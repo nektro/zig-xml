@@ -488,6 +488,8 @@ fn parseAttlistDecl(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void
 
 /// EntityDecl   ::=   GEDecl | PEDecl
 fn parseEntityDecl(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
+    try reader.eat("<!ENTITY") orelse return null;
+    try parseS(alloc, reader) orelse return error.XmlMalformed;
     return try parseGEDecl(alloc, reader) orelse
         try parsePEDecl(alloc, reader) orelse
         return null;
@@ -532,9 +534,7 @@ fn parseAttDef(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
 
 /// GEDecl   ::=   '<!ENTITY' S Name S EntityDef S? '>'
 fn parseGEDecl(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
-    try reader.eat("<!ENTITY") orelse return null;
-    try parseS(alloc, reader) orelse return error.XmlMalformed;
-    try parseName(alloc, reader) orelse return error.XmlMalformed;
+    try parseName(alloc, reader) orelse return null;
     try parseS(alloc, reader) orelse return error.XmlMalformed;
     try parseEntityDef(alloc, reader) orelse return error.XmlMalformed;
     try parseS(alloc, reader) orelse {};
@@ -543,9 +543,7 @@ fn parseGEDecl(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
 
 /// PEDecl   ::=   '<!ENTITY' S '%' S Name S PEDef S? '>'
 fn parsePEDecl(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
-    try reader.eat("<!ENTITY") orelse return null;
-    try parseS(alloc, reader) orelse return error.XmlMalformed;
-    try reader.eat("%") orelse return error.XmlMalformed;
+    try reader.eat("%") orelse return null;
     try parseS(alloc, reader) orelse return error.XmlMalformed;
     try parseName(alloc, reader) orelse return error.XmlMalformed;
     try parseS(alloc, reader) orelse return error.XmlMalformed;
@@ -618,12 +616,9 @@ fn parseEntityDef(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
 
 /// PEDef   ::=   EntityValue | ExternalID
 fn parsePEDef(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
-    //
-    _ = alloc;
-    _ = reader;
-    _ = &parseEntityValue;
-    _ = &parseExternalID;
-    return error.TODO; // TODO:
+    return try parseExternalID(alloc, reader) orelse
+        try parseEntityValue(alloc, reader) orelse
+        null;
 }
 
 /// choice   ::=   '(' S? cp ( S? '|' S? cp )+ S? ')'
