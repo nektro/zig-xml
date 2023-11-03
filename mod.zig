@@ -310,30 +310,30 @@ fn parseNameStartChar(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?u2
     if (try reader.eatRange('A', 'Z')) |b| return b;
     if (try reader.eatByte('_')) |b| return b;
     if (try reader.eatRange('a', 'z')) |b| return b;
-    if (try reader.eatRange(0xC0, 0xD6)) |b| return b;
-    if (try reader.eatRange(0xD8, 0xF6)) |b| return b;
-    // [#xF8-#x2FF]
-    // [#x370-#x37D]
-    // [#x37F-#x1FFF]
-    // [#x200C-#x200D]
-    // [#x2070-#x218F]
-    // [#x2C00-#x2FEF]
-    // [#x3001-#xD7FF]
-    // [#xF900-#xFDCF]
-    // [#xFDF0-#xFFFD]
-    // [#x10000-#xEFFFF]
+    if (try reader.eatRangeM(0xC0, 0xD6)) |b| return b;
+    if (try reader.eatRangeM(0xD8, 0xF6)) |b| return b;
+    if (try reader.eatRangeM(0xF8, 0x2FF)) |b| return b;
+    if (try reader.eatRangeM(0x370, 0x37D)) |b| return b;
+    if (try reader.eatRangeM(0x37F, 0x1FFF)) |b| return b;
+    if (try reader.eatRangeM(0x200C, 0x200D)) |b| return b;
+    if (try reader.eatRangeM(0x2070, 0x218F)) |b| return b;
+    if (try reader.eatRangeM(0x2C00, 0x2FEF)) |b| return b;
+    if (try reader.eatRangeM(0x3001, 0xD7FF)) |b| return b;
+    if (try reader.eatRangeM(0xF900, 0xFDCF)) |b| return b;
+    if (try reader.eatRangeM(0xFDF0, 0xFFFD)) |b| return b;
+    if (try reader.eatRangeM(0x10000, 0xEFFFF)) |b| return b;
     return null;
 }
 
 /// NameChar   ::=   NameStartChar | "-" | "." | [0-9] | #xB7 | [#x0300-#x036F] | [#x203F-#x2040]
 fn parseNameChar(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?u21 {
-    if (try parseNameStartChar(alloc, reader)) |b| return b;
     if (try reader.eatByte('-')) |b| return b;
     if (try reader.eatByte('.')) |b| return b;
     if (try reader.eatRange('0', '9')) |b| return b;
+    if (try parseNameStartChar(alloc, reader)) |b| return b;
     if (try reader.eatByte(0xB7)) |b| return b;
-    // [#x0300-#x036F]
-    // [#x203F-#x2040]
+    if (try reader.eatRangeM(0x0300, 0x036F)) |b| return b;
+    if (try reader.eatRangeM(0x203F, 0x2040)) |b| return b;
     return null;
 }
 

@@ -38,7 +38,7 @@ pub fn peekAmt(ore: *OurReader, comptime amt: usize) !?void {
     ore.amt += diff_amt;
 }
 
-pub fn shiftLAmt(ore: *OurReader, comptime amt: usize) void {
+pub fn shiftLAmt(ore: *OurReader, amt: usize) void {
     std.debug.assert(amt <= ore.amt);
     var new_buf = std.mem.zeroes([buf_size]u8);
     for (amt..ore.amt, 0..) |i, j| new_buf[j] = ore.buf[i];
@@ -61,11 +61,26 @@ pub fn eatByte(ore: *OurReader, test_c: u8) !?u8 {
     return null;
 }
 
-pub fn eatRange(ore: *OurReader, from: u8, to: u8) !?u8 {
+pub fn eatRange(ore: *OurReader, comptime from: u8, comptime to: u8) !?u8 {
     try ore.peekAmt(1) orelse return null;
     if (ore.buf[0] >= from and ore.buf[0] <= to) {
         defer ore.shiftLAmt(1);
         return ore.buf[0];
+    }
+    return null;
+}
+
+pub fn eatRangeM(ore: *OurReader, comptime from: u21, comptime to: u21) !?u21 {
+    const from_len = comptime std.unicode.utf8CodepointSequenceLength(from) catch unreachable;
+    const to_len = comptime std.unicode.utf8CodepointSequenceLength(to) catch unreachable;
+    const amt = @max(from_len, to_len);
+    try ore.peekAmt(amt) orelse return null;
+    const len = std.unicode.utf8ByteSequenceLength(ore.buf[0]) catch return null;
+    if (amt != len) return null;
+    const mcp = std.unicode.utf8Decode(ore.buf[0..amt]) catch return null;
+    if (mcp >= from and mcp <= to) {
+        defer ore.shiftLAmt(len);
+        return @intCast(mcp);
     }
     return null;
 }
