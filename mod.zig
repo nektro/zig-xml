@@ -709,12 +709,19 @@ fn parseCp(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
 
 /// NotationType   ::=   'NOTATION' S '(' S? Name (S? '|' S? Name)* S? ')'
 fn parseNotationType(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
-    //
-    _ = alloc;
-    _ = reader;
-    _ = &parseS;
-    _ = &parseName;
-    return error.TODO; // TODO:
+    try reader.eat("NOTATION") orelse return null;
+    try parseS(alloc, reader) orelse return error.XmlMalformed;
+    try reader.eat("(") orelse return error.XmlMalformed;
+    try parseS(alloc, reader) orelse {};
+    try parseName(alloc, reader) orelse return error.XmlMalformed;
+    while (true) {
+        try parseS(alloc, reader) orelse {};
+        try reader.eat("|") orelse break;
+        try parseS(alloc, reader) orelse {};
+        try parseName(alloc, reader) orelse return error.XmlMalformed;
+    }
+    try parseS(alloc, reader) orelse {};
+    try reader.eat(")") orelse return error.XmlMalformed;
 }
 
 /// Enumeration   ::=   '(' S? Nmtoken (S? '|' S? Nmtoken)* S? ')'
