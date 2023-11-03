@@ -17,7 +17,7 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: std.fs.File.Reade
     var ourreader = OurReader{ .any = anyreader };
     return parseDocument(alloc, &ourreader) catch |err| switch (err) {
         error.XmlMalformed => {
-            std.log.err("{s}:{d}:{d}: {d}'{s}'", .{ path, ourreader.line, ourreader.col, ourreader.amt, ourreader.buf });
+            std.log.err("{s}:{d}:{d}: {d}'{s}'", .{ path, ourreader.line, ourreader.col -| ourreader.amt, ourreader.amt, ourreader.buf });
             if (@errorReturnTrace()) |trace| std.debug.dumpStackTrace(trace.*);
             return err;
         },
