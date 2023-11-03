@@ -1,0 +1,7 @@
+id: j9acnblq851qihs3xtlkhrwjz33wmkstjubq2sqtrcs4jxrh
+name: xml
+main: mod.zig
+license: MPL-2.0
+description: XML
+dependencies:
+  - src: git https://github.com/nektro/zig-extras

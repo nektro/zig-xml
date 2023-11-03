@@ -1,0 +1,9 @@
+zig-*
+.zigmod
+deps.zig
+files.zig
+CVS
+xml-test-suite/xmlconf/ibm/
+xml-test-suite/xmlconf/japanese/
+xml-test-suite/xmlconf/oasis/
+xml-test-suite/xmlconf/sun/

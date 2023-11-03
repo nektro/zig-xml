@@ -1,0 +1,7 @@
+MPL-2.0:
+= https://spdx.org/licenses/MPL-2.0
+- This
+
+MIT:
+= https://spdx.org/licenses/MIT
+- git https://github.com/nektro/zig-extras
