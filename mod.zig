@@ -120,10 +120,10 @@ fn parseSTag(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
 fn parseContent(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
     try parseCharData(alloc, reader) orelse {};
     while (true) {
-        try parseElement(alloc, reader) orelse {
-            try parseReference(alloc, reader) orelse {
-                try parseCDSect(alloc, reader) orelse {
-                    try parsePI(alloc, reader) orelse {
+        try parsePI(alloc, reader) orelse {
+            try parseElement(alloc, reader) orelse {
+                try parseReference(alloc, reader) orelse {
+                    try parseCDSect(alloc, reader) orelse {
                         try parseComment(alloc, reader) orelse break;
                     };
                 };
