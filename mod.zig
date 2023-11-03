@@ -515,11 +515,14 @@ fn parsePEReference(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void
 
 /// contentspec   ::=   'EMPTY' | 'ANY' | Mixed | children
 fn parseContentSpec(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
-    return try reader.eat("EMPTY") orelse
-        try reader.eat("ANY") orelse
-        try parseMixed(alloc, reader) orelse
-        try parseChildren(alloc, reader) orelse
-        null;
+    if (try reader.eat("EMPTY")) |_| return;
+    if (try reader.eat("ANY")) |_| return;
+
+    try reader.eat("(") orelse return null;
+    try parseS(alloc, reader) orelse {};
+    if (try parseMixed(alloc, reader)) |_| return;
+    if (try parseChildren(alloc, reader)) |_| return;
+    return null;
 }
 
 /// AttDef   ::=   S Name S AttType S DefaultDecl
@@ -565,9 +568,7 @@ fn parsePublicID(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
 /// Mixed   ::=   '(' S? '#PCDATA' (S? '|' S? Name)* S? ')*'
 /// Mixed   ::=   '(' S? '#PCDATA' S? ')'
 fn parseMixed(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
-    try reader.eat("(") orelse return null;
-    try parseS(alloc, reader) orelse {};
-    try reader.eat("#PCDATA") orelse return error.XmlMalformed;
+    try reader.eat("#PCDATA") orelse return null;
     try parseS(alloc, reader) orelse {};
     if (try reader.eat(")")) |_| return;
     while (true) {
@@ -623,9 +624,7 @@ fn parsePEDef(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
 
 /// choice   ::=   '(' S? cp ( S? '|' S? cp )+ S? ')'
 fn parseChoice(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
-    try reader.eat("(") orelse return null;
-    try parseS(alloc, reader) orelse {};
-    try parseCp(alloc, reader) orelse return error.XmlMalformed;
+    try parseCp(alloc, reader) orelse return null;
     var i: usize = 0;
     while (true) : (i += 1) {
         try parseS(alloc, reader) orelse {};
@@ -639,9 +638,7 @@ fn parseChoice(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
 
 /// seq   ::=   '(' S? cp ( S? ',' S? cp )* S? ')'
 fn parseSeq(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
-    try reader.eat("(") orelse return null;
-    try parseS(alloc, reader) orelse {};
-    try parseCp(alloc, reader) orelse return error.XmlMalformed;
+    try parseCp(alloc, reader) orelse return null;
     var i: usize = 0;
     while (true) : (i += 1) {
         try parseS(alloc, reader) orelse {};
