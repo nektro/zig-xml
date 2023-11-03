@@ -362,11 +362,15 @@ fn parseSystemLiteral(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?vo
     try reader.skipUntilAfter(&.{'"'});
 }
 
-/// PubidLiteral   ::=   '"' PubidChar* '"' | "'" (PubidChar - "'")* "'"
+/// PubidLiteral   ::=   '"' PubidChar* '"'
+/// PubidLiteral   ::=   "'" (PubidChar - "'")* "'"
 fn parsePubidLiteral(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
-    try reader.eat(&.{'"'}) orelse return null;
-    while (true) _ = try parsePubidChar(alloc, reader) orelse break;
-    try reader.eat(&.{'"'}) orelse return error.XmlMalformed;
+    const q = try reader.eatQuoteS() orelse return null;
+    while (true) {
+        const c = try parsePubidChar(alloc, reader) orelse break;
+        if (q == '\'' and c == q) return;
+    }
+    try reader.eatQuoteE(q) orelse return error.XmlMalformed;
 }
 
 /// markupdecl   ::=   elementdecl | AttlistDecl | EntityDecl | NotationDecl | PI | Comment
