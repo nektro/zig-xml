@@ -109,8 +109,8 @@ fn parseSTag(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
     try reader.eat("<") orelse return null;
     try parseName(alloc, reader) orelse return error.XmlMalformed;
     while (true) {
-        try parseS(alloc, reader) orelse break;
-        try parseAttribute(alloc, reader) orelse return error.XmlMalformed;
+        try parseS(alloc, reader) orelse {};
+        try parseAttribute(alloc, reader) orelse break;
     }
     try parseS(alloc, reader) orelse {};
     try reader.eat(">") orelse return error.XmlMalformed;
