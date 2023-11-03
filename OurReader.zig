@@ -70,7 +70,7 @@ pub fn eatRange(ore: *OurReader, from: u8, to: u8) !?u8 {
     return null;
 }
 
-pub fn eatAny(ore: *OurReader, comptime test_s: []const u8) !?u8 {
+pub fn eatAny(ore: *OurReader, test_s: []const u8) !?u8 {
     try ore.peekAmt(1) orelse return null;
     for (test_s) |c| {
         if (ore.buf[0] == c) {
