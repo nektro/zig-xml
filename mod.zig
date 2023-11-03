@@ -651,9 +651,9 @@ fn parseStringType(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void 
 /// TokenizedType   ::=   'ID' | 'IDREF' | 'IDREFS' | 'ENTITY' | 'ENTITIES' | 'NMTOKEN' | 'NMTOKENS'
 fn parseTokenizedType(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
     _ = alloc;
-    if (try reader.eat("ID")) |_| return;
     if (try reader.eat("IDREFS")) |_| return;
     if (try reader.eat("IDREF")) |_| return;
+    if (try reader.eat("ID")) |_| return;
     if (try reader.eat("ENTITY")) |_| return;
     if (try reader.eat("ENTITIES")) |_| return;
     if (try reader.eat("NMTOKENS")) |_| return;
