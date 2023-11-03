@@ -42,11 +42,22 @@ fn parseProlog(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
 
 /// element   ::=   EmptyElemTag
 /// element   ::=   STag content ETag
+///
+/// EmptyElemTag   ::=   '<' Name (S Attribute)* S? '/>'
+/// STag           ::=   '<' Name (S Attribute)* S? '>'
 fn parseElement(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
-    try parseSTag(alloc, reader) orelse {
-        try parseEmptyElemTag(alloc, reader) orelse return null;
-        return;
-    };
+    if (try reader.peek("</")) return null;
+    if (try reader.peek("<!")) return null;
+    try reader.eat("<") orelse return null;
+    try parseName(alloc, reader) orelse return error.XmlMalformed;
+    while (true) {
+        try parseS(alloc, reader) orelse {};
+        try parseAttribute(alloc, reader) orelse break;
+    }
+    try parseS(alloc, reader) orelse {};
+    if (try reader.eat("/>")) |_| return;
+    try reader.eat(">") orelse return error.XmlMalformed;
+
     try parseContent(alloc, reader) orelse return error.XmlMalformed;
     try parseETag(alloc, reader) orelse return error.XmlMalformed;
 }
@@ -85,34 +96,6 @@ fn parseDoctypeDecl(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void
         try reader.eat("]") orelse return error.XmlMalformed;
         try parseS(alloc, reader) orelse {};
     }
-    try reader.eat(">") orelse return error.XmlMalformed;
-}
-
-/// EmptyElemTag   ::=   '<' Name (S Attribute)* S? '/>'
-fn parseEmptyElemTag(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
-    if (try reader.peek("</")) return null;
-    if (try reader.peek("<!")) return null;
-    try reader.eat("<") orelse return null;
-    try parseName(alloc, reader) orelse return error.XmlMalformed;
-    while (true) {
-        try parseS(alloc, reader) orelse break;
-        try parseAttribute(alloc, reader) orelse return error.XmlMalformed;
-    }
-    try parseS(alloc, reader) orelse {};
-    try reader.eat("/>") orelse return error.XmlMalformed;
-}
-
-/// STag   ::=   '<' Name (S Attribute)* S? '>'
-fn parseSTag(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
-    if (try reader.peek("</")) return null;
-    if (try reader.peek("<!")) return null;
-    try reader.eat("<") orelse return null;
-    try parseName(alloc, reader) orelse return error.XmlMalformed;
-    while (true) {
-        try parseS(alloc, reader) orelse {};
-        try parseAttribute(alloc, reader) orelse break;
-    }
-    try parseS(alloc, reader) orelse {};
     try reader.eat(">") orelse return error.XmlMalformed;
 }
 
