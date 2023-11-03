@@ -7,3 +7,13 @@ xml-test-suite/xmlconf/ibm/
 xml-test-suite/xmlconf/japanese/
 xml-test-suite/xmlconf/oasis/
 xml-test-suite/xmlconf/sun/
+xml-test-suite/xmlconf/xmltest/valid/sa/out/
+xml-test-suite/xmlconf/files/
+xml-test-suite/xmlconf/xmltest/invalid/
+xml-test-suite/xmlconf/xmltest/not-wf/
+xml-test-suite/xmlconf/xmltest/valid/ext-sa/
+xml-test-suite/xmlconf/xmltest/valid/not-sa/
+xml-test-suite/**/*.html
+xml-test-suite/**/*.htm
+xml-test-suite/xmlconf/xmltest/*.xml
+xml-test-suite/xmlconf/*
