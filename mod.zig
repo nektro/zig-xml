@@ -153,7 +153,7 @@ fn parseComment(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 /// PI   ::=   '<?' PITarget (S (Char* - (Char* '?>' Char*)))? '?>'
 fn parsePI(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("<?") orelse return null;
-    try parsePITarget(alloc, p) orelse return error.XmlMalformed;
+    _ = try parsePITarget(alloc, p) orelse return error.XmlMalformed;
     try parseS(p) orelse {};
     try p.skipUntilAfter("?>");
 }
@@ -275,10 +275,10 @@ fn parseCDSect(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// PITarget   ::=   Name - (('X' | 'x') ('M' | 'm') ('L' | 'l'))
-fn parsePITarget(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parsePITarget(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
     if (try p.peek("xml ")) return null;
     if (try p.peek("XML ")) return null;
-    _ = try parseName(alloc, p) orelse return null;
+    return try parseName(alloc, p) orelse return null;
 }
 
 /// Char   ::=   #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]	/* any Unicode character, excluding the surrogate blocks, FFFE, and FFFF. */
