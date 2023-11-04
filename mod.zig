@@ -79,7 +79,7 @@ fn parseXMLDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try parseVersionInfo(alloc, p) orelse return error.XmlMalformed;
     _ = try parseEncodingDecl(alloc, p) orelse {};
     _ = try parseSDDecl(alloc, p) orelse {};
-    _ = try parseS(p) orelse {};
+    try parseS(p) orelse {};
     try p.eat("?>") orelse return error.XmlMalformed;
 }
 
@@ -172,14 +172,15 @@ fn parseEncodingDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// SDDecl   ::=   S 'standalone' Eq (("'" ('yes' | 'no') "'") | ('"' ('yes' | 'no') '"'))
-fn parseSDDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parseSDDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?Standalone {
     _ = alloc;
     try parseS(p) orelse {};
     try p.eat("standalone") orelse return null;
     try parseEq(p) orelse return error.XmlMalformed;
     const q = try p.eatQuoteS() orelse return error.XmlMalformed;
-    try p.eat("yes") orelse try p.eat("no") orelse return error.XmlMalformed;
+    const sd: Standalone = if (try p.eat("yes")) |_| .yes else if (try p.eat("no")) |_| .no else return error.XmlMalformed;
     try p.eatQuoteE(q) orelse return error.XmlMalformed;
+    return sd;
 }
 
 /// Name   ::=   NameStartChar (NameChar)*
@@ -738,3 +739,11 @@ fn parseNmtoken(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 // Ignore   ::=   Char* - (Char* ('<![' | ']]>') Char*)
 // TextDecl   ::=   '<?xml' VersionInfo? EncodingDecl S? '?>'
 // extParsedEnt   ::=   TextDecl? content
+
+//
+//
+
+pub const Standalone = enum {
+    no,
+    yes,
+};
