@@ -155,7 +155,7 @@ fn parseS(p: *Parser) anyerror!?void {
 fn parseVersionInfo(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try parseS(p) orelse return null;
     try p.eat("version") orelse return error.XmlMalformed;
-    try parseEq(alloc, p) orelse return error.XmlMalformed;
+    try parseEq(p) orelse return error.XmlMalformed;
     const q = try p.eatQuoteS() orelse return error.XmlMalformed;
     try parseVersionNum(alloc, p) orelse return error.XmlMalformed;
     try p.eatQuoteE(q) orelse return error.XmlMalformed;
@@ -165,7 +165,7 @@ fn parseVersionInfo(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 fn parseEncodingDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try parseS(p) orelse {};
     try p.eat("encoding") orelse return null;
-    try parseEq(alloc, p) orelse return error.XmlMalformed;
+    try parseEq(p) orelse return error.XmlMalformed;
     const q = try p.eatQuoteS() orelse return error.XmlMalformed;
     try parseEncName(alloc, p) orelse return error.XmlMalformed;
     try p.eatQuoteE(q) orelse return error.XmlMalformed;
@@ -173,9 +173,10 @@ fn parseEncodingDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// SDDecl   ::=   S 'standalone' Eq (("'" ('yes' | 'no') "'") | ('"' ('yes' | 'no') '"'))
 fn parseSDDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+    _ = alloc;
     try parseS(p) orelse {};
     try p.eat("standalone") orelse return null;
-    try parseEq(alloc, p) orelse return error.XmlMalformed;
+    try parseEq(p) orelse return error.XmlMalformed;
     const q = try p.eatQuoteS() orelse return error.XmlMalformed;
     try p.eat("yes") orelse try p.eat("no") orelse return error.XmlMalformed;
     try p.eatQuoteE(q) orelse return error.XmlMalformed;
@@ -216,7 +217,7 @@ fn parseIntSubset(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 /// Attribute   ::=   Name Eq AttValue
 fn parseAttribute(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try parseName(alloc, p) orelse return null;
-    try parseEq(alloc, p) orelse return error.XmlMalformed;
+    try parseEq(p) orelse return error.XmlMalformed;
     try parseAttValue(alloc, p) orelse return error.XmlMalformed;
 }
 
@@ -271,8 +272,7 @@ fn parseChar(alloc: std.mem.Allocator, p: *Parser) anyerror!?u21 {
 }
 
 /// Eq   ::=   S? '=' S?
-fn parseEq(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = alloc;
+fn parseEq(p: *Parser) anyerror!?void {
     try parseS(p) orelse {};
     try p.eat("=") orelse return null;
     try parseS(p) orelse {};
