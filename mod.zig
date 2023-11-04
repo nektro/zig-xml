@@ -89,7 +89,7 @@ fn parseDoctypeDecl(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void
     try parseS(alloc, reader) orelse return error.XmlMalformed;
     try parseName(alloc, reader) orelse return error.XmlMalformed;
     try parseS(alloc, reader) orelse {};
-    try parseExternalID(alloc, reader) orelse {};
+    try parseExternalOrPublicID(alloc, reader, false) orelse {};
     try parseS(alloc, reader) orelse {};
     if (try reader.eat("[")) |_| {
         try parseIntSubset(alloc, reader) orelse return error.XmlMalformed;
@@ -190,13 +190,14 @@ fn parseName(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
 }
 
 /// ExternalID   ::=   'SYSTEM' S SystemLiteral
+/// PublicID     ::=   'PUBLIC' S PubidLiteral
 /// ExternalID   ::=   'PUBLIC' S PubidLiteral S SystemLiteral
-fn parseExternalID(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
+fn parseExternalOrPublicID(alloc: std.mem.Allocator, reader: *OurReader, allow_public: bool) anyerror!?void {
     try reader.eat("SYSTEM") orelse {
         try reader.eat("PUBLIC") orelse return null;
         try parseS(alloc, reader) orelse return error.XmlMalformed;
         try parsePubidLiteral(alloc, reader) orelse return error.XmlMalformed;
-        try parseS(alloc, reader) orelse return error.XmlMalformed;
+        try parseS(alloc, reader) orelse return if (allow_public) {} else error.XmlMalformed;
         try parseSystemLiteral(alloc, reader) orelse return error.XmlMalformed;
         return;
     };
@@ -488,7 +489,7 @@ fn parseNotationDecl(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?voi
     try parseS(alloc, reader) orelse return error.XmlMalformed;
     try parseName(alloc, reader) orelse return error.XmlMalformed;
     try parseS(alloc, reader) orelse return error.XmlMalformed;
-    try parseExternalID(alloc, reader) orelse try parsePublicID(alloc, reader) orelse return error.XmlMalformed;
+    try parseExternalOrPublicID(alloc, reader, true) orelse return error.XmlMalformed;
     try parseS(alloc, reader) orelse {};
     try reader.eat(">") orelse return error.XmlMalformed;
 }
@@ -542,16 +543,6 @@ fn parsePEDecl(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
     try reader.eat(">") orelse return error.XmlMalformed;
 }
 
-/// PublicID   ::=   'PUBLIC' S PubidLiteral
-fn parsePublicID(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
-    //
-    _ = alloc;
-    _ = reader;
-    _ = &parseS;
-    _ = &parsePubidLiteral;
-    return error.TODO; // TODO:
-}
-
 /// Mixed   ::=   '(' S? '#PCDATA' (S? '|' S? Name)* S? ')*'
 /// Mixed   ::=   '(' S? '#PCDATA' S? ')'
 fn parseMixed(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
@@ -596,7 +587,7 @@ fn parseDefaultDecl(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void
 /// EntityDef   ::=   EntityValue | (ExternalID NDataDecl?)
 fn parseEntityDef(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
     return try parseEntityValue(alloc, reader) orelse {
-        try parseExternalID(alloc, reader) orelse return null;
+        try parseExternalOrPublicID(alloc, reader, false) orelse return null;
         try parseNDataDecl(alloc, reader) orelse {};
         return;
     };
@@ -604,7 +595,7 @@ fn parseEntityDef(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
 
 /// PEDef   ::=   EntityValue | ExternalID
 fn parsePEDef(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
-    return try parseExternalID(alloc, reader) orelse
+    return try parseExternalOrPublicID(alloc, reader, false) orelse
         try parseEntityValue(alloc, reader) orelse
         null;
 }
