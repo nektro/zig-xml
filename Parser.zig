@@ -13,7 +13,7 @@ col: usize = 1,
 
 extras: std.ArrayListUnmanaged(u32) = .{},
 string_bytes: std.ArrayListUnmanaged(u8) = .{},
-strings_map: std.StringHashMapUnmanaged(xml.ExtraIndex) = .{},
+strings_map: std.StringHashMapUnmanaged(xml.StringIndex) = .{},
 
 pub fn eat(ore: *OurReader, comptime test_s: string) !?void {
     if (!try ore.peek(test_s)) return null;
@@ -118,7 +118,7 @@ pub fn eatQuoteE(ore: *OurReader, q: u8) !?void {
     };
 }
 
-pub fn addStr(ore: *OurReader, alloc: std.mem.Allocator, str: string) !xml.ExtraIndex {
+pub fn addStr(ore: *OurReader, alloc: std.mem.Allocator, str: string) !xml.StringIndex {
     var res = try ore.strings_map.getOrPut(alloc, str);
     if (res.found_existing) return res.value_ptr.*;
     const q = ore.string_bytes.items.len;

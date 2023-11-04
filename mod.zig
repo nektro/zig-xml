@@ -133,7 +133,7 @@ fn parseContent(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// ETag   ::=   '</' Name S? '>'
-fn parseETag(alloc: std.mem.Allocator, p: *Parser, expected_name: ExtraIndex) anyerror!?void {
+fn parseETag(alloc: std.mem.Allocator, p: *Parser, expected_name: StringIndex) anyerror!?void {
     try p.eat("</") orelse return null;
     const name = try parseName(alloc, p) orelse return error.XmlMalformed;
     if (name != expected_name) return error.XmlMalformed;
@@ -183,7 +183,7 @@ fn parseVersionInfo(p: *Parser) anyerror!?[2]u8 {
 }
 
 /// EncodingDecl   ::=   S 'encoding' Eq ('"' EncName '"' | "'" EncName "'" )
-fn parseEncodingDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
+fn parseEncodingDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     try parseS(p) orelse {};
     try p.eat("encoding") orelse return null;
     try parseEq(p) orelse return error.XmlMalformed;
@@ -205,7 +205,7 @@ fn parseSDDecl(p: *Parser) anyerror!?Standalone {
 }
 
 /// Name   ::=   NameStartChar (NameChar)*
-fn parseName(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
+fn parseName(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     var list = std.ArrayList(u8).init(alloc);
     defer list.deinit();
 
@@ -248,7 +248,7 @@ fn parseAttribute(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// CharData   ::=   [^<&]* - ([^<&]* ']]>' [^<&]*)
-fn parseCharData(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
+fn parseCharData(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     var list = std.ArrayList(u8).init(alloc);
     defer list.deinit();
 
@@ -278,7 +278,7 @@ fn parseReference(alloc: std.mem.Allocator, p: *Parser) anyerror!?Reference {
 }
 
 /// CDSect   ::=   CDStart CData CDEnd
-fn parseCDSect(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
+fn parseCDSect(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     try parseCDStart(p) orelse return null;
     const text = try parseCData(alloc, p) orelse return error.XmlMalformed;
     try parseCDEnd(p) orelse return error.XmlMalformed;
@@ -286,7 +286,7 @@ fn parseCDSect(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
 }
 
 /// PITarget   ::=   Name - (('X' | 'x') ('M' | 'm') ('L' | 'l'))
-fn parsePITarget(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
+fn parsePITarget(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     if (try p.peek("xml ")) return null;
     if (try p.peek("XML ")) return null;
     return try parseName(alloc, p) orelse return null;
@@ -335,7 +335,7 @@ fn parseVersionNum(p: *Parser) anyerror!?[2]u8 {
 }
 
 /// EncName   ::=   [A-Za-z] ([A-Za-z0-9._] | '-')*
-fn parseEncName(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
+fn parseEncName(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     var list = std.ArrayList(u8).init(alloc);
     defer list.deinit();
 
@@ -389,7 +389,7 @@ fn parseNameChar(p: *Parser) anyerror!?u21 {
 
 /// SystemLiteral   ::=   ('"' [^"]* '"')
 /// SystemLiteral   ::=   ("'" [^']* "'")
-fn parseSystemLiteral(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
+fn parseSystemLiteral(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     var list = std.ArrayList(u8).init(alloc);
     defer list.deinit();
 
@@ -405,7 +405,7 @@ fn parseSystemLiteral(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex
 
 /// PubidLiteral   ::=   '"' PubidChar* '"'
 /// PubidLiteral   ::=   "'" (PubidChar - "'")* "'"
-fn parsePubidLiteral(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
+fn parsePubidLiteral(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     var list = std.ArrayList(u8).init(alloc);
     defer list.deinit();
 
@@ -505,7 +505,7 @@ fn parseCDStart(p: *Parser) anyerror!?void {
 }
 
 /// CData   ::=   (Char* - (Char* ']]>' Char*))
-fn parseCData(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
+fn parseCData(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     var list = std.ArrayList(u8).init(alloc);
     defer list.deinit();
 
@@ -834,7 +834,7 @@ fn addUCPtoList(list: *std.ArrayList(u8), cp: u21) !void {
 //
 //
 
-pub const ExtraIndex = enum(u32) { _ };
+pub const StringIndex = enum(u32) { _ };
 
 pub const Document = struct {
     allocator: std.mem.Allocator,
@@ -854,7 +854,7 @@ pub const Standalone = enum {
 };
 
 pub const Element = struct {
-    tag_name: ExtraIndex,
+    tag_name: StringIndex,
 };
 
 pub const Reference = union(enum) {
