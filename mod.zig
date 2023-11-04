@@ -699,21 +699,27 @@ fn parseNotationType(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?voi
 
 /// Enumeration   ::=   '(' S? Nmtoken (S? '|' S? Nmtoken)* S? ')'
 fn parseEnumeration(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
-    //
-    _ = alloc;
-    _ = reader;
-    _ = &parseS;
-    _ = &parseNmtoken;
-    return error.TODO; // TODO:
+    try reader.eat("(") orelse return null;
+    try parseS(alloc, reader) orelse {};
+    try parseNmtoken(alloc, reader) orelse return error.XmlMalformed;
+    while (true) {
+        try parseS(alloc, reader) orelse {};
+        _ = try reader.eatByte('|') orelse break;
+        try parseS(alloc, reader) orelse {};
+        try parseNmtoken(alloc, reader) orelse return error.XmlMalformed;
+    }
+    try parseS(alloc, reader) orelse {};
+    try reader.eat(")") orelse return error.XmlMalformed;
 }
 
 /// Nmtoken   ::=   (NameChar)+
 fn parseNmtoken(alloc: std.mem.Allocator, reader: *OurReader) anyerror!?void {
-    //
-    _ = alloc;
-    _ = reader;
-    _ = &parseNameChar;
-    return error.TODO; // TODO:
+    var i: usize = 0;
+    while (true) : (i += 1) {
+        if (try parseNameChar(alloc, reader)) |_| continue;
+        if (i == 0) return null;
+        break;
+    }
 }
 
 //
