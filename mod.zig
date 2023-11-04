@@ -648,7 +648,7 @@ fn parseChildren(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 /// AttType   ::=   StringType | TokenizedType | EnumeratedType
 fn parseAttType(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     return try parseStringType(p) orelse
-        try parseTokenizedType(alloc, p) orelse
+        try parseTokenizedType(p) orelse
         try parseEnumeratedType(alloc, p) orelse
         null;
 }
@@ -714,8 +714,7 @@ fn parseStringType(p: *Parser) anyerror!?void {
 }
 
 /// TokenizedType   ::=   'ID' | 'IDREF' | 'IDREFS' | 'ENTITY' | 'ENTITIES' | 'NMTOKEN' | 'NMTOKENS'
-fn parseTokenizedType(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = alloc;
+fn parseTokenizedType(p: *Parser) anyerror!?void {
     if (try p.eat("IDREFS")) |_| return;
     if (try p.eat("IDREF")) |_| return;
     if (try p.eat("ID")) |_| return;
