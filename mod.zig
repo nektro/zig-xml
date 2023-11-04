@@ -224,11 +224,11 @@ fn parseExternalOrPublicID(alloc: std.mem.Allocator, p: *Parser, allow_public: b
         try parseS(p) orelse return error.XmlMalformed;
         try parsePubidLiteral(alloc, p) orelse return error.XmlMalformed;
         try parseS(p) orelse return if (allow_public) {} else error.XmlMalformed;
-        try parseSystemLiteral(alloc, p) orelse return error.XmlMalformed;
+        _ = try parseSystemLiteral(alloc, p) orelse return error.XmlMalformed;
         return;
     };
     try parseS(p) orelse return error.XmlMalformed;
-    try parseSystemLiteral(alloc, p) orelse return error.XmlMalformed;
+    _ = try parseSystemLiteral(alloc, p) orelse return error.XmlMalformed;
 }
 
 /// intSubset   ::=   (markupdecl | DeclSep)*
@@ -373,14 +373,18 @@ fn parseNameChar(alloc: std.mem.Allocator, p: *Parser) anyerror!?u21 {
 
 /// SystemLiteral   ::=   ('"' [^"]* '"')
 /// SystemLiteral   ::=   ("'" [^']* "'")
-fn parseSystemLiteral(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = alloc;
+fn parseSystemLiteral(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
+    var list = std.ArrayList(u8).init(alloc);
+    defer list.deinit();
+
     const q = try p.eatQuoteS() orelse return null;
     while (true) {
         if (try p.eatByte(q)) |_| break;
         try p.peekAmt(1) orelse return error.XmlMalformed;
-        _ = try p.eatByte(p.buf[0]) orelse return error.XmlMalformed;
+        const c = try p.eatByte(p.buf[0]) orelse return error.XmlMalformed;
+        try list.append(c);
     }
+    return try p.addStr(alloc, list.items);
 }
 
 /// PubidLiteral   ::=   '"' PubidChar* '"'
