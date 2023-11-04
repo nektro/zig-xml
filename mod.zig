@@ -56,7 +56,7 @@ fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     if (try p.peek("</")) return null;
     if (try p.peek("<!")) return null;
     try p.eat("<") orelse return null;
-    _ = try parseName(alloc, p) orelse return error.XmlMalformed;
+    const name = try parseName(alloc, p) orelse return error.XmlMalformed;
     while (true) {
         try parseS(p) orelse {};
         try parseAttribute(alloc, p) orelse break;
@@ -66,7 +66,7 @@ fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat(">") orelse return error.XmlMalformed;
 
     try parseContent(alloc, p) orelse return error.XmlMalformed;
-    try parseETag(alloc, p) orelse return error.XmlMalformed;
+    try parseETag(alloc, p, name) orelse return error.XmlMalformed;
 }
 
 /// Misc   ::=   Comment | PI | S
@@ -124,9 +124,10 @@ fn parseContent(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// ETag   ::=   '</' Name S? '>'
-fn parseETag(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parseETag(alloc: std.mem.Allocator, p: *Parser, expected_name: Document.ExtraIndex) anyerror!?void {
     try p.eat("</") orelse return null;
-    _ = try parseName(alloc, p) orelse return error.XmlMalformed;
+    const name = try parseName(alloc, p) orelse return error.XmlMalformed;
+    if (name != expected_name) return error.XmlMalformed;
     try parseS(p) orelse {};
     try p.eat(">") orelse return error.XmlMalformed;
 }
