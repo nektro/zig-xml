@@ -253,7 +253,11 @@ fn parseCharData(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// Reference   ::=   EntityRef | CharRef
 fn parseReference(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    try parseCharRef(alloc, p) orelse try parseEntityRef(alloc, p) orelse return null;
+    _ = try parseCharRef(alloc, p) orelse {
+        _ = try parseEntityRef(alloc, p) orelse {
+            return null;
+        };
+    };
 }
 
 /// CDSect   ::=   CDStart CData CDEnd
@@ -415,28 +419,47 @@ fn parseEntityRef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// CharRef   ::=   '&#' [0-9]+ ';'
 /// CharRef   ::=   '&#x' [0-9a-fA-F]+ ';'
-fn parseCharRef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parseCharRef(alloc: std.mem.Allocator, p: *Parser) anyerror!?u21 {
     _ = alloc;
     try p.eat("&#x") orelse {
         try p.eat("&#") orelse return null;
         var i: usize = 0;
+        var d: u21 = 0;
         while (true) : (i += 1) {
-            if (try p.eatRange('0', '9')) |_| continue;
+            if (try p.eatRange('0', '9')) |c| {
+                d *= 10;
+                d += c - '0';
+                continue;
+            }
             if (i == 0) return error.XmlMalformed;
             break;
         }
         try p.eat(";") orelse return error.XmlMalformed;
-        return;
+        return d;
     };
     var i: usize = 0;
+    var d: u21 = 0;
     while (true) : (i += 1) {
-        if (try p.eatRange('0', '9')) |_| continue;
-        if (try p.eatRange('a', 'f')) |_| continue;
-        if (try p.eatRange('A', 'F')) |_| continue;
+        if (try p.eatRange('0', '9')) |c| {
+            d *= 16;
+            d += c - '0';
+            continue;
+        }
+        if (try p.eatRange('a', 'f')) |c| {
+            d *= 16;
+            d += c - 'a' + 10;
+            continue;
+        }
+        if (try p.eatRange('A', 'F')) |c| {
+            d *= 16;
+            d += c - 'A' + 10;
+            continue;
+        }
         if (i == 0) return error.XmlMalformed;
         break;
     }
     try p.eat(";") orelse return error.XmlMalformed;
+    return d;
 }
 
 /// CDStart   ::=   '<![CDATA['
