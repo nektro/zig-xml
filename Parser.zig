@@ -13,7 +13,7 @@ col: usize = 1,
 
 extras: std.ArrayListUnmanaged(u32) = .{},
 string_bytes: std.ArrayListUnmanaged(u8) = .{},
-strings_map: std.StringHashMapUnmanaged(xml.StringIndex) = .{},
+strings_map: std.StringArrayHashMapUnmanaged(xml.StringIndex) = .{},
 
 pub fn eat(ore: *OurReader, comptime test_s: string) !?void {
     if (!try ore.peek(test_s)) return null;
@@ -119,7 +119,8 @@ pub fn eatQuoteE(ore: *OurReader, q: u8) !?void {
 }
 
 pub fn addStr(ore: *OurReader, alloc: std.mem.Allocator, str: string) !xml.StringIndex {
-    var res = try ore.strings_map.getOrPut(alloc, str);
+    const adapter: Adapter = .{ .ore = ore };
+    var res = try ore.strings_map.getOrPutAdapted(alloc, str, adapter);
     if (res.found_existing) return res.value_ptr.*;
     const q = ore.string_bytes.items.len;
     try ore.string_bytes.appendSlice(alloc, str);
@@ -128,3 +129,21 @@ pub fn addStr(ore: *OurReader, alloc: std.mem.Allocator, str: string) !xml.Strin
     res.value_ptr.* = @enumFromInt(r);
     return @enumFromInt(r);
 }
+
+const Adapter = struct {
+    ore: *const OurReader,
+
+    pub fn hash(ctx: @This(), a: string) u32 {
+        _ = ctx;
+        var hasher = std.hash.Wyhash.init(0);
+        hasher.update(a);
+        return @truncate(hasher.final());
+    }
+
+    pub fn eql(ctx: @This(), a: string, _: string, b_index: usize) bool {
+        const extras_offset = ctx.ore.strings_map.values()[b_index];
+        const str = ctx.ore.extras.items[@intFromEnum(extras_offset)..][0..2].*;
+        const b = ctx.ore.string_bytes.items[str[0]..][0..str[1]];
+        return std.mem.eql(u8, a, b);
+    }
+};

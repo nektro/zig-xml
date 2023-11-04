@@ -826,9 +826,10 @@ fn parseNmtoken(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 //
 
 fn addUCPtoList(list: *std.ArrayList(u8), cp: u21) !void {
-    //
-    _ = list;
-    _ = cp;
+    var buf: [4]u8 = undefined;
+    const len = std.unicode.utf8CodepointSequenceLength(cp) catch unreachable;
+    _ = std.unicode.utf8Encode(cp, buf[0..len]) catch unreachable;
+    try list.appendSlice(buf[0..len]);
 }
 
 //
