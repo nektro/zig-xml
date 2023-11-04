@@ -92,7 +92,7 @@ fn parseMisc(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 /// XMLDecl   ::=   '<?xml' VersionInfo EncodingDecl? SDDecl? S? '?>'
 fn parseXMLDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("<?xml") orelse return null;
-    try parseVersionInfo(p) orelse return error.XmlMalformed;
+    _ = try parseVersionInfo(p) orelse return error.XmlMalformed;
     _ = try parseEncodingDecl(alloc, p) orelse {};
     _ = try parseSDDecl(p) orelse {};
     try parseS(p) orelse {};
@@ -172,13 +172,14 @@ fn parseS(p: *Parser) anyerror!?void {
 }
 
 /// VersionInfo   ::=   S 'version' Eq ("'" VersionNum "'" | '"' VersionNum '"')
-fn parseVersionInfo(p: *Parser) anyerror!?void {
+fn parseVersionInfo(p: *Parser) anyerror!?[2]u8 {
     try parseS(p) orelse return null;
     try p.eat("version") orelse return error.XmlMalformed;
     try parseEq(p) orelse return error.XmlMalformed;
     const q = try p.eatQuoteS() orelse return error.XmlMalformed;
-    try parseVersionNum(p) orelse return error.XmlMalformed;
+    const vers = try parseVersionNum(p) orelse return error.XmlMalformed;
     try p.eatQuoteE(q) orelse return error.XmlMalformed;
+    return vers;
 }
 
 /// EncodingDecl   ::=   S 'encoding' Eq ('"' EncName '"' | "'" EncName "'" )
@@ -315,14 +316,20 @@ fn parseEq(p: *Parser) anyerror!?void {
 }
 
 /// VersionNum   ::=   '1.' [0-9]+
-fn parseVersionNum(p: *Parser) anyerror!?void {
+fn parseVersionNum(p: *Parser) anyerror!?[2]u8 {
+    var vers = [2]u8{ 1, 0 };
     try p.eat("1.") orelse return null;
     var i: usize = 0;
     while (true) : (i += 1) {
-        if (try p.eatRange('0', '9')) |_| continue;
+        if (try p.eatRange('0', '9')) |c| {
+            vers[1] *= 10;
+            vers[1] += c - '0';
+            continue;
+        }
         if (i == 0) return null;
         break;
     }
+    return vers;
 }
 
 /// EncName   ::=   [A-Za-z] ([A-Za-z0-9._] | '-')*
