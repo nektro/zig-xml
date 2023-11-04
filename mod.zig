@@ -211,7 +211,7 @@ fn parseName(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
 
     try addUCPtoList(&list, try parseNameStartChar(p) orelse return null);
     while (true) {
-        try addUCPtoList(&list, try parseNameChar(alloc, p) orelse break);
+        try addUCPtoList(&list, try parseNameChar(p) orelse break);
     }
     return try p.addStr(alloc, list.items);
 }
@@ -375,8 +375,7 @@ fn parseNameStartChar(p: *Parser) anyerror!?u21 {
 }
 
 /// NameChar   ::=   NameStartChar | "-" | "." | [0-9] | #xB7 | [#x0300-#x036F] | [#x203F-#x2040]
-fn parseNameChar(alloc: std.mem.Allocator, p: *Parser) anyerror!?u21 {
-    _ = alloc;
+fn parseNameChar(p: *Parser) anyerror!?u21 {
     if (try p.eatByte('-')) |b| return b;
     if (try p.eatByte('.')) |b| return b;
     if (try p.eatRange('0', '9')) |b| return b;
@@ -798,9 +797,10 @@ fn parseEnumeration(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// Nmtoken   ::=   (NameChar)+
 fn parseNmtoken(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+    _ = alloc;
     var i: usize = 0;
     while (true) : (i += 1) {
-        if (try parseNameChar(alloc, p)) |_| continue;
+        if (try parseNameChar(p)) |_| continue;
         if (i == 0) return null;
         break;
     }
