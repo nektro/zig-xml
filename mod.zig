@@ -51,10 +51,10 @@ fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("<") orelse return null;
     try parseName(alloc, p) orelse return error.XmlMalformed;
     while (true) {
-        try parseS(alloc, p) orelse {};
+        try parseS(p) orelse {};
         try parseAttribute(alloc, p) orelse break;
     }
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     if (try p.eat("/>")) |_| return;
     try p.eat(">") orelse return error.XmlMalformed;
 
@@ -66,7 +66,7 @@ fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 fn parseMisc(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try parseComment(alloc, p) orelse {
         try parsePI(alloc, p) orelse {
-            try parseS(alloc, p) orelse {
+            try parseS(p) orelse {
                 return null;
             };
         };
@@ -79,22 +79,22 @@ fn parseXMLDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try parseVersionInfo(alloc, p) orelse return error.XmlMalformed;
     _ = try parseEncodingDecl(alloc, p) orelse {};
     _ = try parseSDDecl(alloc, p) orelse {};
-    _ = try parseS(alloc, p) orelse {};
+    _ = try parseS(p) orelse {};
     try p.eat("?>") orelse return error.XmlMalformed;
 }
 
 /// doctypedecl   ::=   '<!DOCTYPE' S Name (S ExternalID)? S? ('[' intSubset ']' S?)? '>'
 fn parseDoctypeDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("<!DOCTYPE") orelse return null;
-    try parseS(alloc, p) orelse return error.XmlMalformed;
+    try parseS(p) orelse return error.XmlMalformed;
     try parseName(alloc, p) orelse return error.XmlMalformed;
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     try parseExternalOrPublicID(alloc, p, false) orelse {};
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     if (try p.eat("[")) |_| {
         try parseIntSubset(alloc, p) orelse return error.XmlMalformed;
         try p.eat("]") orelse return error.XmlMalformed;
-        try parseS(alloc, p) orelse {};
+        try parseS(p) orelse {};
     }
     try p.eat(">") orelse return error.XmlMalformed;
 }
@@ -120,7 +120,7 @@ fn parseContent(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 fn parseETag(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("</") orelse return null;
     try parseName(alloc, p) orelse return error.XmlMalformed;
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     try p.eat(">") orelse return error.XmlMalformed;
 }
 
@@ -137,13 +137,12 @@ fn parseComment(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 fn parsePI(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("<?") orelse return null;
     try parsePITarget(alloc, p) orelse return error.XmlMalformed;
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     try p.skipUntilAfter("?>");
 }
 
 /// S   ::=   (#x20 | #x9 | #xD | #xA)+
-fn parseS(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = alloc;
+fn parseS(p: *Parser) anyerror!?void {
     var i: usize = 0;
     while (true) : (i += 1) {
         if (try p.eatAny(&.{ 0x20, 0x09, 0x0D, 0x0A })) |_| continue; // space, \t, \r, \n
@@ -154,7 +153,7 @@ fn parseS(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// VersionInfo   ::=   S 'version' Eq ("'" VersionNum "'" | '"' VersionNum '"')
 fn parseVersionInfo(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    try parseS(alloc, p) orelse return null;
+    try parseS(p) orelse return null;
     try p.eat("version") orelse return error.XmlMalformed;
     try parseEq(alloc, p) orelse return error.XmlMalformed;
     const q = try p.eatQuoteS() orelse return error.XmlMalformed;
@@ -164,7 +163,7 @@ fn parseVersionInfo(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// EncodingDecl   ::=   S 'encoding' Eq ('"' EncName '"' | "'" EncName "'" )
 fn parseEncodingDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     try p.eat("encoding") orelse return null;
     try parseEq(alloc, p) orelse return error.XmlMalformed;
     const q = try p.eatQuoteS() orelse return error.XmlMalformed;
@@ -174,7 +173,7 @@ fn parseEncodingDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// SDDecl   ::=   S 'standalone' Eq (("'" ('yes' | 'no') "'") | ('"' ('yes' | 'no') '"'))
 fn parseSDDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     try p.eat("standalone") orelse return null;
     try parseEq(alloc, p) orelse return error.XmlMalformed;
     const q = try p.eatQuoteS() orelse return error.XmlMalformed;
@@ -196,13 +195,13 @@ fn parseName(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 fn parseExternalOrPublicID(alloc: std.mem.Allocator, p: *Parser, allow_public: bool) anyerror!?void {
     try p.eat("SYSTEM") orelse {
         try p.eat("PUBLIC") orelse return null;
-        try parseS(alloc, p) orelse return error.XmlMalformed;
+        try parseS(p) orelse return error.XmlMalformed;
         try parsePubidLiteral(alloc, p) orelse return error.XmlMalformed;
-        try parseS(alloc, p) orelse return if (allow_public) {} else error.XmlMalformed;
+        try parseS(p) orelse return if (allow_public) {} else error.XmlMalformed;
         try parseSystemLiteral(alloc, p) orelse return error.XmlMalformed;
         return;
     };
-    try parseS(alloc, p) orelse return error.XmlMalformed;
+    try parseS(p) orelse return error.XmlMalformed;
     try parseSystemLiteral(alloc, p) orelse return error.XmlMalformed;
 }
 
@@ -273,9 +272,10 @@ fn parseChar(alloc: std.mem.Allocator, p: *Parser) anyerror!?u21 {
 
 /// Eq   ::=   S? '=' S?
 fn parseEq(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    try parseS(alloc, p) orelse {};
+    _ = alloc;
+    try parseS(p) orelse {};
     try p.eat("=") orelse return null;
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
 }
 
 /// VersionNum   ::=   '1.' [0-9]+
@@ -372,7 +372,7 @@ fn parseMarkupDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 /// DeclSep   ::=   PEReference | S
 fn parseDeclSep(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     return try parsePEReference(alloc, p) orelse
-        try parseS(alloc, p) orelse
+        try parseS(p) orelse
         null;
 }
 
@@ -457,28 +457,28 @@ fn parsePubidChar(alloc: std.mem.Allocator, p: *Parser) anyerror!?u21 {
 /// elementdecl   ::=   '<!ELEMENT' S Name S contentspec S? '>'
 fn parseElementDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("<!ELEMENT") orelse return null;
-    try parseS(alloc, p) orelse return error.XmlMalformed;
+    try parseS(p) orelse return error.XmlMalformed;
     try parseName(alloc, p) orelse return error.XmlMalformed;
-    try parseS(alloc, p) orelse return error.XmlMalformed;
+    try parseS(p) orelse return error.XmlMalformed;
     try parseContentSpec(alloc, p) orelse return error.XmlMalformed;
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     try p.eat(">") orelse return error.XmlMalformed;
 }
 
 /// AttlistDecl   ::=   '<!ATTLIST' S Name AttDef* S? '>'
 fn parseAttlistDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("<!ATTLIST") orelse return null;
-    try parseS(alloc, p) orelse return error.XmlMalformed;
+    try parseS(p) orelse return error.XmlMalformed;
     try parseName(alloc, p) orelse return error.XmlMalformed;
     while (true) try parseAttDef(alloc, p) orelse break;
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     try p.eat(">") orelse return error.XmlMalformed;
 }
 
 /// EntityDecl   ::=   GEDecl | PEDecl
 fn parseEntityDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("<!ENTITY") orelse return null;
-    try parseS(alloc, p) orelse return error.XmlMalformed;
+    try parseS(p) orelse return error.XmlMalformed;
     return try parseGEDecl(alloc, p) orelse
         try parsePEDecl(alloc, p) orelse
         return null;
@@ -487,11 +487,11 @@ fn parseEntityDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 /// NotationDecl   ::=   '<!NOTATION' S Name S (ExternalID | PublicID) S? '>'
 fn parseNotationDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("<!NOTATION") orelse return null;
-    try parseS(alloc, p) orelse return error.XmlMalformed;
+    try parseS(p) orelse return error.XmlMalformed;
     try parseName(alloc, p) orelse return error.XmlMalformed;
-    try parseS(alloc, p) orelse return error.XmlMalformed;
+    try parseS(p) orelse return error.XmlMalformed;
     try parseExternalOrPublicID(alloc, p, true) orelse return error.XmlMalformed;
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     try p.eat(">") orelse return error.XmlMalformed;
 }
 
@@ -508,7 +508,7 @@ fn parseContentSpec(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     if (try p.eat("ANY")) |_| return;
 
     try p.eat("(") orelse return null;
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     if (try parseMixed(alloc, p)) |_| return;
     if (try parseChildren(alloc, p)) |_| return;
     return null;
@@ -516,31 +516,31 @@ fn parseContentSpec(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// AttDef   ::=   S Name S AttType S DefaultDecl
 fn parseAttDef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    try parseS(alloc, p) orelse return null;
+    try parseS(p) orelse return null;
     try parseName(alloc, p) orelse return error.XmlMalformed;
-    try parseS(alloc, p) orelse return error.XmlMalformed;
+    try parseS(p) orelse return error.XmlMalformed;
     try parseAttType(alloc, p) orelse return error.XmlMalformed;
-    try parseS(alloc, p) orelse return error.XmlMalformed;
+    try parseS(p) orelse return error.XmlMalformed;
     try parseDefaultDecl(alloc, p) orelse return error.XmlMalformed;
 }
 
 /// GEDecl   ::=   '<!ENTITY' S Name S EntityDef S? '>'
 fn parseGEDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try parseName(alloc, p) orelse return null;
-    try parseS(alloc, p) orelse return error.XmlMalformed;
+    try parseS(p) orelse return error.XmlMalformed;
     try parseEntityDef(alloc, p) orelse return error.XmlMalformed;
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     try p.eat(">") orelse return error.XmlMalformed;
 }
 
 /// PEDecl   ::=   '<!ENTITY' S '%' S Name S PEDef S? '>'
 fn parsePEDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("%") orelse return null;
-    try parseS(alloc, p) orelse return error.XmlMalformed;
+    try parseS(p) orelse return error.XmlMalformed;
     try parseName(alloc, p) orelse return error.XmlMalformed;
-    try parseS(alloc, p) orelse return error.XmlMalformed;
+    try parseS(p) orelse return error.XmlMalformed;
     try parsePEDef(alloc, p) orelse return error.XmlMalformed;
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     try p.eat(">") orelse return error.XmlMalformed;
 }
 
@@ -548,12 +548,12 @@ fn parsePEDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 /// Mixed   ::=   '(' S? '#PCDATA' S? ')'
 fn parseMixed(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("#PCDATA") orelse return null;
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     if (try p.eat(")")) |_| return;
     while (true) {
-        try parseS(alloc, p) orelse {};
+        try parseS(p) orelse {};
         try p.eat("|") orelse break;
-        try parseS(alloc, p) orelse {};
+        try parseS(p) orelse {};
         try parseName(alloc, p) orelse return error.XmlMalformed;
     }
     try p.eat(")*") orelse return error.XmlMalformed;
@@ -580,7 +580,7 @@ fn parseDefaultDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     if (try p.eat("#IMPLIED")) |_| return;
 
     if (try p.eat("#FIXED")) |_| {
-        try parseS(alloc, p) orelse return error.XmlMalformed;
+        try parseS(p) orelse return error.XmlMalformed;
     }
     try parseAttValue(alloc, p) orelse return error.XmlMalformed;
 }
@@ -607,24 +607,24 @@ fn parsePEDef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 fn parseChoiceOrSeq(alloc: std.mem.Allocator, p: *Parser, started: bool, sep_start: ?u8) anyerror!?void {
     if (!started) {
         try p.eat("(") orelse return null;
-        try parseS(alloc, p) orelse {};
+        try parseS(p) orelse {};
         try parseCp(alloc, p, sep_start) orelse return error.XmlMalformed;
     } else {
         try parseCp(alloc, p, sep_start) orelse return null;
     }
 
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     if (try p.eat(")")) |_| return;
 
     const sep = sep_start orelse try p.eatAny(&.{ '|', ',' }) orelse return error.XmlMalformed;
     if (sep_start != null) _ = try p.eatByte(sep);
     while (true) {
-        try parseS(alloc, p) orelse {};
+        try parseS(p) orelse {};
         try parseCp(alloc, p, sep) orelse break;
-        try parseS(alloc, p) orelse {};
+        try parseS(p) orelse {};
         _ = try p.eatByte(sep) orelse break;
     }
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     try p.eat(")") orelse return error.XmlMalformed;
 }
 
@@ -669,9 +669,9 @@ fn parseEntityValue(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// NDataDecl   ::=   S 'NDATA' S Name
 fn parseNDataDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    try parseS(alloc, p) orelse return null;
+    try parseS(p) orelse return null;
     try p.eat("NDATA") orelse return error.XmlMalformed;
-    try parseS(alloc, p) orelse return error.XmlMalformed;
+    try parseS(p) orelse return error.XmlMalformed;
     try parseName(alloc, p) orelse return error.XmlMalformed;
 }
 
@@ -684,32 +684,32 @@ fn parseCp(alloc: std.mem.Allocator, p: *Parser, sep_start: ?u8) anyerror!?void 
 /// NotationType   ::=   'NOTATION' S '(' S? Name (S? '|' S? Name)* S? ')'
 fn parseNotationType(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("NOTATION") orelse return null;
-    try parseS(alloc, p) orelse return error.XmlMalformed;
+    try parseS(p) orelse return error.XmlMalformed;
     try p.eat("(") orelse return error.XmlMalformed;
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     try parseName(alloc, p) orelse return error.XmlMalformed;
     while (true) {
-        try parseS(alloc, p) orelse {};
+        try parseS(p) orelse {};
         try p.eat("|") orelse break;
-        try parseS(alloc, p) orelse {};
+        try parseS(p) orelse {};
         try parseName(alloc, p) orelse return error.XmlMalformed;
     }
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     try p.eat(")") orelse return error.XmlMalformed;
 }
 
 /// Enumeration   ::=   '(' S? Nmtoken (S? '|' S? Nmtoken)* S? ')'
 fn parseEnumeration(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("(") orelse return null;
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     try parseNmtoken(alloc, p) orelse return error.XmlMalformed;
     while (true) {
-        try parseS(alloc, p) orelse {};
+        try parseS(p) orelse {};
         _ = try p.eatByte('|') orelse break;
-        try parseS(alloc, p) orelse {};
+        try parseS(p) orelse {};
         try parseNmtoken(alloc, p) orelse return error.XmlMalformed;
     }
-    try parseS(alloc, p) orelse {};
+    try parseS(p) orelse {};
     try p.eat(")") orelse return error.XmlMalformed;
 }
 
