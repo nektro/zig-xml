@@ -94,7 +94,7 @@ fn parseXMLDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("<?xml") orelse return null;
     try parseVersionInfo(alloc, p) orelse return error.XmlMalformed;
     _ = try parseEncodingDecl(alloc, p) orelse {};
-    _ = try parseSDDecl(alloc, p) orelse {};
+    _ = try parseSDDecl(p) orelse {};
     try parseS(p) orelse {};
     try p.eat("?>") orelse return error.XmlMalformed;
 }
@@ -193,8 +193,7 @@ fn parseEncodingDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// SDDecl   ::=   S 'standalone' Eq (("'" ('yes' | 'no') "'") | ('"' ('yes' | 'no') '"'))
-fn parseSDDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?Standalone {
-    _ = alloc;
+fn parseSDDecl(p: *Parser) anyerror!?Standalone {
     try parseS(p) orelse {};
     try p.eat("standalone") orelse return null;
     try parseEq(p) orelse return error.XmlMalformed;
