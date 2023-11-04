@@ -209,7 +209,7 @@ fn parseName(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
     var list = std.ArrayList(u8).init(alloc);
     defer list.deinit();
 
-    try addUCPtoList(&list, try parseNameStartChar(alloc, p) orelse return null);
+    try addUCPtoList(&list, try parseNameStartChar(p) orelse return null);
     while (true) {
         try addUCPtoList(&list, try parseNameChar(alloc, p) orelse break);
     }
@@ -354,8 +354,7 @@ fn parseEncName(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
 }
 
 /// NameStartChar   ::=   ":" | [A-Z] | "_" | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] | [#x370-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
-fn parseNameStartChar(alloc: std.mem.Allocator, p: *Parser) anyerror!?u21 {
-    _ = alloc;
+fn parseNameStartChar(p: *Parser) anyerror!?u21 {
     if (try p.eatByte(':')) |b| return b;
     if (try p.eatRange('A', 'Z')) |b| return b;
     if (try p.eatByte('_')) |b| return b;
@@ -377,10 +376,11 @@ fn parseNameStartChar(alloc: std.mem.Allocator, p: *Parser) anyerror!?u21 {
 
 /// NameChar   ::=   NameStartChar | "-" | "." | [0-9] | #xB7 | [#x0300-#x036F] | [#x203F-#x2040]
 fn parseNameChar(alloc: std.mem.Allocator, p: *Parser) anyerror!?u21 {
+    _ = alloc;
     if (try p.eatByte('-')) |b| return b;
     if (try p.eatByte('.')) |b| return b;
     if (try p.eatRange('0', '9')) |b| return b;
-    if (try parseNameStartChar(alloc, p)) |b| return b;
+    if (try parseNameStartChar(p)) |b| return b;
     if (try p.eatByte(0xB7)) |b| return b;
     if (try p.eatRangeM(0x0300, 0x036F)) |b| return b;
     if (try p.eatRangeM(0x203F, 0x2040)) |b| return b;
