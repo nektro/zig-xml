@@ -117,7 +117,7 @@ fn parseDoctypeDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// content   ::=   CharData? ((element | Reference | CDSect | PI | Comment) CharData?)*
 fn parseContent(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    try parseCharData(alloc, p) orelse {};
+    _ = try parseCharData(alloc, p) orelse {};
     while (true) {
         try parsePI(alloc, p) orelse {
             _ = try parseElement(alloc, p) orelse {
@@ -128,7 +128,7 @@ fn parseContent(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
                 };
             };
         };
-        try parseCharData(alloc, p) orelse {};
+        _ = try parseCharData(alloc, p) orelse {};
     }
 }
 
@@ -246,15 +246,21 @@ fn parseAttribute(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// CharData   ::=   [^<&]* - ([^<&]* ']]>' [^<&]*)
-fn parseCharData(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = alloc;
+fn parseCharData(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
+    var list = std.ArrayList(u8).init(alloc);
+    defer list.deinit();
+
     var i: usize = 0;
     while (true) : (i += 1) {
         if (try p.peek("]]>")) break;
-        if (try p.eatAnyNot("<&")) |_| continue;
+        if (try p.eatAnyNot("<&")) |c| {
+            try list.append(c);
+            continue;
+        }
         if (i == 0) return null;
         break;
     }
+    return try p.addStr(alloc, list.items);
 }
 
 /// Reference   ::=   EntityRef | CharRef
