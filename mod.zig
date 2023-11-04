@@ -80,7 +80,7 @@ fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?Element {
 
 /// Misc   ::=   Comment | PI | S
 fn parseMisc(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    try parseComment(alloc, p) orelse {
+    try parseComment(p) orelse {
         try parsePI(alloc, p) orelse {
             try parseS(p) orelse {
                 return null;
@@ -123,7 +123,7 @@ fn parseContent(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
             _ = try parseElement(alloc, p) orelse {
                 _ = try parseReference(alloc, p) orelse {
                     try parseCDSect(alloc, p) orelse {
-                        try parseComment(alloc, p) orelse break;
+                        try parseComment(p) orelse break;
                     };
                 };
             };
@@ -142,8 +142,7 @@ fn parseETag(alloc: std.mem.Allocator, p: *Parser, expected_name: ExtraIndex) an
 }
 
 /// Comment   ::=   '<!--' ((Char - '-') | ('-' (Char - '-')))* '-->'
-fn parseComment(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = alloc;
+fn parseComment(p: *Parser) anyerror!?void {
     try p.eat("<!--") orelse return null;
     while (true) {
         if (try p.eat("-->")) |_| break;
@@ -408,7 +407,7 @@ fn parseMarkupDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
         try parseEntityDecl(alloc, p) orelse
         try parseNotationDecl(alloc, p) orelse
         try parsePI(alloc, p) orelse
-        try parseComment(alloc, p) orelse
+        try parseComment(p) orelse
         null;
 }
 
