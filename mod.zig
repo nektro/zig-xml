@@ -183,13 +183,14 @@ fn parseVersionInfo(p: *Parser) anyerror!?[2]u8 {
 }
 
 /// EncodingDecl   ::=   S 'encoding' Eq ('"' EncName '"' | "'" EncName "'" )
-fn parseEncodingDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parseEncodingDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
     try parseS(p) orelse {};
     try p.eat("encoding") orelse return null;
     try parseEq(p) orelse return error.XmlMalformed;
     const q = try p.eatQuoteS() orelse return error.XmlMalformed;
-    try parseEncName(alloc, p) orelse return error.XmlMalformed;
+    const ename = try parseEncName(alloc, p) orelse return error.XmlMalformed;
     try p.eatQuoteE(q) orelse return error.XmlMalformed;
+    return ename;
 }
 
 /// SDDecl   ::=   S 'standalone' Eq (("'" ('yes' | 'no') "'") | ('"' ('yes' | 'no') '"'))
@@ -333,18 +334,23 @@ fn parseVersionNum(p: *Parser) anyerror!?[2]u8 {
 }
 
 /// EncName   ::=   [A-Za-z] ([A-Za-z0-9._] | '-')*
-fn parseEncName(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = alloc;
-    _ = try p.eatRange('A', 'Z') orelse try p.eatRange('a', 'z') orelse return null;
+fn parseEncName(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
+    var list = std.ArrayList(u8).init(alloc);
+    defer list.deinit();
+
+    const b = try p.eatRange('A', 'Z') orelse try p.eatRange('a', 'z') orelse return null;
+    try list.append(b);
     while (true) {
-        if (try p.eatRange('A', 'Z')) |_| continue;
-        if (try p.eatRange('a', 'z')) |_| continue;
-        if (try p.eatRange('0', '9')) |_| continue;
-        if (try p.eatByte('.')) |_| continue;
-        if (try p.eatByte('_')) |_| continue;
-        if (try p.eatByte('-')) |_| continue;
-        break;
+        const c = try p.eatRange('A', 'Z') orelse
+            try p.eatRange('a', 'z') orelse
+            try p.eatRange('0', '9') orelse
+            try p.eatByte('.') orelse
+            try p.eatByte('_') orelse
+            try p.eatByte('-') orelse
+            break;
+        try list.append(c);
     }
+    return try p.addStr(alloc, list.items);
 }
 
 /// NameStartChar   ::=   ":" | [A-Z] | "_" | [a-z] | [#xC0-#xD6] | [#xD8-#xF6] | [#xF8-#x2FF] | [#x370-#x37D] | [#x37F-#x1FFF] | [#x200C-#x200D] | [#x2070-#x218F] | [#x2C00-#x2FEF] | [#x3001-#xD7FF] | [#xF900-#xFDCF] | [#xFDF0-#xFFFD] | [#x10000-#xEFFFF]
