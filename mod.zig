@@ -126,10 +126,11 @@ fn parseETag(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// Comment   ::=   '<!--' ((Char - '-') | ('-' (Char - '-')))* '-->'
 fn parseComment(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = alloc;
-    _ = &parseChar;
     try p.eat("<!--") orelse return null;
-    try p.skipUntilAfter("-->");
+    while (true) {
+        if (try p.eat("-->")) |_| break;
+        _ = try parseChar(alloc, p) orelse return error.XmlMalformed;
+    }
 }
 
 /// PI   ::=   '<?' PITarget (S (Char* - (Char* '?>' Char*)))? '?>'
