@@ -121,7 +121,7 @@ fn parseContent(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     while (true) {
         try parsePI(alloc, p) orelse {
             _ = try parseElement(alloc, p) orelse {
-                try parseReference(alloc, p) orelse {
+                _ = try parseReference(alloc, p) orelse {
                     try parseCDSect(alloc, p) orelse {
                         try parseComment(alloc, p) orelse break;
                     };
@@ -256,12 +256,15 @@ fn parseCharData(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// Reference   ::=   EntityRef | CharRef
-fn parseReference(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = try parseCharRef(alloc, p) orelse {
+fn parseReference(alloc: std.mem.Allocator, p: *Parser) anyerror!?Reference {
+    const cp = try parseCharRef(alloc, p) orelse {
         _ = try parseEntityRef(alloc, p) orelse {
             return null;
         };
+        // TODO:
+        return .{ .entity = {} };
     };
+    return .{ .char = cp };
 }
 
 /// CDSect   ::=   CDStart CData CDEnd
@@ -821,4 +824,9 @@ pub const Standalone = enum {
 
 pub const Element = struct {
     tag_name: ExtraIndex,
+};
+
+pub const Reference = union(enum) {
+    char: u21,
+    entity: void,
 };
