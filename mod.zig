@@ -92,7 +92,7 @@ fn parseMisc(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 /// XMLDecl   ::=   '<?xml' VersionInfo EncodingDecl? SDDecl? S? '?>'
 fn parseXMLDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("<?xml") orelse return null;
-    try parseVersionInfo(alloc, p) orelse return error.XmlMalformed;
+    try parseVersionInfo(p) orelse return error.XmlMalformed;
     _ = try parseEncodingDecl(alloc, p) orelse {};
     _ = try parseSDDecl(p) orelse {};
     try parseS(p) orelse {};
@@ -172,8 +172,7 @@ fn parseS(p: *Parser) anyerror!?void {
 }
 
 /// VersionInfo   ::=   S 'version' Eq ("'" VersionNum "'" | '"' VersionNum '"')
-fn parseVersionInfo(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = alloc;
+fn parseVersionInfo(p: *Parser) anyerror!?void {
     try parseS(p) orelse return null;
     try p.eat("version") orelse return error.XmlMalformed;
     try parseEq(p) orelse return error.XmlMalformed;
