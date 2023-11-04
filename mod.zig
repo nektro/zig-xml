@@ -155,7 +155,10 @@ fn parsePI(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("<?") orelse return null;
     _ = try parsePITarget(alloc, p) orelse return error.XmlMalformed;
     try parseS(p) orelse {};
-    try p.skipUntilAfter("?>");
+    while (true) {
+        if (try p.eat("?>")) |_| break;
+        _ = try parseChar(alloc, p) orelse return error.XmlMalformed;
+    }
 }
 
 /// S   ::=   (#x20 | #x9 | #xD | #xA)+
@@ -372,8 +375,12 @@ fn parseNameChar(alloc: std.mem.Allocator, p: *Parser) anyerror!?u21 {
 /// SystemLiteral   ::=   ("'" [^']* "'")
 fn parseSystemLiteral(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     _ = alloc;
-    try p.eat(&.{'"'}) orelse return null;
-    try p.skipUntilAfter(&.{'"'});
+    const q = try p.eatQuoteS() orelse return null;
+    while (true) {
+        if (try p.eatByte(q)) |_| break;
+        try p.peekAmt(1) orelse return error.XmlMalformed;
+        _ = try p.eatByte(p.buf[0]) orelse return error.XmlMalformed;
+    }
 }
 
 /// PubidLiteral   ::=   '"' PubidChar* '"'

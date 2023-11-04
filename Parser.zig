@@ -51,12 +51,6 @@ pub fn shiftLAmt(ore: *OurReader, amt: usize) void {
     ore.amt -= amt;
 }
 
-pub fn skipUntilAfter(ore: *OurReader, comptime test_s: string) !void {
-    while (try ore.eat(test_s) == null) {
-        ore.shiftLAmt(1);
-    }
-}
-
 pub fn eatByte(ore: *OurReader, test_c: u8) !?u8 {
     try ore.peekAmt(1) orelse return null;
     if (ore.buf[0] == test_c) {
