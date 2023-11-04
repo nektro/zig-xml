@@ -122,7 +122,7 @@ fn parseContent(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
         try parsePI(alloc, p) orelse {
             _ = try parseElement(alloc, p) orelse {
                 _ = try parseReference(alloc, p) orelse {
-                    try parseCDSect(alloc, p) orelse {
+                    _ = try parseCDSect(alloc, p) orelse {
                         try parseComment(p) orelse break;
                     };
                 };
@@ -278,10 +278,11 @@ fn parseReference(alloc: std.mem.Allocator, p: *Parser) anyerror!?Reference {
 }
 
 /// CDSect   ::=   CDStart CData CDEnd
-fn parseCDSect(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    try parseCDStart(alloc, p) orelse return null;
-    try parseCData(alloc, p) orelse return error.XmlMalformed;
-    try parseCDEnd(alloc, p) orelse return error.XmlMalformed;
+fn parseCDSect(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
+    try parseCDStart(p) orelse return null;
+    const text = try parseCData(alloc, p) orelse return error.XmlMalformed;
+    try parseCDEnd(p) orelse return error.XmlMalformed;
+    return text;
 }
 
 /// PITarget   ::=   Name - (('X' | 'x') ('M' | 'm') ('L' | 'l'))
@@ -499,23 +500,25 @@ fn parseCharRef(p: *Parser) anyerror!?u21 {
 }
 
 /// CDStart   ::=   '<![CDATA['
-fn parseCDStart(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = alloc;
+fn parseCDStart(p: *Parser) anyerror!?void {
     try p.eat("<![CDATA[") orelse return null;
 }
 
 /// CData   ::=   (Char* - (Char* ']]>' Char*))
-fn parseCData(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = alloc;
+fn parseCData(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
+    var list = std.ArrayList(u8).init(alloc);
+    defer list.deinit();
+
     while (true) {
         if (try p.peek("]]>")) break;
-        _ = try parseChar(p) orelse return error.XmlMalformed;
+        const c = try parseChar(p) orelse return error.XmlMalformed;
+        try addUCPtoList(&list, c);
     }
+    return try p.addStr(alloc, list.items);
 }
 
 /// CDEnd   ::=   ']]>'
-fn parseCDEnd(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = alloc;
+fn parseCDEnd(p: *Parser) anyerror!?void {
     return p.eat("]]>");
 }
 
