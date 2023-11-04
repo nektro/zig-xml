@@ -784,26 +784,32 @@ fn parseNotationType(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 fn parseEnumeration(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("(") orelse return null;
     try parseS(p) orelse {};
-    try parseNmtoken(alloc, p) orelse return error.XmlMalformed;
+    _ = try parseNmtoken(alloc, p) orelse return error.XmlMalformed;
     while (true) {
         try parseS(p) orelse {};
         _ = try p.eatByte('|') orelse break;
         try parseS(p) orelse {};
-        try parseNmtoken(alloc, p) orelse return error.XmlMalformed;
+        _ = try parseNmtoken(alloc, p) orelse return error.XmlMalformed;
     }
     try parseS(p) orelse {};
     try p.eat(")") orelse return error.XmlMalformed;
 }
 
 /// Nmtoken   ::=   (NameChar)+
-fn parseNmtoken(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = alloc;
+fn parseNmtoken(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
+    var list = std.ArrayList(u8).init(alloc);
+    defer list.deinit();
+
     var i: usize = 0;
     while (true) : (i += 1) {
-        if (try parseNameChar(p)) |_| continue;
+        if (try parseNameChar(p)) |c| {
+            try addUCPtoList(&list, c);
+            continue;
+        }
         if (i == 0) return null;
         break;
     }
+    return try p.addStr(alloc, list.items);
 }
 
 //
