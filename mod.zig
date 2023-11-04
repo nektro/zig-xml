@@ -222,7 +222,7 @@ fn parseExternalOrPublicID(alloc: std.mem.Allocator, p: *Parser, allow_public: b
     try p.eat("SYSTEM") orelse {
         try p.eat("PUBLIC") orelse return null;
         try parseS(p) orelse return error.XmlMalformed;
-        try parsePubidLiteral(alloc, p) orelse return error.XmlMalformed;
+        _ = try parsePubidLiteral(alloc, p) orelse return error.XmlMalformed;
         try parseS(p) orelse return if (allow_public) {} else error.XmlMalformed;
         _ = try parseSystemLiteral(alloc, p) orelse return error.XmlMalformed;
         return;
@@ -389,13 +389,17 @@ fn parseSystemLiteral(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex
 
 /// PubidLiteral   ::=   '"' PubidChar* '"'
 /// PubidLiteral   ::=   "'" (PubidChar - "'")* "'"
-fn parsePubidLiteral(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parsePubidLiteral(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
+    var list = std.ArrayList(u8).init(alloc);
+    defer list.deinit();
+
     const q = try p.eatQuoteS() orelse return null;
     while (true) {
+        if (try p.eatQuoteE(q)) |_| break;
         const c = try parsePubidChar(alloc, p) orelse break;
-        if (q == '\'' and c == q) return;
+        try addUCPtoList(&list, c);
     }
-    try p.eatQuoteE(q) orelse return error.XmlMalformed;
+    return try p.addStr(alloc, list.items);
 }
 
 /// markupdecl   ::=   elementdecl | AttlistDecl | EntityDecl | NotationDecl | PI | Comment
