@@ -260,7 +260,7 @@ fn parseCharData(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// Reference   ::=   EntityRef | CharRef
 fn parseReference(alloc: std.mem.Allocator, p: *Parser) anyerror!?Reference {
-    const cp = try parseCharRef(alloc, p) orelse {
+    const cp = try parseCharRef(p) orelse {
         _ = try parseEntityRef(alloc, p) orelse {
             return null;
         };
@@ -441,8 +441,7 @@ fn parseEntityRef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// CharRef   ::=   '&#' [0-9]+ ';'
 /// CharRef   ::=   '&#x' [0-9a-fA-F]+ ';'
-fn parseCharRef(alloc: std.mem.Allocator, p: *Parser) anyerror!?u21 {
-    _ = alloc;
+fn parseCharRef(p: *Parser) anyerror!?u21 {
     try p.eat("&#x") orelse {
         try p.eat("&#") orelse return null;
         var i: usize = 0;
