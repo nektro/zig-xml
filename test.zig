@@ -128,5 +128,6 @@ test { try doValid("xml-test-suite/xmlconf/xmltest/valid/sa/119.xml"); }
 fn doValid(testfile_path: string) !void {
     var testfile_file = try std.fs.cwd().openFile(testfile_path, .{});
     defer testfile_file.close();
-    try xml.parse(std.testing.allocator, testfile_path, testfile_file.reader());
+    var doc = try xml.parse(std.testing.allocator, testfile_path, testfile_file.reader());
+    defer doc.deinit();
 }

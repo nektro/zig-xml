@@ -3,12 +3,17 @@ const string = []const u8;
 const extras = @import("extras");
 const OurReader = @This();
 const buf_size = 16;
+const xml = @import("./mod.zig");
 
 any: extras.AnyReader,
 buf: [buf_size]u8 = std.mem.zeroes([buf_size]u8),
 amt: usize = 0,
 line: usize = 1,
 col: usize = 1,
+
+extras: std.ArrayListUnmanaged(u32) = .{},
+string_bytes: std.ArrayListUnmanaged(u8) = .{},
+strings_map: std.StringHashMapUnmanaged(xml.Document.ExtraIndex) = .{},
 
 pub fn eat(ore: *OurReader, comptime test_s: string) !?void {
     if (!try ore.peek(test_s)) return null;
@@ -117,4 +122,15 @@ pub fn eatQuoteE(ore: *OurReader, q: u8) !?void {
         '\'' => ore.eat("'"),
         else => unreachable,
     };
+}
+
+pub fn addStr(ore: *OurReader, alloc: std.mem.Allocator, str: string) !xml.Document.ExtraIndex {
+    var res = try ore.strings_map.getOrPut(alloc, str);
+    if (res.found_existing) return res.value_ptr.*;
+    const q = ore.string_bytes.items.len;
+    try ore.string_bytes.appendSlice(alloc, str);
+    const r = ore.extras.items.len;
+    try ore.extras.appendSlice(alloc, &[_]u32{ @as(u32, @intCast(q)), @as(u32, @intCast(str.len)) });
+    res.value_ptr.* = @enumFromInt(r);
+    return @enumFromInt(r);
 }
