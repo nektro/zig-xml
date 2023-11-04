@@ -143,10 +143,11 @@ fn parseETag(alloc: std.mem.Allocator, p: *Parser, expected_name: ExtraIndex) an
 
 /// Comment   ::=   '<!--' ((Char - '-') | ('-' (Char - '-')))* '-->'
 fn parseComment(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+    _ = alloc;
     try p.eat("<!--") orelse return null;
     while (true) {
         if (try p.eat("-->")) |_| break;
-        _ = try parseChar(alloc, p) orelse return error.XmlMalformed;
+        _ = try parseChar(p) orelse return error.XmlMalformed;
     }
 }
 
@@ -157,7 +158,7 @@ fn parsePI(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try parseS(p) orelse {};
     while (true) {
         if (try p.eat("?>")) |_| break;
-        _ = try parseChar(alloc, p) orelse return error.XmlMalformed;
+        _ = try parseChar(p) orelse return error.XmlMalformed;
     }
 }
 
@@ -285,8 +286,7 @@ fn parsePITarget(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
 }
 
 /// Char   ::=   #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF]	/* any Unicode character, excluding the surrogate blocks, FFFE, and FFFF. */
-fn parseChar(alloc: std.mem.Allocator, p: *Parser) anyerror!?u21 {
-    _ = alloc;
+fn parseChar(p: *Parser) anyerror!?u21 {
     try p.peekAmt(3) orelse return null;
     if (std.unicode.utf8Decode(p.buf[0..1]) catch null) |cp| {
         p.shiftLAmt(1);
@@ -491,9 +491,10 @@ fn parseCDStart(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// CData   ::=   (Char* - (Char* ']]>' Char*))
 fn parseCData(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+    _ = alloc;
     while (true) {
         if (try p.peek("]]>")) break;
-        _ = try parseChar(alloc, p) orelse return error.XmlMalformed;
+        _ = try parseChar(p) orelse return error.XmlMalformed;
     }
 }
 
