@@ -173,11 +173,12 @@ fn parseS(p: *Parser) anyerror!?void {
 
 /// VersionInfo   ::=   S 'version' Eq ("'" VersionNum "'" | '"' VersionNum '"')
 fn parseVersionInfo(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+    _ = alloc;
     try parseS(p) orelse return null;
     try p.eat("version") orelse return error.XmlMalformed;
     try parseEq(p) orelse return error.XmlMalformed;
     const q = try p.eatQuoteS() orelse return error.XmlMalformed;
-    try parseVersionNum(alloc, p) orelse return error.XmlMalformed;
+    try parseVersionNum(p) orelse return error.XmlMalformed;
     try p.eatQuoteE(q) orelse return error.XmlMalformed;
 }
 
@@ -315,8 +316,7 @@ fn parseEq(p: *Parser) anyerror!?void {
 }
 
 /// VersionNum   ::=   '1.' [0-9]+
-fn parseVersionNum(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = alloc;
+fn parseVersionNum(p: *Parser) anyerror!?void {
     try p.eat("1.") orelse return null;
     var i: usize = 0;
     while (true) : (i += 1) {
