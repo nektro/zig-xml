@@ -412,7 +412,7 @@ fn parsePubidLiteral(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex 
     const q = try p.eatQuoteS() orelse return null;
     while (true) {
         if (try p.eatQuoteE(q)) |_| break;
-        const c = try parsePubidChar(alloc, p) orelse break;
+        const c = try parsePubidChar(p) orelse break;
         try addUCPtoList(&list, c);
     }
     return try p.addStr(alloc, list.items);
@@ -523,8 +523,7 @@ fn parseCDEnd(p: *Parser) anyerror!?void {
 }
 
 /// PubidChar   ::=   #x20 | #xD | #xA | [a-zA-Z0-9] | [-'()+,./:=?;!*#@$_%]
-fn parsePubidChar(alloc: std.mem.Allocator, p: *Parser) anyerror!?u21 {
-    _ = alloc;
+fn parsePubidChar(p: *Parser) anyerror!?u21 {
     if (try p.eatByte(0x20)) |b| return b;
     if (try p.eatByte(0x0D)) |b| return b;
     if (try p.eatByte(0x0A)) |b| return b;
