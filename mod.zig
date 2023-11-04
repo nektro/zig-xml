@@ -52,7 +52,7 @@ fn parseProlog(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 ///
 /// EmptyElemTag   ::=   '<' Name (S Attribute)* S? '/>'
 /// STag           ::=   '<' Name (S Attribute)* S? '>'
-fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?Element {
     if (try p.peek("</")) return null;
     if (try p.peek("<!")) return null;
     try p.eat("<") orelse return null;
@@ -62,11 +62,16 @@ fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
         try parseAttribute(alloc, p) orelse break;
     }
     try parseS(p) orelse {};
-    if (try p.eat("/>")) |_| return;
+    if (try p.eat("/>")) |_| return .{
+        .tag_name = name,
+    };
     try p.eat(">") orelse return error.XmlMalformed;
 
     try parseContent(alloc, p) orelse return error.XmlMalformed;
     try parseETag(alloc, p, name) orelse return error.XmlMalformed;
+    return .{
+        .tag_name = name,
+    };
 }
 
 /// Misc   ::=   Comment | PI | S
@@ -111,7 +116,7 @@ fn parseContent(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try parseCharData(alloc, p) orelse {};
     while (true) {
         try parsePI(alloc, p) orelse {
-            try parseElement(alloc, p) orelse {
+            _ = try parseElement(alloc, p) orelse {
                 try parseReference(alloc, p) orelse {
                     try parseCDSect(alloc, p) orelse {
                         try parseComment(alloc, p) orelse break;
@@ -124,7 +129,7 @@ fn parseContent(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// ETag   ::=   '</' Name S? '>'
-fn parseETag(alloc: std.mem.Allocator, p: *Parser, expected_name: Document.ExtraIndex) anyerror!?void {
+fn parseETag(alloc: std.mem.Allocator, p: *Parser, expected_name: ExtraIndex) anyerror!?void {
     try p.eat("</") orelse return null;
     const name = try parseName(alloc, p) orelse return error.XmlMalformed;
     if (name != expected_name) return error.XmlMalformed;
@@ -192,7 +197,7 @@ fn parseSDDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?Standalone {
 }
 
 /// Name   ::=   NameStartChar (NameChar)*
-fn parseName(alloc: std.mem.Allocator, p: *Parser) anyerror!?Document.ExtraIndex {
+fn parseName(alloc: std.mem.Allocator, p: *Parser) anyerror!?ExtraIndex {
     var list = std.ArrayList(u8).init(alloc);
     defer list.deinit();
 
@@ -768,12 +773,12 @@ fn addUCPtoList(list: *std.ArrayList(u8), cp: u21) !void {
 //
 //
 
+pub const ExtraIndex = enum(u32) { _ };
+
 pub const Document = struct {
     allocator: std.mem.Allocator,
     extras: []const u32,
     string_bytes: []const u8,
-
-    pub const ExtraIndex = enum(u32) { _ };
 
     pub fn deinit(doc: *Document) void {
         doc.allocator.free(doc.extras);
@@ -785,4 +790,8 @@ pub const Document = struct {
 pub const Standalone = enum {
     no,
     yes,
+};
+
+pub const Element = struct {
+    tag_name: ExtraIndex,
 };
