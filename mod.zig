@@ -647,7 +647,7 @@ fn parseChildren(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// AttType   ::=   StringType | TokenizedType | EnumeratedType
 fn parseAttType(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    return try parseStringType(alloc, p) orelse
+    return try parseStringType(p) orelse
         try parseTokenizedType(alloc, p) orelse
         try parseEnumeratedType(alloc, p) orelse
         null;
@@ -709,8 +709,7 @@ fn parseChoiceOrSeq(alloc: std.mem.Allocator, p: *Parser, started: bool, sep_sta
 }
 
 /// StringType   ::=   'CDATA'
-fn parseStringType(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = alloc;
+fn parseStringType(p: *Parser) anyerror!?void {
     return p.eat("CDATA");
 }
 
