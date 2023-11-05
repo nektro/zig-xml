@@ -125,16 +125,27 @@ fn parseDoctypeDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 fn parseContent(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     _ = try parseCharData(alloc, p) orelse {};
     while (true) {
-        _ = try parsePI(alloc, p) orelse {
-            _ = try parseElement(alloc, p) orelse {
-                _ = try parseReference(alloc, p) orelse {
-                    _ = try parseCDSect(alloc, p) orelse {
-                        try parseComment(p) orelse break;
-                    };
-                };
-            };
-        };
-        _ = try parseCharData(alloc, p) orelse {};
+        if (try parsePI(alloc, p)) |_| {
+            _ = try parseCharData(alloc, p) orelse {};
+            continue;
+        }
+        if (try parseElement(alloc, p)) |_| {
+            _ = try parseCharData(alloc, p) orelse {};
+            continue;
+        }
+        if (try parseReference(alloc, p)) |_| {
+            _ = try parseCharData(alloc, p) orelse {};
+            continue;
+        }
+        if (try parseCDSect(alloc, p)) |_| {
+            _ = try parseCharData(alloc, p) orelse {};
+            continue;
+        }
+        if (try parseComment(p)) |_| {
+            _ = try parseCharData(alloc, p) orelse {};
+            continue;
+        }
+        break;
     }
 }
 
