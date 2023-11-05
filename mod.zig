@@ -63,13 +63,11 @@ fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?Element {
     if (try p.peek("<!")) return null;
     try p.eat("<") orelse return null;
     const name = try parseName(alloc, p) orelse return error.XmlMalformed;
-    while (true) {
-        try parseS(p) orelse {};
-        _ = try parseAttribute(alloc, p) orelse break;
-    }
+    const attributes = try collectAttributes(alloc, p);
     try parseS(p) orelse {};
     if (try p.eat("/>")) |_| return .{
         .tag_name = name,
+        .attributes = attributes,
     };
     try p.eat(">") orelse return error.XmlMalformed;
 
@@ -77,7 +75,21 @@ fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?Element {
     try parseETag(alloc, p, name) orelse return error.XmlMalformed;
     return .{
         .tag_name = name,
+        .attributes = attributes,
     };
+}
+
+fn collectAttributes(alloc: std.mem.Allocator, p: *Parser) !AttributeListIndex {
+    var list = std.ArrayList(StringIndex).init(alloc);
+    defer list.deinit();
+
+    while (true) {
+        try parseS(p) orelse {};
+        const attr = try parseAttribute(alloc, p) orelse break;
+        try list.append(attr.name);
+        try list.append(attr.value);
+    }
+    return @enumFromInt(@intFromEnum(try p.addStrList(alloc, list.items)));
 }
 
 /// Misc   ::=   Comment | PI | S
@@ -948,6 +960,10 @@ pub const StringListIndex = enum(u32) {
     empty = std.math.maxInt(u32),
     _,
 };
+pub const AttributeListIndex = enum(u32) {
+    empty = std.math.maxInt(u32),
+    _,
+};
 
 pub const Document = struct {
     allocator: std.mem.Allocator,
@@ -968,6 +984,7 @@ pub const Standalone = enum {
 
 pub const Element = struct {
     tag_name: StringIndex,
+    attributes: AttributeListIndex,
 };
 
 pub const Reference = union(enum) {
