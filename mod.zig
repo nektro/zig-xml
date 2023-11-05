@@ -686,7 +686,7 @@ fn parseMixed(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringListIndex {
 /// children   ::=   (choice | seq) ('?' | '*' | '+')?
 fn parseChildren(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try parseChoiceOrSeq(alloc, p, true, null) orelse return null;
-    _ = try p.eatAny(&.{ '?', '*', '+' }) orelse {};
+    _ = try p.eatEnumU8(ChildrenAmt) orelse {};
 }
 
 /// AttType   ::=   StringType | TokenizedType | EnumeratedType
@@ -797,7 +797,7 @@ fn parseCp(alloc: std.mem.Allocator, p: *Parser, sep_start: ?u8) anyerror!?void 
             return null;
         };
     };
-    _ = try p.eatAny(&.{ '?', '*', '+' }) orelse {};
+    _ = try p.eatEnumU8(ChildrenAmt) orelse {};
 }
 
 /// NotationType   ::=   'NOTATION' S '(' S? Name (S? '|' S? Name)* S? ')'
@@ -976,4 +976,10 @@ pub const NotationDecl = struct {
 pub const DeclSep = union(enum) {
     pe_ref: StringIndex,
     s: void,
+};
+
+pub const ChildrenAmt = enum(u8) {
+    op = '?',
+    star = '*',
+    plus = '+',
 };

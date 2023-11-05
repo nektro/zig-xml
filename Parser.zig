@@ -128,6 +128,15 @@ pub fn eatEnum(ore: *Parser, comptime E: type) !?E {
     return null;
 }
 
+pub fn eatEnumU8(ore: *Parser, comptime E: type) !?E {
+    inline for (comptime std.meta.fieldNames(E)) |name| {
+        if (try ore.eatByte(@intFromEnum(@field(E, name)))) |_| {
+            return @field(E, name);
+        }
+    }
+    return null;
+}
+
 pub fn addStr(ore: *Parser, alloc: std.mem.Allocator, str: string) !xml.StringIndex {
     const adapter: Adapter = .{ .ore = ore };
     var res = try ore.strings_map.getOrPutAdapted(alloc, str, adapter);
