@@ -464,9 +464,9 @@ fn parseMarkupDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// DeclSep   ::=   PEReference | S
-fn parseDeclSep(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    if (try parsePEReference(alloc, p)) |_| return;
-    if (try parseS(p)) |_| return;
+fn parseDeclSep(alloc: std.mem.Allocator, p: *Parser) anyerror!?DeclSep {
+    if (try parsePEReference(alloc, p)) |s| return .{ .pe_ref = s };
+    if (try parseS(p)) |_| return .{ .s = {} };
     return null;
 }
 
@@ -971,4 +971,9 @@ pub const Misc = union(enum) {
 pub const NotationDecl = struct {
     name: StringIndex,
     id: ID,
+};
+
+pub const DeclSep = union(enum) {
+    pe_ref: StringIndex,
+    s: void,
 };
