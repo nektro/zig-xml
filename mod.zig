@@ -71,14 +71,16 @@ fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?Element {
     if (try p.eat("/>")) |_| return .{
         .tag_name = name,
         .attributes = attributes,
+        .content = null,
     };
     try p.eat(">") orelse return error.XmlMalformed;
 
-    _ = try parseContent(alloc, p) orelse return error.XmlMalformed;
+    const content = try parseContent(alloc, p) orelse return error.XmlMalformed;
     try parseETag(alloc, p, name) orelse return error.XmlMalformed;
     return .{
         .tag_name = name,
         .attributes = attributes,
+        .content = content,
     };
 }
 
@@ -1018,6 +1020,7 @@ pub const Standalone = enum {
 pub const Element = struct {
     tag_name: StringIndex,
     attributes: AttributeListIndex,
+    content: ?NodeListIndex,
 };
 
 pub const Reference = union(enum) {
