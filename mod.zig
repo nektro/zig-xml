@@ -727,9 +727,9 @@ fn parseTokenizedType(p: *Parser) anyerror!?TokenizedType {
 }
 
 /// EnumeratedType   ::=   NotationType | Enumeration
-fn parseEnumeratedType(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    if (try parseNotationType(alloc, p)) |_| return;
-    if (try parseEnumeration(alloc, p)) |_| return;
+fn parseEnumeratedType(alloc: std.mem.Allocator, p: *Parser) anyerror!?EnumeratedType {
+    if (try parseNotationType(alloc, p)) |idx| return .{ .notation_type = idx };
+    if (try parseEnumeration(alloc, p)) |idx| return .{ .enumeration = idx };
     return null;
 }
 
@@ -892,4 +892,9 @@ pub const TokenizedType = enum {
     ENTITIES,
     NMTOKENS,
     NMTOKEN,
+};
+
+pub const EnumeratedType = union(enum) {
+    notation_type: StringListIndex,
+    enumeration: StringListIndex,
 };
