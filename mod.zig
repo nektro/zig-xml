@@ -111,7 +111,7 @@ fn parseDoctypeDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try parseS(p) orelse return error.XmlMalformed;
     _ = try parseName(alloc, p) orelse return error.XmlMalformed;
     try parseS(p) orelse {};
-    try parseExternalOrPublicID(alloc, p, false) orelse {};
+    _ = try parseExternalOrPublicID(alloc, p, false) orelse {};
     try parseS(p) orelse {};
     if (try p.eat("[")) |_| {
         try parseIntSubset(alloc, p) orelse return error.XmlMalformed;
@@ -233,17 +233,18 @@ fn parseName(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
 /// ExternalID   ::=   'SYSTEM' S SystemLiteral
 /// PublicID     ::=   'PUBLIC' S PubidLiteral
 /// ExternalID   ::=   'PUBLIC' S PubidLiteral S SystemLiteral
-fn parseExternalOrPublicID(alloc: std.mem.Allocator, p: *Parser, allow_public: bool) anyerror!?void {
+fn parseExternalOrPublicID(alloc: std.mem.Allocator, p: *Parser, comptime allow_public: bool) anyerror!?ID {
     try p.eat("SYSTEM") orelse {
         try p.eat("PUBLIC") orelse return null;
         try parseS(p) orelse return error.XmlMalformed;
-        _ = try parsePubidLiteral(alloc, p) orelse return error.XmlMalformed;
-        try parseS(p) orelse return if (allow_public) {} else error.XmlMalformed;
-        _ = try parseSystemLiteral(alloc, p) orelse return error.XmlMalformed;
-        return;
+        const pubid_lit = try parsePubidLiteral(alloc, p) orelse return error.XmlMalformed;
+        try parseS(p) orelse return if (allow_public) .{ .public = pubid_lit } else error.XmlMalformed;
+        const sys_lit = try parseSystemLiteral(alloc, p) orelse return error.XmlMalformed;
+        return .{ .external = .{ .public = .{ pubid_lit, sys_lit } } };
     };
     try parseS(p) orelse return error.XmlMalformed;
-    _ = try parseSystemLiteral(alloc, p) orelse return error.XmlMalformed;
+    const sys_lit = try parseSystemLiteral(alloc, p) orelse return error.XmlMalformed;
+    return .{ .external = .{ .system = sys_lit } };
 }
 
 /// intSubset   ::=   (markupdecl | DeclSep)*
@@ -584,7 +585,7 @@ fn parseNotationDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try parseS(p) orelse return error.XmlMalformed;
     _ = try parseName(alloc, p) orelse return error.XmlMalformed;
     try parseS(p) orelse return error.XmlMalformed;
-    try parseExternalOrPublicID(alloc, p, true) orelse return error.XmlMalformed;
+    _ = try parseExternalOrPublicID(alloc, p, true) orelse return error.XmlMalformed;
     try parseS(p) orelse {};
     try p.eat(">") orelse return error.XmlMalformed;
 }
@@ -686,7 +687,7 @@ fn parseDefaultDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 /// EntityDef   ::=   EntityValue | (ExternalID NDataDecl?)
 fn parseEntityDef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     return try parseEntityValue(alloc, p) orelse {
-        try parseExternalOrPublicID(alloc, p, false) orelse return null;
+        _ = try parseExternalOrPublicID(alloc, p, false) orelse return null;
         _ = try parseNDataDecl(alloc, p) orelse {};
         return;
     };
@@ -923,4 +924,14 @@ pub const AttType = union(enum) {
 pub const XMLDecl = struct {
     encoding: ?StringIndex,
     standalone: ?Standalone,
+};
+
+pub const ID = union(enum) {
+    public: StringIndex,
+    external: ExternalID,
+};
+
+pub const ExternalID = union(enum) {
+    system: StringIndex,
+    public: [2]StringIndex,
 };
