@@ -65,7 +65,7 @@ fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?Element {
     const name = try parseName(alloc, p) orelse return error.XmlMalformed;
     while (true) {
         try parseS(p) orelse {};
-        try parseAttribute(alloc, p) orelse break;
+        _ = try parseAttribute(alloc, p) orelse break;
     }
     try parseS(p) orelse {};
     if (try p.eat("/>")) |_| return .{
@@ -269,10 +269,14 @@ fn parseIntSubset(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// Attribute   ::=   Name Eq AttValue
-fn parseAttribute(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = try parseName(alloc, p) orelse return null;
+fn parseAttribute(alloc: std.mem.Allocator, p: *Parser) anyerror!?Attribute {
+    const name = try parseName(alloc, p) orelse return null;
     try parseEq(p) orelse return error.XmlMalformed;
-    _ = try parseAttValue(alloc, p) orelse return error.XmlMalformed;
+    const value = try parseAttValue(alloc, p) orelse return error.XmlMalformed;
+    return .{
+        .name = name,
+        .value = value,
+    };
 }
 
 /// CharData   ::=   [^<&]* - ([^<&]* ']]>' [^<&]*)
@@ -1061,4 +1065,9 @@ pub const GEDecl = struct {
 pub const EntityDecl = union(enum) {
     ge: GEDecl,
     pe: PEDecl,
+};
+
+pub const Attribute = struct {
+    name: StringIndex,
+    value: StringIndex,
 };
