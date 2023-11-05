@@ -257,9 +257,12 @@ fn parseExternalOrPublicID(alloc: std.mem.Allocator, p: *Parser, comptime allow_
 
 /// intSubset   ::=   (markupdecl | DeclSep)*
 fn parseIntSubset(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    try parseMarkupDecl(alloc, p) orelse try parseDeclSep(alloc, p) orelse return null;
-    while (true) {
-        try parseMarkupDecl(alloc, p) orelse try parseDeclSep(alloc, p) orelse break;
+    var i: usize = 0;
+    while (true) : (i += 1) {
+        if (try parseMarkupDecl(alloc, p)) |_| continue;
+        if (try parseDeclSep(alloc, p)) |_| continue;
+        if (i == 0) return null;
+        break;
     }
 }
 
