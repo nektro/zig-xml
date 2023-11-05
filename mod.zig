@@ -634,17 +634,21 @@ fn parsePEDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// Mixed   ::=   '(' S? '#PCDATA' (S? '|' S? Name)* S? ')*'
 /// Mixed   ::=   '(' S? '#PCDATA' S? ')'
-fn parseMixed(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parseMixed(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringListIndex {
     try p.eat("#PCDATA") orelse return null;
     try parseS(p) orelse {};
-    if (try p.eat(")")) |_| return;
+    if (try p.eat(")")) |_| return .empty;
+
+    var list = std.ArrayList(StringIndex).init(alloc);
+    defer list.deinit();
     while (true) {
         try parseS(p) orelse {};
         try p.eat("|") orelse break;
         try parseS(p) orelse {};
-        _ = try parseName(alloc, p) orelse return error.XmlMalformed;
+        try list.append(try parseName(alloc, p) orelse return error.XmlMalformed);
     }
     try p.eat(")*") orelse return error.XmlMalformed;
+    return try p.addStrList(alloc, list.items);
 }
 
 /// children   ::=   (choice | seq) ('?' | '*' | '+')?
@@ -850,8 +854,13 @@ fn addUCPtoList(list: *std.ArrayList(u8), cp: u21) !void {
 //
 //
 
-pub const StringIndex = enum(u32) { _ };
-pub const StringListIndex = enum(u32) { _ };
+pub const StringIndex = enum(u32) {
+    _,
+};
+pub const StringListIndex = enum(u32) {
+    empty = std.math.maxInt(u32),
+    _,
+};
 
 pub const Document = struct {
     allocator: std.mem.Allocator,

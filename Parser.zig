@@ -158,6 +158,7 @@ const Adapter = struct {
 };
 
 pub fn addStrList(ore: *Parser, alloc: std.mem.Allocator, items: []const xml.StringIndex) !xml.StringListIndex {
+    if (items.len == 0) return .empty;
     const r = ore.extras.items.len;
     try ore.extras.ensureUnusedCapacity(alloc, 1 + items.len);
     ore.extras.appendAssumeCapacity(@intCast(items.len));
