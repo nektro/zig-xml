@@ -592,14 +592,18 @@ fn parseEntityDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// NotationDecl   ::=   '<!NOTATION' S Name S (ExternalID | PublicID) S? '>'
-fn parseNotationDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parseNotationDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?NotationDecl {
     try p.eat("<!NOTATION") orelse return null;
     try parseS(p) orelse return error.XmlMalformed;
-    _ = try parseName(alloc, p) orelse return error.XmlMalformed;
+    const name = try parseName(alloc, p) orelse return error.XmlMalformed;
     try parseS(p) orelse return error.XmlMalformed;
-    _ = try parseExternalOrPublicID(alloc, p, true) orelse return error.XmlMalformed;
+    const id = try parseExternalOrPublicID(alloc, p, true) orelse return error.XmlMalformed;
     try parseS(p) orelse {};
     try p.eat(">") orelse return error.XmlMalformed;
+    return .{
+        .name = name,
+        .id = id,
+    };
 }
 
 /// PEReference   ::=   '%' Name ';'
@@ -953,4 +957,9 @@ pub const Misc = union(enum) {
     comment: void,
     pi: PI,
     s: void,
+};
+
+pub const NotationDecl = struct {
+    name: StringIndex,
+    id: ID,
 };
