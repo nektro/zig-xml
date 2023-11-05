@@ -439,9 +439,9 @@ fn parseMarkupDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// DeclSep   ::=   PEReference | S
 fn parseDeclSep(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    return try parsePEReference(alloc, p) orelse
-        try parseS(p) orelse
-        null;
+    if (try parsePEReference(alloc, p)) |_| return;
+    if (try parseS(p)) |_| return;
+    return null;
 }
 
 /// AttValue   ::=   '"' ([^<&"] | Reference)* '"'
@@ -567,9 +567,9 @@ fn parseAttlistDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 fn parseEntityDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try p.eat("<!ENTITY") orelse return null;
     try parseS(p) orelse return error.XmlMalformed;
-    return try parseGEDecl(alloc, p) orelse
-        try parsePEDecl(alloc, p) orelse
-        return null;
+    if (try parseGEDecl(alloc, p)) |_| return;
+    if (try parsePEDecl(alloc, p)) |_| return;
+    return null;
 }
 
 /// NotationDecl   ::=   '<!NOTATION' S Name S (ExternalID | PublicID) S? '>'
@@ -655,10 +655,10 @@ fn parseChildren(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// AttType   ::=   StringType | TokenizedType | EnumeratedType
 fn parseAttType(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    return try parseStringType(p) orelse
-        try parseTokenizedType(p) orelse
-        try parseEnumeratedType(alloc, p) orelse
-        null;
+    if (try parseStringType(p)) |_| return;
+    if (try parseTokenizedType(p)) |_| return;
+    if (try parseEnumeratedType(alloc, p)) |_| return;
+    return null;
 }
 
 /// DefaultDecl   ::=   '#REQUIRED' | '#IMPLIED'
@@ -684,9 +684,9 @@ fn parseEntityDef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// PEDef   ::=   EntityValue | ExternalID
 fn parsePEDef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    return try parseExternalOrPublicID(alloc, p, false) orelse
-        try parseEntityValue(alloc, p) orelse
-        null;
+    if (try parseExternalOrPublicID(alloc, p, false)) |_| return;
+    if (try parseEntityValue(alloc, p)) |_| return;
+    return null;
 }
 
 /// choice   ::=   '(' S? cp ( S? '|' S? cp )+ S? ')'
@@ -735,9 +735,9 @@ fn parseTokenizedType(p: *Parser) anyerror!?void {
 
 /// EnumeratedType   ::=   NotationType | Enumeration
 fn parseEnumeratedType(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    return try parseNotationType(alloc, p) orelse
-        try parseEnumeration(alloc, p) orelse
-        null;
+    if (try parseNotationType(alloc, p)) |_| return;
+    if (try parseEnumeration(alloc, p)) |_| return;
+    return null;
 }
 
 /// EntityValue   ::=   '"' ([^%&"] | PEReference | Reference)* '"'
