@@ -99,7 +99,6 @@ test { try doValid("xml-test-suite/xmlconf/xmltest/valid/sa/093.xml"); }
 test { try doValid("xml-test-suite/xmlconf/xmltest/valid/sa/094.xml"); }
 test { try doValid("xml-test-suite/xmlconf/xmltest/valid/sa/095.xml"); }
 test { try doValid("xml-test-suite/xmlconf/xmltest/valid/sa/096.xml"); }
-test { try doValid("xml-test-suite/xmlconf/xmltest/valid/sa/097.ent"); }
 test { try doValid("xml-test-suite/xmlconf/xmltest/valid/sa/097.xml"); }
 test { try doValid("xml-test-suite/xmlconf/xmltest/valid/sa/098.xml"); }
 test { try doValid("xml-test-suite/xmlconf/xmltest/valid/sa/099.xml"); }
