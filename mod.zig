@@ -677,7 +677,7 @@ fn parseDefaultDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 fn parseEntityDef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     return try parseEntityValue(alloc, p) orelse {
         try parseExternalOrPublicID(alloc, p, false) orelse return null;
-        try parseNDataDecl(alloc, p) orelse {};
+        _ = try parseNDataDecl(alloc, p) orelse {};
         return;
     };
 }
@@ -754,11 +754,11 @@ fn parseEntityValue(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// NDataDecl   ::=   S 'NDATA' S Name
-fn parseNDataDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parseNDataDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     try parseS(p) orelse return null;
     try p.eat("NDATA") orelse return error.XmlMalformed;
     try parseS(p) orelse return error.XmlMalformed;
-    _ = try parseName(alloc, p) orelse return error.XmlMalformed;
+    return try parseName(alloc, p) orelse return error.XmlMalformed;
 }
 
 /// cp   ::=   (Name | choice | seq) ('?' | '*' | '+')?
