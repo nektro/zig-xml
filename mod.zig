@@ -654,14 +654,27 @@ fn parseGEDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// PEDecl   ::=   '<!ENTITY' S '%' S Name S PEDef S? '>'
-fn parsePEDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parsePEDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?PEDecl {
     try p.eat("%") orelse return null;
     try parseS(p) orelse return error.XmlMalformed;
-    _ = try parseName(alloc, p) orelse return error.XmlMalformed;
+    const name = try parseName(alloc, p) orelse return error.XmlMalformed;
     try parseS(p) orelse return error.XmlMalformed;
-    _ = try parsePEDef(alloc, p) orelse return error.XmlMalformed;
+    const def = try parsePEDef(alloc, p) orelse return error.XmlMalformed;
     try parseS(p) orelse {};
     try p.eat(">") orelse return error.XmlMalformed;
+    switch (def) {
+        .entity_value => |sidx| {
+            try p.pentity_map.put(alloc, name, sidx);
+        },
+        .external_id => |exid| {
+            _ = exid;
+            //TODO
+        },
+    }
+    return .{
+        .name = name,
+        .def = def,
+    };
 }
 
 /// Mixed   ::=   '(' S? '#PCDATA' (S? '|' S? Name)* S? ')*'
@@ -1016,4 +1029,9 @@ pub const EntityDef = union(enum) {
         id: ExternalID,
         ndata: ?StringIndex,
     },
+};
+
+pub const PEDecl = struct {
+    name: StringIndex,
+    def: PEDef,
 };
