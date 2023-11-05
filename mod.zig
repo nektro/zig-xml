@@ -782,18 +782,22 @@ fn parseNotationType(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// Enumeration   ::=   '(' S? Nmtoken (S? '|' S? Nmtoken)* S? ')'
-fn parseEnumeration(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parseEnumeration(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringListIndex {
+    var list = std.ArrayList(StringIndex).init(alloc);
+    defer list.deinit();
+
     try p.eat("(") orelse return null;
     try parseS(p) orelse {};
-    _ = try parseNmtoken(alloc, p) orelse return error.XmlMalformed;
+    try list.append(try parseNmtoken(alloc, p) orelse return error.XmlMalformed);
     while (true) {
         try parseS(p) orelse {};
         _ = try p.eatByte('|') orelse break;
         try parseS(p) orelse {};
-        _ = try parseNmtoken(alloc, p) orelse return error.XmlMalformed;
+        try list.append(try parseNmtoken(alloc, p) orelse return error.XmlMalformed);
     }
     try parseS(p) orelse {};
     try p.eat(")") orelse return error.XmlMalformed;
+    return try p.addStrList(alloc, list.items);
 }
 
 /// Nmtoken   ::=   (NameChar)+
@@ -843,6 +847,7 @@ fn addUCPtoList(list: *std.ArrayList(u8), cp: u21) !void {
 //
 
 pub const StringIndex = enum(u32) { _ };
+pub const StringListIndex = enum(u32) { _ };
 
 pub const Document = struct {
     allocator: std.mem.Allocator,
