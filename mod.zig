@@ -415,7 +415,7 @@ fn parseNameChar(p: *Parser) anyerror!?u21 {
     if (try p.eatByte('.')) |b| return b;
     if (try p.eatRange('0', '9')) |b| return b;
     if (try parseNameStartChar(p)) |b| return b;
-    if (try p.eatByte(0xB7)) |b| return b;
+    if (try p.eatRangeM(0xB7, 0xB7)) |b| return b;
     if (try p.eatRangeM(0x0300, 0x036F)) |b| return b;
     if (try p.eatRangeM(0x203F, 0x2040)) |b| return b;
     return null;
