@@ -659,7 +659,7 @@ fn parsePEDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try parseS(p) orelse return error.XmlMalformed;
     _ = try parseName(alloc, p) orelse return error.XmlMalformed;
     try parseS(p) orelse return error.XmlMalformed;
-    try parsePEDef(alloc, p) orelse return error.XmlMalformed;
+    _ = try parsePEDef(alloc, p) orelse return error.XmlMalformed;
     try parseS(p) orelse {};
     try p.eat(">") orelse return error.XmlMalformed;
 }
@@ -722,9 +722,9 @@ fn parseEntityDef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// PEDef   ::=   EntityValue | ExternalID
-fn parsePEDef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    if (try parseExternalOrPublicID(alloc, p, false)) |_| return;
-    if (try parseEntityValue(alloc, p)) |_| return;
+fn parsePEDef(alloc: std.mem.Allocator, p: *Parser) anyerror!?PEDef {
+    if (try parseExternalOrPublicID(alloc, p, false)) |id| return .{ .external_id = id.external };
+    if (try parseEntityValue(alloc, p)) |ev| return .{ .entity_value = ev };
     return null;
 }
 
@@ -1000,4 +1000,9 @@ pub const ChildrenAmt = enum(u8) {
     op = '?',
     star = '*',
     plus = '+',
+};
+
+pub const PEDef = union(enum) {
+    entity_value: StringIndex,
+    external_id: ExternalID,
 };
