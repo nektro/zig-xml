@@ -765,20 +765,24 @@ fn parseCp(alloc: std.mem.Allocator, p: *Parser, sep_start: ?u8) anyerror!?void 
 }
 
 /// NotationType   ::=   'NOTATION' S '(' S? Name (S? '|' S? Name)* S? ')'
-fn parseNotationType(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parseNotationType(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringListIndex {
+    var list = std.ArrayList(StringIndex).init(alloc);
+    defer list.deinit();
+
     try p.eat("NOTATION") orelse return null;
     try parseS(p) orelse return error.XmlMalformed;
     try p.eat("(") orelse return error.XmlMalformed;
     try parseS(p) orelse {};
-    _ = try parseName(alloc, p) orelse return error.XmlMalformed;
+    try list.append(try parseName(alloc, p) orelse return error.XmlMalformed);
     while (true) {
         try parseS(p) orelse {};
         try p.eat("|") orelse break;
         try parseS(p) orelse {};
-        _ = try parseName(alloc, p) orelse return error.XmlMalformed;
+        try list.append(try parseName(alloc, p) orelse return error.XmlMalformed);
     }
     try parseS(p) orelse {};
     try p.eat(")") orelse return error.XmlMalformed;
+    return try p.addStrList(alloc, list.items);
 }
 
 /// Enumeration   ::=   '(' S? Nmtoken (S? '|' S? Nmtoken)* S? ')'
