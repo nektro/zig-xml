@@ -45,7 +45,7 @@ fn parseDocument(alloc: std.mem.Allocator, p: *Parser) anyerror!Document {
 
 /// prolog   ::=   XMLDecl? Misc* (doctypedecl Misc*)?
 fn parseProlog(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    try parseXMLDecl(alloc, p) orelse {};
+    _ = try parseXMLDecl(alloc, p) orelse {};
     while (true) try parseMisc(alloc, p) orelse break;
     try parseDoctypeDecl(alloc, p) orelse return;
     while (true) try parseMisc(alloc, p) orelse break;
@@ -90,13 +90,19 @@ fn parseMisc(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// XMLDecl   ::=   '<?xml' VersionInfo EncodingDecl? SDDecl? S? '?>'
-fn parseXMLDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parseXMLDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?XMLDecl {
     try p.eat("<?xml") orelse return null;
-    _ = try parseVersionInfo(p) orelse return error.XmlMalformed;
-    _ = try parseEncodingDecl(alloc, p) orelse {};
-    _ = try parseSDDecl(p) orelse {};
+    const version_info = try parseVersionInfo(p) orelse return error.XmlMalformed;
+    const encoding = try parseEncodingDecl(alloc, p);
+    const standalone = try parseSDDecl(p);
     try parseS(p) orelse {};
     try p.eat("?>") orelse return error.XmlMalformed;
+    if (version_info[0] != 1) return error.XmlMalformed; // version should be 1.0
+    if (version_info[1] != 0) return error.XmlMalformed; // version should be 1.0
+    return .{
+        .encoding = encoding,
+        .standalone = standalone,
+    };
 }
 
 /// doctypedecl   ::=   '<!DOCTYPE' S Name (S ExternalID)? S? ('[' intSubset ']' S?)? '>'
@@ -912,4 +918,9 @@ pub const AttType = union(enum) {
     string: void,
     tokenized: TokenizedType,
     enumerated: EnumeratedType,
+};
+
+pub const XMLDecl = struct {
+    encoding: ?StringIndex,
+    standalone: ?Standalone,
 };
