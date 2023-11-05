@@ -1,7 +1,7 @@
 const std = @import("std");
 const string = []const u8;
 const extras = @import("extras");
-const OurReader = @This();
+const Parser = @This();
 const buf_size = 16;
 const xml = @import("./mod.zig");
 
@@ -15,12 +15,12 @@ extras: std.ArrayListUnmanaged(u32) = .{},
 string_bytes: std.ArrayListUnmanaged(u8) = .{},
 strings_map: std.StringArrayHashMapUnmanaged(xml.StringIndex) = .{},
 
-pub fn eat(ore: *OurReader, comptime test_s: string) !?void {
+pub fn eat(ore: *Parser, comptime test_s: string) !?void {
     if (!try ore.peek(test_s)) return null;
     ore.shiftLAmt(test_s.len);
 }
 
-pub fn peek(ore: *OurReader, comptime test_s: string) !bool {
+pub fn peek(ore: *Parser, comptime test_s: string) !bool {
     comptime std.debug.assert(test_s.len > 0);
     comptime std.debug.assert(test_s.len <= buf_size);
     try ore.peekAmt(test_s.len) orelse return false;
@@ -28,7 +28,7 @@ pub fn peek(ore: *OurReader, comptime test_s: string) !bool {
     return std.mem.eql(u8, test_s, ore.buf[0..test_s.len]);
 }
 
-pub fn peekAmt(ore: *OurReader, comptime amt: usize) !?void {
+pub fn peekAmt(ore: *Parser, comptime amt: usize) !?void {
     if (ore.amt >= amt) return;
     const diff_amt = amt - ore.amt;
     const target_buf = ore.buf[ore.amt..][0..diff_amt];
@@ -43,7 +43,7 @@ pub fn peekAmt(ore: *OurReader, comptime amt: usize) !?void {
     ore.amt += diff_amt;
 }
 
-pub fn shiftLAmt(ore: *OurReader, amt: usize) void {
+pub fn shiftLAmt(ore: *Parser, amt: usize) void {
     std.debug.assert(amt <= ore.amt);
     var new_buf = std.mem.zeroes([buf_size]u8);
     for (amt..ore.amt, 0..) |i, j| new_buf[j] = ore.buf[i];
@@ -51,7 +51,7 @@ pub fn shiftLAmt(ore: *OurReader, amt: usize) void {
     ore.amt -= amt;
 }
 
-pub fn eatByte(ore: *OurReader, test_c: u8) !?u8 {
+pub fn eatByte(ore: *Parser, test_c: u8) !?u8 {
     try ore.peekAmt(1) orelse return null;
     if (ore.buf[0] == test_c) {
         defer ore.shiftLAmt(1);
@@ -60,7 +60,7 @@ pub fn eatByte(ore: *OurReader, test_c: u8) !?u8 {
     return null;
 }
 
-pub fn eatRange(ore: *OurReader, comptime from: u8, comptime to: u8) !?u8 {
+pub fn eatRange(ore: *Parser, comptime from: u8, comptime to: u8) !?u8 {
     try ore.peekAmt(1) orelse return null;
     if (ore.buf[0] >= from and ore.buf[0] <= to) {
         defer ore.shiftLAmt(1);
@@ -69,7 +69,7 @@ pub fn eatRange(ore: *OurReader, comptime from: u8, comptime to: u8) !?u8 {
     return null;
 }
 
-pub fn eatRangeM(ore: *OurReader, comptime from: u21, comptime to: u21) !?u21 {
+pub fn eatRangeM(ore: *Parser, comptime from: u21, comptime to: u21) !?u21 {
     const from_len = comptime std.unicode.utf8CodepointSequenceLength(from) catch unreachable;
     const to_len = comptime std.unicode.utf8CodepointSequenceLength(to) catch unreachable;
     const amt = @max(from_len, to_len);
@@ -84,7 +84,7 @@ pub fn eatRangeM(ore: *OurReader, comptime from: u21, comptime to: u21) !?u21 {
     return null;
 }
 
-pub fn eatAny(ore: *OurReader, test_s: []const u8) !?u8 {
+pub fn eatAny(ore: *Parser, test_s: []const u8) !?u8 {
     try ore.peekAmt(1) orelse return null;
     for (test_s) |c| {
         if (ore.buf[0] == c) {
@@ -95,7 +95,7 @@ pub fn eatAny(ore: *OurReader, test_s: []const u8) !?u8 {
     return null;
 }
 
-pub fn eatAnyNot(ore: *OurReader, test_s: []const u8) !?u8 {
+pub fn eatAnyNot(ore: *Parser, test_s: []const u8) !?u8 {
     try ore.peekAmt(1) orelse return null;
     for (test_s) |c| {
         if (ore.buf[0] == c) {
@@ -106,11 +106,11 @@ pub fn eatAnyNot(ore: *OurReader, test_s: []const u8) !?u8 {
     return ore.buf[0];
 }
 
-pub fn eatQuoteS(ore: *OurReader) !?u8 {
+pub fn eatQuoteS(ore: *Parser) !?u8 {
     return ore.eatAny(&.{ '"', '\'' });
 }
 
-pub fn eatQuoteE(ore: *OurReader, q: u8) !?void {
+pub fn eatQuoteE(ore: *Parser, q: u8) !?void {
     return switch (q) {
         '"' => ore.eat("\""),
         '\'' => ore.eat("'"),
@@ -118,7 +118,7 @@ pub fn eatQuoteE(ore: *OurReader, q: u8) !?void {
     };
 }
 
-pub fn eatEnum(ore: *OurReader, comptime E: type) !?E {
+pub fn eatEnum(ore: *Parser, comptime E: type) !?E {
     inline for (comptime std.meta.fieldNames(E)) |name| {
         if (try ore.eat(name)) |_| {
             return @field(E, name);
@@ -127,7 +127,7 @@ pub fn eatEnum(ore: *OurReader, comptime E: type) !?E {
     return null;
 }
 
-pub fn addStr(ore: *OurReader, alloc: std.mem.Allocator, str: string) !xml.StringIndex {
+pub fn addStr(ore: *Parser, alloc: std.mem.Allocator, str: string) !xml.StringIndex {
     const adapter: Adapter = .{ .ore = ore };
     var res = try ore.strings_map.getOrPutAdapted(alloc, str, adapter);
     if (res.found_existing) return res.value_ptr.*;
@@ -140,7 +140,7 @@ pub fn addStr(ore: *OurReader, alloc: std.mem.Allocator, str: string) !xml.Strin
 }
 
 const Adapter = struct {
-    ore: *const OurReader,
+    ore: *const Parser,
 
     pub fn hash(ctx: @This(), a: string) u32 {
         _ = ctx;
