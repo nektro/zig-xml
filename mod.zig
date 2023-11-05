@@ -10,7 +10,7 @@ const Parser = @import("./Parser.zig");
 //
 //
 
-pub fn parse(alloc: std.mem.Allocator, path: string, inreader: std.fs.File.Reader) !Document {
+pub fn parse(alloc: std.mem.Allocator, path: string, inreader: anytype) !Document {
     var bufread = std.io.bufferedReader(inreader);
     var counter = std.io.countingReader(bufread.reader());
     const anyreader = extras.AnyReader.from(counter.reader());
@@ -29,7 +29,8 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: std.fs.File.Reade
             if (@errorReturnTrace()) |trace| std.debug.dumpStackTrace(trace.*);
             return err;
         },
-        else => |e| @as(@TypeOf(counter.reader()).Error, @errSetCast(e)),
+        // stave off error: error sets 'anyerror' and 'error{}' have no common errors
+        else => |e| @as(@TypeOf(counter.reader()).Error || error{XmlMalformed}, @errSetCast(e)),
     };
 }
 
@@ -180,6 +181,10 @@ fn parseContent(alloc: std.mem.Allocator, p: *Parser) anyerror!?NodeListIndex {
             continue;
         }
         break;
+    }
+    if (list2.items.len > 0) {
+        try list1.append(try p.addTextNode(alloc, try p.addStr(alloc, list2.items)));
+        list2.clearRetainingCapacity();
     }
     return try p.addNodeList(alloc, list1.items);
 }
@@ -975,7 +980,8 @@ fn addReferenceToList(p: *Parser, list: *std.ArrayList(u8), ref: Reference) !voi
 }
 
 fn addOpStringToList(p: *Parser, list: *std.ArrayList(u8), sidx_maybe: ?StringIndex) !void {
-    try list.appendSlice(p.getStr(sidx_maybe orelse try p.addStr(undefined, "")));
+    // try list.appendSlice(p.getStr(sidx_maybe orelse try p.addStr(list.allocator, "")));
+    try list.appendSlice(std.mem.trim(u8, p.getStr(sidx_maybe orelse try p.addStr(list.allocator, "")), " \n"));
 }
 
 //
@@ -1011,6 +1017,40 @@ pub const Document = struct {
         doc.allocator.free(doc.extras);
         doc.allocator.free(doc.string_bytes);
         doc.nodes.deinit(doc.allocator);
+    }
+
+    pub fn str(doc: *const Document, idx: StringIndex) string {
+        const obj = doc.extras[@intFromEnum(idx)..][0..2].*;
+        return doc.string_bytes[obj[0]..][0..obj[1]];
+    }
+
+    pub fn elem_children(doc: *const Document, elem: Element) []const NodeIndex {
+        const eidx = elem.content orelse return &.{};
+        if (eidx == .empty) return &.{};
+        const handle = doc.extras[@intFromEnum(eidx)..];
+        const len = handle[0];
+        return @ptrCast(handle[1..][0..len]);
+    }
+
+    pub fn elem_attr(doc: *const Document, elem: Element, key: string) ?string {
+        const eidx = elem.attributes;
+        if (eidx == .empty) return &.{};
+        const handle = doc.extras[@intFromEnum(eidx)..];
+        const len = handle[0];
+        // error: TODO: implement @ptrCast between slices changing the length
+        // const attributes: []const Attribute = @ptrCast(handle[1..][0..len]);
+        // for (attributes) |item| {
+        for (0..len) |i| {
+            const item: Attribute = @bitCast(handle[1..][2 * i ..][0..2].*);
+            if (std.mem.eql(u8, doc.str(item.name), key)) {
+                return doc.str(item.value);
+            }
+        }
+        return null;
+    }
+
+    pub fn node(doc: *const Document, idx: NodeIndex) Parser.Node {
+        return doc.nodes.get(@intFromEnum(idx));
     }
 };
 
@@ -1122,7 +1162,7 @@ pub const EntityDecl = union(enum) {
     pe: PEDecl,
 };
 
-pub const Attribute = struct {
+pub const Attribute = extern struct {
     name: StringIndex,
     value: StringIndex,
 };
