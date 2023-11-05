@@ -559,9 +559,9 @@ fn parseCDEnd(p: *Parser) anyerror!?void {
 
 /// PubidChar   ::=   #x20 | #xD | #xA | [a-zA-Z0-9] | [-'()+,./:=?;!*#@$_%]
 fn parsePubidChar(p: *Parser) anyerror!?u21 {
-    if (try p.eatByte(0x20)) |b| return b;
-    if (try p.eatByte(0x0D)) |b| return b;
-    if (try p.eatByte(0x0A)) |b| return b;
+    if (try p.eatByte(0x20)) |b| return b; // space
+    if (try p.eatByte(0x0D)) |b| return b; // \r
+    if (try p.eatByte(0x0A)) |b| return b; // \n
     if (try p.eatRange('a', 'z')) |b| return b;
     if (try p.eatRange('A', 'Z')) |b| return b;
     if (try p.eatRange('0', '9')) |b| return b;
@@ -684,6 +684,9 @@ fn parseMixed(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringListIndex {
 }
 
 /// children   ::=   (choice | seq) ('?' | '*' | '+')?
+/// choice     ::=   '(' S? cp ( S? '|' S? cp )+ S? ')'
+/// seq        ::=   '(' S? cp ( S? ',' S? cp )* S? ')'
+/// cp         ::=   (Name | choice | seq) ('?' | '*' | '+')?
 fn parseChildren(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try parseChoiceOrSeq(alloc, p, true, null) orelse return null;
     _ = try p.eatEnumU8(ChildrenAmt) orelse {};
