@@ -118,6 +118,15 @@ pub fn eatQuoteE(ore: *OurReader, q: u8) !?void {
     };
 }
 
+pub fn eatEnum(ore: *OurReader, comptime E: type) !?E {
+    inline for (comptime std.meta.fieldNames(E)) |name| {
+        if (try ore.eat(name)) |_| {
+            return @field(E, name);
+        }
+    }
+    return null;
+}
+
 pub fn addStr(ore: *OurReader, alloc: std.mem.Allocator, str: string) !xml.StringIndex {
     const adapter: Adapter = .{ .ore = ore };
     var res = try ore.strings_map.getOrPutAdapted(alloc, str, adapter);

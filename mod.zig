@@ -199,7 +199,7 @@ fn parseSDDecl(p: *Parser) anyerror!?Standalone {
     try p.eat("standalone") orelse return null;
     try parseEq(p) orelse return error.XmlMalformed;
     const q = try p.eatQuoteS() orelse return error.XmlMalformed;
-    const sd: Standalone = if (try p.eat("yes")) |_| .yes else if (try p.eat("no")) |_| .no else return error.XmlMalformed;
+    const sd = try p.eatEnum(Standalone) orelse return error.XmlMalformed;
     try p.eatQuoteE(q) orelse return error.XmlMalformed;
     return sd;
 }
