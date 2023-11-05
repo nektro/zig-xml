@@ -603,10 +603,11 @@ fn parseNotationDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// PEReference   ::=   '%' Name ';'
-fn parsePEReference(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parsePEReference(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     try p.eat("%") orelse return null;
-    _ = try parseName(alloc, p) orelse return error.XmlMalformed;
+    const name = try parseName(alloc, p) orelse return error.XmlMalformed;
     try p.eat(";") orelse return error.XmlMalformed;
+    return name;
 }
 
 /// contentspec   ::=   'EMPTY' | 'ANY' | Mixed | children
