@@ -970,10 +970,10 @@ pub const Document = struct {
     extras: []const u32,
     string_bytes: []const u8,
 
-    pub fn deinit(doc: *Document) void {
+    pub fn deinit(doc: *const Document) void {
         doc.allocator.free(doc.extras);
         doc.allocator.free(doc.string_bytes);
-        doc.* = undefined;
+        @constCast(doc).* = undefined;
     }
 };
 
