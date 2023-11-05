@@ -714,7 +714,7 @@ fn parseDefaultDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 
 /// EntityDef   ::=   EntityValue | (ExternalID NDataDecl?)
 fn parseEntityDef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    return try parseEntityValue(alloc, p) orelse {
+    _ = try parseEntityValue(alloc, p) orelse {
         _ = try parseExternalOrPublicID(alloc, p, false) orelse return null;
         _ = try parseNDataDecl(alloc, p) orelse {};
         return;
@@ -774,15 +774,19 @@ fn parseEnumeratedType(alloc: std.mem.Allocator, p: *Parser) anyerror!?Enumerate
 
 /// EntityValue   ::=   '"' ([^%&"] | PEReference | Reference)* '"'
 /// EntityValue   ::=   "'" ([^%&'] | PEReference | Reference)* "'"
-fn parseEntityValue(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parseEntityValue(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
+    var list = std.ArrayList(u8).init(alloc);
+    defer list.deinit();
+
     const q = try p.eatQuoteS() orelse return null;
-    while (true) {
+    while (true) blk: {
         if (try p.eatQuoteE(q)) |_| break;
-        if (try p.eatAnyNot(&.{ '%', '&', q })) |_| continue;
-        if (try parsePEReference(alloc, p)) |_| continue;
-        if (try parseReference(alloc, p)) |_| continue;
+        if (try p.eatAnyNot(&.{ '%', '&', q })) |b| break :blk try list.append(b);
+        if (try parsePEReference(alloc, p)) |ref| break :blk try list.appendSlice(p.getStr(p.pentity_map.get(ref) orelse return error.XmlMalformed));
+        if (try parseReference(alloc, p)) |ref| break :blk try addReferenceToList(p, &list, ref);
         unreachable;
     }
+    return try p.addStr(alloc, list.items);
 }
 
 /// NDataDecl   ::=   S 'NDATA' S Name
@@ -884,6 +888,17 @@ fn addUCPtoList(list: *std.ArrayList(u8), cp: u21) !void {
     const len = std.unicode.utf8CodepointSequenceLength(cp) catch unreachable;
     _ = std.unicode.utf8Encode(cp, buf[0..len]) catch unreachable;
     try list.appendSlice(buf[0..len]);
+}
+
+fn addReferenceToList(p: *Parser, list: *std.ArrayList(u8), ref: Reference) !void {
+    return switch (ref) {
+        .char => |c| addUCPtoList(list, c),
+        .entity_found => |sidx| list.appendSlice(p.getStr(sidx)),
+        .entity_name => |nm| list.appendSlice(p.getStr(p.gentity_map.get(nm) orelse blk: {
+            std.log.warn("xml: encountered unknown entity: &{s};", .{p.getStr(nm)});
+            break :blk try p.addStr(list.allocator, "");
+        })),
+    };
 }
 
 //
