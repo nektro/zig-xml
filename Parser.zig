@@ -10,10 +10,11 @@ buf: [buf_size]u8 = std.mem.zeroes([buf_size]u8),
 amt: usize = 0,
 line: usize = 1,
 col: usize = 1,
-
 extras: std.ArrayListUnmanaged(u32) = .{},
 string_bytes: std.ArrayListUnmanaged(u8) = .{},
 strings_map: std.StringArrayHashMapUnmanaged(xml.StringIndex) = .{},
+gentity_map: std.AutoArrayHashMapUnmanaged(xml.StringIndex, xml.StringIndex) = .{},
+pentity_map: std.AutoArrayHashMapUnmanaged(xml.StringIndex, xml.StringIndex) = .{},
 
 pub fn eat(ore: *Parser, comptime test_s: string) !?void {
     if (!try ore.peek(test_s)) return null;

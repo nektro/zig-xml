@@ -18,6 +18,8 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: std.fs.File.Reade
     errdefer ourreader.extras.deinit(alloc);
     errdefer ourreader.string_bytes.deinit(alloc);
     errdefer ourreader.strings_map.deinit(alloc);
+    defer ourreader.gentity_map.deinit(alloc);
+    defer ourreader.pentity_map.deinit(alloc);
 
     return parseDocument(alloc, &ourreader) catch |err| switch (err) {
         error.XmlMalformed => {
@@ -294,11 +296,9 @@ fn parseCharData(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
 /// Reference   ::=   EntityRef | CharRef
 fn parseReference(alloc: std.mem.Allocator, p: *Parser) anyerror!?Reference {
     const cp = try parseCharRef(p) orelse {
-        _ = try parseEntityRef(alloc, p) orelse {
-            return null;
-        };
-        // TODO:
-        return .{ .entity = {} };
+        const ref = try parseEntityRef(alloc, p) orelse return null;
+        const ent = p.gentity_map.get(ref) orelse return .{ .entity_name = ref };
+        return .{ .entity_found = ent };
     };
     return .{ .char = cp };
 }
@@ -909,7 +909,8 @@ pub const Element = struct {
 
 pub const Reference = union(enum) {
     char: u21,
-    entity: void,
+    entity_found: StringIndex,
+    entity_name: StringIndex,
 };
 
 pub const PI = struct {
