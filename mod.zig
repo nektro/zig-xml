@@ -35,8 +35,8 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: std.fs.File.Reade
 
 /// document   ::=   prolog element Misc*
 fn parseDocument(alloc: std.mem.Allocator, p: *Parser) anyerror!Document {
-    _ = try parseProlog(alloc, p);
-    _ = try parseElement(alloc, p);
+    _ = try parseProlog(alloc, p) orelse return error.XmlMalformed;
+    const root = try parseElement(alloc, p) orelse return error.XmlMalformed;
     while (true) _ = try parseMisc(alloc, p) orelse break;
 
     defer p.strings_map.deinit(alloc);
@@ -45,6 +45,7 @@ fn parseDocument(alloc: std.mem.Allocator, p: *Parser) anyerror!Document {
         .extras = try p.extras.toOwnedSlice(alloc),
         .string_bytes = try p.string_bytes.toOwnedSlice(alloc),
         .nodes = p.nodes.toOwnedSlice(),
+        .root = root,
     };
 }
 
@@ -1004,6 +1005,7 @@ pub const Document = struct {
     extras: []const u32,
     string_bytes: []const u8,
     nodes: std.MultiArrayList(Parser.Node).Slice,
+    root: Element,
 
     pub fn deinit(doc: *Document) void {
         doc.allocator.free(doc.extras);
