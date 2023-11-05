@@ -151,9 +151,8 @@ const Adapter = struct {
     }
 
     pub fn eql(ctx: @This(), a: string, _: string, b_index: usize) bool {
-        const extras_offset = ctx.ore.strings_map.values()[b_index];
-        const str = ctx.ore.extras.items[@intFromEnum(extras_offset)..][0..2].*;
-        const b = ctx.ore.string_bytes.items[str[0]..][0..str[1]];
+        const sidx = ctx.ore.strings_map.values()[b_index];
+        const b = ctx.ore.getStr(sidx);
         return std.mem.eql(u8, a, b);
     }
 };
@@ -165,4 +164,10 @@ pub fn addStrList(ore: *Parser, alloc: std.mem.Allocator, items: []const xml.Str
     ore.extras.appendAssumeCapacity(@intCast(items.len));
     ore.extras.appendSliceAssumeCapacity(@ptrCast(items));
     return @enumFromInt(r);
+}
+
+pub fn getStr(ore: *const Parser, sidx: xml.StringIndex) string {
+    const obj = ore.extras.items[@intFromEnum(sidx)..][0..2].*;
+    const str = ore.string_bytes.items[obj[0]..][0..obj[1]];
+    return str;
 }

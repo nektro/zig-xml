@@ -297,7 +297,15 @@ fn parseCharData(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
 fn parseReference(alloc: std.mem.Allocator, p: *Parser) anyerror!?Reference {
     const cp = try parseCharRef(p) orelse {
         const ref = try parseEntityRef(alloc, p) orelse return null;
-        const ent = p.gentity_map.get(ref) orelse return .{ .entity_name = ref };
+        const ent = p.gentity_map.get(ref) orelse {
+            const actual = p.getStr(ref);
+            if (std.mem.eql(u8, actual, "amp")) return .{ .char = '&' };
+            if (std.mem.eql(u8, actual, "lt")) return .{ .char = '<' };
+            if (std.mem.eql(u8, actual, "gt")) return .{ .char = '>' };
+            if (std.mem.eql(u8, actual, "apos")) return .{ .char = '\'' };
+            if (std.mem.eql(u8, actual, "quot")) return .{ .char = '"' };
+            return .{ .entity_name = ref };
+        };
         return .{ .entity_found = ent };
     };
     return .{ .char = cp };
