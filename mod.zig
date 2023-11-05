@@ -591,11 +591,11 @@ fn parseAttlistDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// EntityDecl   ::=   GEDecl | PEDecl
-fn parseEntityDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parseEntityDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?EntityDecl {
     try p.eat("<!ENTITY") orelse return null;
     try parseS(p) orelse return error.XmlMalformed;
-    if (try parseGEDecl(alloc, p)) |_| return;
-    if (try parsePEDecl(alloc, p)) |_| return;
+    if (try parseGEDecl(alloc, p)) |ge| return .{ .ge = ge };
+    if (try parsePEDecl(alloc, p)) |pe| return .{ .pe = pe };
     return null;
 }
 
@@ -1052,4 +1052,9 @@ pub const PEDecl = struct {
 pub const GEDecl = struct {
     name: StringIndex,
     def: EntityDef,
+};
+
+pub const EntityDecl = union(enum) {
+    ge: GEDecl,
+    pe: PEDecl,
 };
