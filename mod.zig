@@ -20,7 +20,9 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: std.fs.File.Reade
     errdefer ourreader.strings_map.deinit(alloc);
     defer ourreader.gentity_map.deinit(alloc);
     defer ourreader.pentity_map.deinit(alloc);
+    errdefer ourreader.nodes.deinit(alloc);
 
+    _ = try ourreader.addStr(alloc, "");
     return parseDocument(alloc, &ourreader) catch |err| switch (err) {
         error.XmlMalformed => {
             std.log.err("{s}:{d}:{d}: {d}'{s}'", .{ path, ourreader.line, ourreader.col -| ourreader.amt, ourreader.amt, ourreader.buf });
@@ -42,6 +44,7 @@ fn parseDocument(alloc: std.mem.Allocator, p: *Parser) anyerror!Document {
         .allocator = alloc,
         .extras = try p.extras.toOwnedSlice(alloc),
         .string_bytes = try p.string_bytes.toOwnedSlice(alloc),
+        .nodes = p.nodes.toOwnedSlice(),
     };
 }
 
@@ -71,7 +74,7 @@ fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?Element {
     };
     try p.eat(">") orelse return error.XmlMalformed;
 
-    try parseContent(alloc, p) orelse return error.XmlMalformed;
+    _ = try parseContent(alloc, p) orelse return error.XmlMalformed;
     try parseETag(alloc, p, name) orelse return error.XmlMalformed;
     return .{
         .tag_name = name,
@@ -133,31 +136,49 @@ fn parseDoctypeDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// content   ::=   CharData? ((element | Reference | CDSect | PI | Comment) CharData?)*
-fn parseContent(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = try parseCharData(alloc, p) orelse {};
+fn parseContent(alloc: std.mem.Allocator, p: *Parser) anyerror!?NodeListIndex {
+    var list1 = std.ArrayList(NodeIndex).init(alloc);
+    defer list1.deinit();
+    var list2 = std.ArrayList(u8).init(alloc);
+    defer list2.deinit();
+
+    try addOpStringToList(p, &list2, try parseCharData(alloc, p));
     while (true) {
-        if (try parsePI(alloc, p)) |_| {
-            _ = try parseCharData(alloc, p) orelse {};
+        if (try parsePI(alloc, p)) |pi| {
+            try list1.append(try p.addPINode(alloc, pi));
+            if (list2.items.len > 0) {
+                try list1.append(try p.addTextNode(alloc, try p.addStr(alloc, list2.items)));
+                list2.clearRetainingCapacity();
+            }
+            try addOpStringToList(p, &list2, try parseCharData(alloc, p));
             continue;
         }
-        if (try parseElement(alloc, p)) |_| {
-            _ = try parseCharData(alloc, p) orelse {};
+        if (try parseElement(alloc, p)) |elem| {
+            try list1.append(try p.addElemNode(alloc, elem));
+            if (list2.items.len > 0) {
+                try list1.append(try p.addTextNode(alloc, try p.addStr(alloc, list2.items)));
+                list2.clearRetainingCapacity();
+            }
+            try addOpStringToList(p, &list2, try parseCharData(alloc, p));
             continue;
         }
-        if (try parseReference(alloc, p)) |_| {
-            _ = try parseCharData(alloc, p) orelse {};
+        if (try parseReference(alloc, p)) |ref| {
+            try addReferenceToList(p, &list2, ref);
+            try addOpStringToList(p, &list2, try parseCharData(alloc, p));
             continue;
         }
-        if (try parseCDSect(alloc, p)) |_| {
-            _ = try parseCharData(alloc, p) orelse {};
+        if (try parseCDSect(alloc, p)) |cdata| {
+            try addOpStringToList(p, &list2, cdata);
+            try addOpStringToList(p, &list2, try parseCharData(alloc, p));
             continue;
         }
         if (try parseComment(p)) |_| {
-            _ = try parseCharData(alloc, p) orelse {};
+            try addOpStringToList(p, &list2, try parseCharData(alloc, p));
             continue;
         }
         break;
     }
+    return try p.addNodeList(alloc, list1.items);
 }
 
 /// ETag   ::=   '</' Name S? '>'
@@ -179,7 +200,7 @@ fn parseComment(p: *Parser) anyerror!?void {
 }
 
 /// PI   ::=   '<?' PITarget (S (Char* - (Char* '?>' Char*)))? '?>'
-fn parsePI(alloc: std.mem.Allocator, p: *Parser) anyerror!?PI {
+fn parsePI(alloc: std.mem.Allocator, p: *Parser) anyerror!?ProcessingInstruction {
     try p.eat("<?") orelse return null;
     const target = try parsePITarget(alloc, p) orelse return error.XmlMalformed;
     try parseS(p) orelse {};
@@ -950,6 +971,10 @@ fn addReferenceToList(p: *Parser, list: *std.ArrayList(u8), ref: Reference) !voi
     };
 }
 
+fn addOpStringToList(p: *Parser, list: *std.ArrayList(u8), sidx_maybe: ?StringIndex) !void {
+    try list.appendSlice(p.getStr(sidx_maybe orelse try p.addStr(undefined, "")));
+}
+
 //
 //
 
@@ -964,16 +989,24 @@ pub const AttributeListIndex = enum(u32) {
     empty = std.math.maxInt(u32),
     _,
 };
+pub const NodeIndex = enum(u32) {
+    _,
+};
+pub const NodeListIndex = enum(u32) {
+    empty = std.math.maxInt(u32),
+    _,
+};
 
 pub const Document = struct {
     allocator: std.mem.Allocator,
     extras: []const u32,
     string_bytes: []const u8,
+    nodes: std.MultiArrayList(Parser.Node).Slice,
 
-    pub fn deinit(doc: *const Document) void {
+    pub fn deinit(doc: *Document) void {
         doc.allocator.free(doc.extras);
         doc.allocator.free(doc.string_bytes);
-        @constCast(doc).* = undefined;
+        doc.nodes.deinit(doc.allocator);
     }
 };
 
@@ -993,7 +1026,7 @@ pub const Reference = union(enum) {
     entity_name: StringIndex,
 };
 
-pub const PI = struct {
+pub const ProcessingInstruction = struct {
     target: StringIndex,
     rest: StringIndex,
 };
@@ -1036,7 +1069,7 @@ pub const ExternalID = union(enum) {
 
 pub const Misc = union(enum) {
     comment: void,
-    pi: PI,
+    pi: ProcessingInstruction,
     s: void,
 };
 

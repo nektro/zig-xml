@@ -15,6 +15,7 @@ string_bytes: std.ArrayListUnmanaged(u8) = .{},
 strings_map: std.StringArrayHashMapUnmanaged(xml.StringIndex) = .{},
 gentity_map: std.AutoArrayHashMapUnmanaged(xml.StringIndex, xml.StringIndex) = .{},
 pentity_map: std.AutoArrayHashMapUnmanaged(xml.StringIndex, xml.StringIndex) = .{},
+nodes: std.MultiArrayList(Node) = .{},
 
 pub fn eat(ore: *Parser, comptime test_s: string) !?void {
     if (!try ore.peek(test_s)) return null;
@@ -179,4 +180,37 @@ pub fn getStr(ore: *const Parser, sidx: xml.StringIndex) string {
     const obj = ore.extras.items[@intFromEnum(sidx)..][0..2].*;
     const str = ore.string_bytes.items[obj[0]..][0..obj[1]];
     return str;
+}
+
+pub fn addElemNode(ore: *Parser, alloc: std.mem.Allocator, ele: xml.Element) !xml.NodeIndex {
+    const r = ore.nodes.len;
+    try ore.nodes.append(alloc, .{ .element = ele });
+    return @enumFromInt(r);
+}
+
+pub fn addTextNode(ore: *Parser, alloc: std.mem.Allocator, txt: xml.StringIndex) !xml.NodeIndex {
+    const r = ore.nodes.len;
+    try ore.nodes.append(alloc, .{ .text = txt });
+    return @enumFromInt(r);
+}
+
+pub fn addPINode(ore: *Parser, alloc: std.mem.Allocator, pi: xml.ProcessingInstruction) !xml.NodeIndex {
+    const r = ore.nodes.len;
+    try ore.nodes.append(alloc, .{ .pi = pi });
+    return @enumFromInt(r);
+}
+
+pub const Node = union(enum) {
+    text: xml.StringIndex,
+    element: xml.Element,
+    pi: xml.ProcessingInstruction,
+};
+
+pub fn addNodeList(ore: *Parser, alloc: std.mem.Allocator, items: []const xml.NodeIndex) !xml.NodeListIndex {
+    if (items.len == 0) return .empty;
+    const r = ore.extras.items.len;
+    try ore.extras.ensureUnusedCapacity(alloc, 1 + items.len);
+    ore.extras.appendAssumeCapacity(@intCast(items.len));
+    ore.extras.appendSliceAssumeCapacity(@ptrCast(items));
+    return @enumFromInt(r);
 }
