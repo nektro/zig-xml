@@ -607,7 +607,7 @@ fn parseAttDef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try parseS(p) orelse return null;
     _ = try parseName(alloc, p) orelse return error.XmlMalformed;
     try parseS(p) orelse return error.XmlMalformed;
-    try parseAttType(alloc, p) orelse return error.XmlMalformed;
+    _ = try parseAttType(alloc, p) orelse return error.XmlMalformed;
     try parseS(p) orelse return error.XmlMalformed;
     try parseDefaultDecl(alloc, p) orelse return error.XmlMalformed;
 }
@@ -654,10 +654,10 @@ fn parseChildren(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// AttType   ::=   StringType | TokenizedType | EnumeratedType
-fn parseAttType(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    if (try parseStringType(p)) |_| return;
-    if (try parseTokenizedType(p)) |_| return;
-    if (try parseEnumeratedType(alloc, p)) |_| return;
+fn parseAttType(alloc: std.mem.Allocator, p: *Parser) anyerror!?AttType {
+    if (try parseStringType(p)) |_| return .{ .string = {} };
+    if (try parseTokenizedType(p)) |t| return .{ .tokenized = t };
+    if (try parseEnumeratedType(alloc, p)) |t| return .{ .enumerated = t };
     return null;
 }
 
@@ -897,4 +897,10 @@ pub const TokenizedType = enum {
 pub const EnumeratedType = union(enum) {
     notation_type: StringListIndex,
     enumeration: StringListIndex,
+};
+
+pub const AttType = union(enum) {
+    string: void,
+    tokenized: TokenizedType,
+    enumerated: EnumeratedType,
 };
