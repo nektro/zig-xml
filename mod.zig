@@ -81,7 +81,7 @@ fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?Element {
 /// Misc   ::=   Comment | PI | S
 fn parseMisc(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     try parseComment(p) orelse {
-        try parsePI(alloc, p) orelse {
+        _ = try parsePI(alloc, p) orelse {
             try parseS(p) orelse {
                 return null;
             };
@@ -119,7 +119,7 @@ fn parseDoctypeDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 fn parseContent(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     _ = try parseCharData(alloc, p) orelse {};
     while (true) {
-        try parsePI(alloc, p) orelse {
+        _ = try parsePI(alloc, p) orelse {
             _ = try parseElement(alloc, p) orelse {
                 _ = try parseReference(alloc, p) orelse {
                     _ = try parseCDSect(alloc, p) orelse {
@@ -151,14 +151,22 @@ fn parseComment(p: *Parser) anyerror!?void {
 }
 
 /// PI   ::=   '<?' PITarget (S (Char* - (Char* '?>' Char*)))? '?>'
-fn parsePI(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parsePI(alloc: std.mem.Allocator, p: *Parser) anyerror!?PI {
     try p.eat("<?") orelse return null;
-    _ = try parsePITarget(alloc, p) orelse return error.XmlMalformed;
+    const target = try parsePITarget(alloc, p) orelse return error.XmlMalformed;
     try parseS(p) orelse {};
+
+    var list = std.ArrayList(u8).init(alloc);
+    defer list.deinit();
     while (true) {
         if (try p.eat("?>")) |_| break;
-        _ = try parseChar(p) orelse return error.XmlMalformed;
+        const cp = try parseChar(p) orelse return error.XmlMalformed;
+        try addUCPtoList(&list, cp);
     }
+    return .{
+        .target = target,
+        .rest = try p.addStr(alloc, list.items),
+    };
 }
 
 /// S   ::=   (#x20 | #x9 | #xD | #xA)+
@@ -420,13 +428,13 @@ fn parsePubidLiteral(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex
 
 /// markupdecl   ::=   elementdecl | AttlistDecl | EntityDecl | NotationDecl | PI | Comment
 fn parseMarkupDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    return try parseElementDecl(alloc, p) orelse
-        try parseAttlistDecl(alloc, p) orelse
-        try parseEntityDecl(alloc, p) orelse
-        try parseNotationDecl(alloc, p) orelse
-        try parsePI(alloc, p) orelse
-        try parseComment(p) orelse
-        null;
+    if (try parseElementDecl(alloc, p)) |_| return;
+    if (try parseAttlistDecl(alloc, p)) |_| return;
+    if (try parseEntityDecl(alloc, p)) |_| return;
+    if (try parseNotationDecl(alloc, p)) |_| return;
+    if (try parsePI(alloc, p)) |_| return;
+    if (try parseComment(p)) |_| return;
+    return null;
 }
 
 /// DeclSep   ::=   PEReference | S
@@ -867,4 +875,9 @@ pub const Element = struct {
 pub const Reference = union(enum) {
     char: u21,
     entity: void,
+};
+
+pub const PI = struct {
+    target: StringIndex,
+    rest: StringIndex,
 };
