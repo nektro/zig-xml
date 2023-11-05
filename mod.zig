@@ -33,7 +33,7 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: std.fs.File.Reade
 fn parseDocument(alloc: std.mem.Allocator, p: *Parser) anyerror!Document {
     _ = try parseProlog(alloc, p);
     _ = try parseElement(alloc, p);
-    while (true) try parseMisc(alloc, p) orelse break;
+    while (true) _ = try parseMisc(alloc, p) orelse break;
 
     defer p.strings_map.deinit(alloc);
     return .{
@@ -46,9 +46,9 @@ fn parseDocument(alloc: std.mem.Allocator, p: *Parser) anyerror!Document {
 /// prolog   ::=   XMLDecl? Misc* (doctypedecl Misc*)?
 fn parseProlog(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     _ = try parseXMLDecl(alloc, p) orelse {};
-    while (true) try parseMisc(alloc, p) orelse break;
+    while (true) _ = try parseMisc(alloc, p) orelse break;
     try parseDoctypeDecl(alloc, p) orelse return;
-    while (true) try parseMisc(alloc, p) orelse break;
+    while (true) _ = try parseMisc(alloc, p) orelse break;
 }
 
 /// element   ::=   EmptyElemTag
@@ -79,14 +79,11 @@ fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?Element {
 }
 
 /// Misc   ::=   Comment | PI | S
-fn parseMisc(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    try parseComment(p) orelse {
-        _ = try parsePI(alloc, p) orelse {
-            try parseS(p) orelse {
-                return null;
-            };
-        };
-    };
+fn parseMisc(alloc: std.mem.Allocator, p: *Parser) anyerror!?Misc {
+    if (try parseComment(p)) |_| return .{ .comment = {} };
+    if (try parsePI(alloc, p)) |pi| return .{ .pi = pi };
+    if (try parseS(p)) |_| return .{ .s = {} };
+    return null;
 }
 
 /// XMLDecl   ::=   '<?xml' VersionInfo EncodingDecl? SDDecl? S? '?>'
@@ -945,4 +942,10 @@ pub const ID = union(enum) {
 pub const ExternalID = union(enum) {
     system: StringIndex,
     public: [2]StringIndex,
+};
+
+pub const Misc = union(enum) {
+    comment: void,
+    pi: PI,
+    s: void,
 };
