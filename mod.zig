@@ -645,12 +645,25 @@ fn parseAttDef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// GEDecl   ::=   '<!ENTITY' S Name S EntityDef S? '>'
-fn parseGEDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = try parseName(alloc, p) orelse return null;
+fn parseGEDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?GEDecl {
+    const name = try parseName(alloc, p) orelse return null;
     try parseS(p) orelse return error.XmlMalformed;
-    _ = try parseEntityDef(alloc, p) orelse return error.XmlMalformed;
+    const def = try parseEntityDef(alloc, p) orelse return error.XmlMalformed;
     try parseS(p) orelse {};
     try p.eat(">") orelse return error.XmlMalformed;
+    switch (def) {
+        .value => |sidx| {
+            try p.gentity_map.put(alloc, name, sidx);
+        },
+        .external => |ext| {
+            _ = ext;
+            //TODO
+        },
+    }
+    return .{
+        .name = name,
+        .def = def,
+    };
 }
 
 /// PEDecl   ::=   '<!ENTITY' S '%' S Name S PEDef S? '>'
@@ -1034,4 +1047,9 @@ pub const EntityDef = union(enum) {
 pub const PEDecl = struct {
     name: StringIndex,
     def: PEDef,
+};
+
+pub const GEDecl = struct {
+    name: StringIndex,
+    def: EntityDef,
 };
