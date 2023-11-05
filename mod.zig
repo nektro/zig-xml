@@ -648,7 +648,7 @@ fn parseAttDef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 fn parseGEDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     _ = try parseName(alloc, p) orelse return null;
     try parseS(p) orelse return error.XmlMalformed;
-    try parseEntityDef(alloc, p) orelse return error.XmlMalformed;
+    _ = try parseEntityDef(alloc, p) orelse return error.XmlMalformed;
     try parseS(p) orelse {};
     try p.eat(">") orelse return error.XmlMalformed;
 }
@@ -713,12 +713,15 @@ fn parseDefaultDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// EntityDef   ::=   EntityValue | (ExternalID NDataDecl?)
-fn parseEntityDef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
-    _ = try parseEntityValue(alloc, p) orelse {
-        _ = try parseExternalOrPublicID(alloc, p, false) orelse return null;
-        _ = try parseNDataDecl(alloc, p) orelse {};
-        return;
-    };
+fn parseEntityDef(alloc: std.mem.Allocator, p: *Parser) anyerror!?EntityDef {
+    if (try parseEntityValue(alloc, p)) |ev| return .{ .value = ev };
+
+    const id = try parseExternalOrPublicID(alloc, p, false) orelse return null;
+    const ndata = try parseNDataDecl(alloc, p);
+    return .{ .external = .{
+        .id = id.external,
+        .ndata = ndata,
+    } };
 }
 
 /// PEDef   ::=   EntityValue | ExternalID
@@ -1005,4 +1008,12 @@ pub const ChildrenAmt = enum(u8) {
 pub const PEDef = union(enum) {
     entity_value: StringIndex,
     external_id: ExternalID,
+};
+
+pub const EntityDef = union(enum) {
+    value: StringIndex,
+    external: struct {
+        id: ExternalID,
+        ndata: ?StringIndex,
+    },
 };
