@@ -722,15 +722,8 @@ fn parseStringType(p: *Parser) anyerror!?void {
 }
 
 /// TokenizedType   ::=   'ID' | 'IDREF' | 'IDREFS' | 'ENTITY' | 'ENTITIES' | 'NMTOKEN' | 'NMTOKENS'
-fn parseTokenizedType(p: *Parser) anyerror!?void {
-    if (try p.eat("IDREFS")) |_| return;
-    if (try p.eat("IDREF")) |_| return;
-    if (try p.eat("ID")) |_| return;
-    if (try p.eat("ENTITY")) |_| return;
-    if (try p.eat("ENTITIES")) |_| return;
-    if (try p.eat("NMTOKENS")) |_| return;
-    if (try p.eat("NMTOKEN")) |_| return;
-    return null;
+fn parseTokenizedType(p: *Parser) anyerror!?TokenizedType {
+    return p.eatEnum(TokenizedType);
 }
 
 /// EnumeratedType   ::=   NotationType | Enumeration
@@ -880,4 +873,14 @@ pub const Reference = union(enum) {
 pub const PI = struct {
     target: StringIndex,
     rest: StringIndex,
+};
+
+pub const TokenizedType = enum {
+    IDREFS,
+    IDREF,
+    ID,
+    ENTITY,
+    ENTITIES,
+    NMTOKENS,
+    NMTOKEN,
 };
