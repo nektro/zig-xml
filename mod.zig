@@ -272,7 +272,7 @@ fn parseIntSubset(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 fn parseAttribute(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     _ = try parseName(alloc, p) orelse return null;
     try parseEq(p) orelse return error.XmlMalformed;
-    try parseAttValue(alloc, p) orelse return error.XmlMalformed;
+    _ = try parseAttValue(alloc, p) orelse return error.XmlMalformed;
 }
 
 /// CharData   ::=   [^<&]* - ([^<&]* ']]>' [^<&]*)
@@ -472,14 +472,18 @@ fn parseDeclSep(alloc: std.mem.Allocator, p: *Parser) anyerror!?DeclSep {
 
 /// AttValue   ::=   '"' ([^<&"] | Reference)* '"'
 /// AttValue   ::=   "'" ([^<&'] | Reference)* "'"
-fn parseAttValue(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parseAttValue(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
+    var list = std.ArrayList(u8).init(alloc);
+    defer list.deinit();
+
     const q = try p.eatQuoteS() orelse return null;
-    while (true) {
+    while (true) blk: {
         if (try p.eatQuoteE(q)) |_| break;
-        if (try p.eatAnyNot(&.{ '<', '&', q })) |_| continue;
-        if (try parseReference(alloc, p)) |_| continue;
+        if (try p.eatAnyNot(&.{ '<', '&', q })) |b| break :blk try list.append(b);
+        if (try parseReference(alloc, p)) |ref| break :blk try addReferenceToList(p, &list, ref);
         unreachable;
     }
+    return try p.addStr(alloc, list.items);
 }
 
 /// EntityRef   ::=   '&' Name ';'
@@ -735,7 +739,7 @@ fn parseDefaultDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
     if (try p.eat("#FIXED")) |_| {
         try parseS(p) orelse return error.XmlMalformed;
     }
-    try parseAttValue(alloc, p) orelse return error.XmlMalformed;
+    _ = try parseAttValue(alloc, p) orelse return error.XmlMalformed;
 }
 
 /// EntityDef   ::=   EntityValue | (ExternalID NDataDecl?)
