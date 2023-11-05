@@ -91,7 +91,7 @@ fn parseXMLDecl(alloc: std.mem.Allocator, p: *Parser) anyerror!?XMLDecl {
     try p.eat("<?xml") orelse return null;
     const version_info = try parseVersionInfo(p) orelse return error.XmlMalformed;
     const encoding = try parseEncodingDecl(alloc, p);
-    const standalone = try parseSDDecl(p);
+    const standalone = try parseSDDecl(p) orelse .no;
     try parseS(p) orelse {};
     try p.eat("?>") orelse return error.XmlMalformed;
     if (version_info[0] != 1) return error.XmlMalformed; // version should be 1.0
@@ -931,7 +931,7 @@ pub const AttType = union(enum) {
 
 pub const XMLDecl = struct {
     encoding: ?StringIndex,
-    standalone: ?Standalone,
+    standalone: Standalone,
 };
 
 pub const ID = union(enum) {
