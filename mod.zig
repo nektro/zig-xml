@@ -475,10 +475,11 @@ fn parseAttValue(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
 }
 
 /// EntityRef   ::=   '&' Name ';'
-fn parseEntityRef(alloc: std.mem.Allocator, p: *Parser) anyerror!?void {
+fn parseEntityRef(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     try p.eat("&") orelse return null;
-    _ = try parseName(alloc, p) orelse return error.XmlMalformed;
+    const name = try parseName(alloc, p) orelse return error.XmlMalformed;
     try p.eat(";") orelse return error.XmlMalformed;
+    return name;
 }
 
 /// CharRef   ::=   '&#' [0-9]+ ';'
