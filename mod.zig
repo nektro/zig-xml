@@ -1034,7 +1034,7 @@ pub const Document = struct {
 
     pub fn elem_attr(doc: *const Document, elem: Element, key: string) ?string {
         const eidx = elem.attributes;
-        if (eidx == .empty) return &.{};
+        if (eidx == .empty) return null;
         const handle = doc.extras[@intFromEnum(eidx)..];
         const len = handle[0];
         // error: TODO: implement @ptrCast between slices changing the length
