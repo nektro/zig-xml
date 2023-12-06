@@ -989,6 +989,10 @@ fn addOpStringToList(p: *Parser, list: *std.ArrayList(u8), sidx_maybe: ?StringIn
 
 pub const StringIndex = enum(u32) {
     _,
+
+    pub fn resolve(idx: StringIndex, doc: *const Document) string {
+        return doc.str(idx);
+    }
 };
 pub const StringListIndex = enum(u32) {
     empty = std.math.maxInt(u32),
@@ -1000,6 +1004,10 @@ pub const AttributeListIndex = enum(u32) {
 };
 pub const NodeIndex = enum(u32) {
     _,
+
+    pub fn resolve(idx: NodeIndex, doc: *const Document) Parser.Node {
+        return doc.node(idx);
+    }
 };
 pub const NodeListIndex = enum(u32) {
     empty = std.math.maxInt(u32),
@@ -1063,6 +1071,14 @@ pub const Element = struct {
     tag_name: StringIndex,
     attributes: AttributeListIndex,
     content: ?NodeListIndex,
+
+    pub fn children(el: Element, doc: *const Document) []const NodeIndex {
+        return doc.elem_children(el);
+    }
+
+    pub fn attr(el: Element, doc: *const Document, key: string) ?string {
+        return doc.elem_attr(el, key);
+    }
 };
 
 pub const Reference = union(enum) {
