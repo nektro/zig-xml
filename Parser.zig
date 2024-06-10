@@ -10,7 +10,7 @@ buf: [buf_size]u8 = std.mem.zeroes([buf_size]u8),
 amt: usize = 0,
 line: usize = 1,
 col: usize = 1,
-extras: std.ArrayListUnmanaged(u32) = .{},
+data: std.ArrayListUnmanaged(u32) = .{},
 string_bytes: std.ArrayListUnmanaged(u8) = .{},
 strings_map: std.StringArrayHashMapUnmanaged(xml.StringIndex) = .{},
 gentity_map: std.AutoArrayHashMapUnmanaged(xml.StringIndex, xml.StringIndex) = .{},
@@ -144,8 +144,8 @@ pub fn addStr(p: *Parser, alloc: std.mem.Allocator, str: string) !xml.StringInde
     if (res.found_existing) return res.value_ptr.*;
     const q = p.string_bytes.items.len;
     try p.string_bytes.appendSlice(alloc, str);
-    const r = p.extras.items.len;
-    try p.extras.appendSlice(alloc, &[_]u32{ @as(u32, @intCast(q)), @as(u32, @intCast(str.len)) });
+    const r = p.data.items.len;
+    try p.data.appendSlice(alloc, &[_]u32{ @as(u32, @intCast(q)), @as(u32, @intCast(str.len)) });
     res.value_ptr.* = @enumFromInt(r);
     return @enumFromInt(r);
 }
@@ -169,15 +169,15 @@ const Adapter = struct {
 
 pub fn addStrList(p: *Parser, alloc: std.mem.Allocator, items: []const xml.StringIndex) !xml.StringListIndex {
     if (items.len == 0) return .empty;
-    const r = p.extras.items.len;
-    try p.extras.ensureUnusedCapacity(alloc, 1 + items.len);
-    p.extras.appendAssumeCapacity(@intCast(items.len));
-    p.extras.appendSliceAssumeCapacity(@ptrCast(items));
+    const r = p.data.items.len;
+    try p.data.ensureUnusedCapacity(alloc, 1 + items.len);
+    p.data.appendAssumeCapacity(@intCast(items.len));
+    p.data.appendSliceAssumeCapacity(@ptrCast(items));
     return @enumFromInt(r);
 }
 
 pub fn getStr(p: *const Parser, sidx: xml.StringIndex) string {
-    const obj = p.extras.items[@intFromEnum(sidx)..][0..2].*;
+    const obj = p.data.items[@intFromEnum(sidx)..][0..2].*;
     const str = p.string_bytes.items[obj[0]..][0..obj[1]];
     return str;
 }
@@ -208,9 +208,9 @@ pub const Node = union(enum) {
 
 pub fn addNodeList(p: *Parser, alloc: std.mem.Allocator, items: []const xml.NodeIndex) !xml.NodeListIndex {
     if (items.len == 0) return .empty;
-    const r = p.extras.items.len;
-    try p.extras.ensureUnusedCapacity(alloc, 1 + items.len);
-    p.extras.appendAssumeCapacity(@intCast(items.len));
-    p.extras.appendSliceAssumeCapacity(@ptrCast(items));
+    const r = p.data.items.len;
+    try p.data.ensureUnusedCapacity(alloc, 1 + items.len);
+    p.data.appendAssumeCapacity(@intCast(items.len));
+    p.data.appendSliceAssumeCapacity(@ptrCast(items));
     return @enumFromInt(r);
 }

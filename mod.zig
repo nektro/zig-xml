@@ -20,7 +20,7 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: anytype) !Documen
     var counter = std.io.countingReader(bufread.reader());
     const anyreader = extras.AnyReader.from(counter.reader());
     var ourreader = Parser{ .any = anyreader };
-    errdefer ourreader.extras.deinit(alloc);
+    errdefer ourreader.data.deinit(alloc);
     errdefer ourreader.string_bytes.deinit(alloc);
     errdefer ourreader.strings_map.deinit(alloc);
     defer ourreader.gentity_map.deinit(alloc);
@@ -51,7 +51,7 @@ fn parseDocument(alloc: std.mem.Allocator, p: *Parser) anyerror!Document {
     defer p.strings_map.deinit(alloc);
     return .{
         .allocator = alloc,
-        .extras = try p.extras.toOwnedSlice(alloc),
+        .data = try p.data.toOwnedSlice(alloc),
         .string_bytes = try p.string_bytes.toOwnedSlice(alloc),
         .nodes = p.nodes.toOwnedSlice(),
         .root = root,
@@ -1213,26 +1213,26 @@ pub const NodeListIndex = enum(u32) {
 
 pub const Document = struct {
     allocator: std.mem.Allocator,
-    extras: []const u32,
+    data: []const u32,
     string_bytes: []const u8,
     nodes: std.MultiArrayList(Parser.Node).Slice,
     root: Element,
 
     pub fn deinit(doc: *Document) void {
-        doc.allocator.free(doc.extras);
+        doc.allocator.free(doc.data);
         doc.allocator.free(doc.string_bytes);
         doc.nodes.deinit(doc.allocator);
     }
 
     pub fn str(doc: *const Document, idx: StringIndex) string {
-        const obj = doc.extras[@intFromEnum(idx)..][0..2].*;
+        const obj = doc.data[@intFromEnum(idx)..][0..2].*;
         return doc.string_bytes[obj[0]..][0..obj[1]];
     }
 
     pub fn elem_children(doc: *const Document, elem: Element) []const NodeIndex {
         const eidx = elem.content orelse return &.{};
         if (eidx == .empty) return &.{};
-        const handle = doc.extras[@intFromEnum(eidx)..];
+        const handle = doc.data[@intFromEnum(eidx)..];
         const len = handle[0];
         return @ptrCast(handle[1..][0..len]);
     }
@@ -1240,7 +1240,7 @@ pub const Document = struct {
     pub fn elem_attr(doc: *const Document, elem: Element, key: string) ?string {
         const eidx = elem.attributes;
         if (eidx == .empty) return null;
-        const handle = doc.extras[@intFromEnum(eidx)..];
+        const handle = doc.data[@intFromEnum(eidx)..];
         const len = handle[0] / 2;
         // error: TODO: implement @ptrCast between slices changing the length
         // const attributes: []const Attribute = @ptrCast(handle[1..][0..len]);
