@@ -1182,33 +1182,6 @@ fn addOpStringToList(p: *Parser, list: *std.ArrayList(u8), sidx_maybe: ?StringIn
 //
 //
 
-pub const StringIndex = enum(u32) {
-    _,
-
-    pub fn resolve(idx: StringIndex, doc: *const Document) string {
-        return doc.str(idx);
-    }
-};
-pub const StringListIndex = enum(u32) {
-    empty = std.math.maxInt(u32),
-    _,
-};
-pub const AttributeListIndex = enum(u32) {
-    empty = std.math.maxInt(u32),
-    _,
-};
-pub const NodeIndex = enum(u32) {
-    _,
-
-    pub fn resolve(idx: NodeIndex, doc: *const Document) Parser.Node {
-        return doc.node(idx);
-    }
-};
-pub const NodeListIndex = enum(u32) {
-    empty = std.math.maxInt(u32),
-    _,
-};
-
 pub const Document = struct {
     allocator: std.mem.Allocator,
     data: []const u32,
@@ -1255,6 +1228,29 @@ pub const Document = struct {
     pub fn node(this: *const Document, idx: NodeIndex) Parser.Node {
         return this.nodes.get(@intFromEnum(idx));
     }
+};
+
+pub const StringIndex = enum(u32) {
+    _,
+};
+
+pub const StringListIndex = enum(u32) {
+    empty = std.math.maxInt(u32),
+    _,
+};
+
+pub const AttributeListIndex = enum(u32) {
+    empty = std.math.maxInt(u32),
+    _,
+};
+
+pub const NodeIndex = enum(u32) {
+    _,
+};
+
+pub const NodeListIndex = enum(u32) {
+    empty = std.math.maxInt(u32),
+    _,
 };
 
 pub const Standalone = enum {
