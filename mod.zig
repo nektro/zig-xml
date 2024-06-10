@@ -1207,14 +1207,6 @@ pub const Document = struct {
         doc = null;
     }
 
-    pub fn elem_children(this: *const Document, elem: Element) []const NodeIndex {
-        const eidx = elem.content orelse return &.{};
-        if (eidx == .empty) return &.{};
-        const handle = this.data[@intFromEnum(eidx)..];
-        const len = handle[0];
-        return @ptrCast(handle[1..][0..len]);
-    }
-
     pub fn elem_attr(this: *const Document, elem: Element, key: string) ?string {
         const eidx = elem.attributes;
         if (eidx == .empty) return null;
@@ -1275,12 +1267,12 @@ pub const Element = struct {
     attributes: AttributeListIndex,
     content: ?NodeListIndex,
 
-    pub fn children(el: Element, doc: *const Document) []const NodeIndex {
-        return doc.elem_children(el);
-    }
-
-    pub fn attr(el: Element, doc: *const Document, key: string) ?string {
-        return doc.elem_attr(el, key);
+    pub fn children(this: Element) []const NodeIndex {
+        const eidx = this.content orelse return &.{};
+        if (eidx == .empty) return &.{};
+        const handle = doc.?.data[@intFromEnum(eidx)..];
+        const len = handle[0];
+        return @ptrCast(handle[1..][0..len]);
     }
 };
 

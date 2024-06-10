@@ -153,7 +153,7 @@ test {
 
     try expectEqualStrings(doc.root.tag_name.slice(), "category");
 
-    const children = doc.elem_children(doc.root);
+    const children = doc.root.children();
     try expect(children.len == 3);
     try expect(children[0].v() == .element);
     try expect(children[1].v() == .element);
@@ -163,13 +163,13 @@ test {
     try expectEqualStrings(child1.tag_name.slice(), "book");
     try expectEqualStrings(doc.elem_attr(child1, "title").?, "The Hunger Games");
 
-    const children2 = doc.elem_children(child1);
+    const children2 = child1.children();
     try expect(children2.len == 1);
     try expect(children2[0].v() == .element);
 
     const child2 = children2[0].v().element;
     try expectEqualStrings(child2.tag_name.slice(), "price");
-    const children3 = doc.elem_children(child2);
+    const children3 = child2.children();
     try expect(children3.len == 1);
     try expect(children3[0].v() == .text);
     try expectEqualStrings(children3[0].v().text.slice(), "$13");
