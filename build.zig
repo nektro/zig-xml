@@ -5,6 +5,25 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const mode = b.option(std.builtin.Mode, "mode", "") orelse .Debug;
 
+    {
+        const exe = b.addExecutable(.{
+            .name = "bench",
+            .root_source_file = b.path("main.zig"),
+            .target = target,
+            .optimize = mode,
+        });
+        deps.addAllTo(exe);
+        exe.linkLibC();
+
+        const run_exe = b.addRunArtifact(exe);
+        if (b.args) |args| {
+            run_exe.addArgs(args);
+        }
+
+        const run_step = b.step("run", "Run benchmark");
+        run_step.dependOn(&run_exe.step);
+    }
+
     const unit_tests = b.addTest(.{
         .root_source_file = b.path("test.zig"),
         .target = target,
