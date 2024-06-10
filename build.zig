@@ -6,7 +6,7 @@ pub fn build(b: *std.Build) void {
     const mode = b.option(std.builtin.Mode, "mode", "") orelse .Debug;
 
     const unit_tests = b.addTest(.{
-        .root_source_file = .{ .path = "test.zig" },
+        .root_source_file = b.path("test.zig"),
         .target = target,
         .optimize = mode,
     });
