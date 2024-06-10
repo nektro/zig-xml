@@ -1206,23 +1206,6 @@ pub const Document = struct {
         std.debug.assert(doc == this);
         doc = null;
     }
-
-    pub fn elem_attr(this: *const Document, elem: Element, key: string) ?string {
-        const eidx = elem.attributes;
-        if (eidx == .empty) return null;
-        const handle = this.data[@intFromEnum(eidx)..];
-        const len = handle[0] / 2;
-        // error: TODO: implement @ptrCast between slices changing the length
-        // const attributes: []const Attribute = @ptrCast(handle[1..][0..len]);
-        // for (attributes) |item| {
-        for (0..len) |i| {
-            const item: Attribute = @bitCast(handle[1..][2 * i ..][0..2].*);
-            if (std.mem.eql(u8, item.name.slice(), key)) {
-                return item.value.slice();
-            }
-        }
-        return null;
-    }
 };
 
 pub const StringIndex = enum(u32) {
@@ -1273,6 +1256,23 @@ pub const Element = struct {
         const handle = doc.?.data[@intFromEnum(eidx)..];
         const len = handle[0];
         return @ptrCast(handle[1..][0..len]);
+    }
+
+    pub fn attr(this: Element, key: string) ?string {
+        const eidx = this.attributes;
+        if (eidx == .empty) return null;
+        const handle = doc.?.data[@intFromEnum(eidx)..];
+        const len = handle[0] / 2;
+        // error: TODO: implement @ptrCast between slices changing the length
+        // const attributes: []const Attribute = @ptrCast(handle[1..][0..len]);
+        // for (attributes) |item| {
+        for (0..len) |i| {
+            const item: Attribute = @bitCast(handle[1..][2 * i ..][0..2].*);
+            if (std.mem.eql(u8, item.name.slice(), key)) {
+                return item.value.slice();
+            }
+        }
+        return null;
     }
 };
 

@@ -161,7 +161,7 @@ test {
 
     const child1 = children[1].v().element;
     try expectEqualStrings(child1.tag_name.slice(), "book");
-    try expectEqualStrings(doc.elem_attr(child1, "title").?, "The Hunger Games");
+    try expectEqualStrings(child1.attr("title").?, "The Hunger Games");
 
     const children2 = child1.children();
     try expect(children2.len == 1);
