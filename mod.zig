@@ -6,6 +6,7 @@ const std = @import("std");
 const string = []const u8;
 const extras = @import("extras");
 const Parser = @import("./Parser.zig");
+const log = std.log.scoped(.xml);
 
 //
 //
@@ -25,7 +26,7 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: anytype) !Documen
     _ = try ourreader.addStr(alloc, "");
     return parseDocument(alloc, &ourreader) catch |err| switch (err) {
         error.XmlMalformed => {
-            std.log.err("{s}:{d}:{d}: {d}'{s}'", .{ path, ourreader.line, ourreader.col -| ourreader.amt, ourreader.amt, ourreader.buf });
+            log.err("{s}:{d}:{d}: {d}'{s}'", .{ path, ourreader.line, ourreader.col -| ourreader.amt, ourreader.amt, ourreader.buf });
             if (@errorReturnTrace()) |trace| std.debug.dumpStackTrace(trace.*);
             return err;
         },
@@ -973,7 +974,7 @@ fn addReferenceToList(p: *Parser, list: *std.ArrayList(u8), ref: Reference) !voi
         .char => |c| addUCPtoList(list, c),
         .entity_found => |sidx| list.appendSlice(p.getStr(sidx)),
         .entity_name => |nm| list.appendSlice(p.getStr(p.gentity_map.get(nm) orelse blk: {
-            std.log.warn("xml: encountered unknown entity: &{s};", .{p.getStr(nm)});
+            log.warn("encountered unknown entity: &{s};", .{p.getStr(nm)});
             break :blk try p.addStr(list.allocator, "");
         })),
     };
