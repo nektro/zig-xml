@@ -1182,6 +1182,8 @@ fn addOpStringToList(p: *Parser, list: *std.ArrayList(u8), sidx_maybe: ?StringIn
 //
 //
 
+pub threadlocal var doc: ?*const Document = null;
+
 pub const Document = struct {
     allocator: std.mem.Allocator,
     data: []const u32,
@@ -1195,9 +1197,14 @@ pub const Document = struct {
         this.nodes.deinit(this.allocator);
     }
 
-    pub fn str(this: *const Document, idx: StringIndex) string {
-        const obj = this.data[@intFromEnum(idx)..][0..2].*;
-        return this.string_bytes[obj[0]..][0..obj[1]];
+    pub fn acquire(this: *const Document) void {
+        std.debug.assert(doc == null);
+        doc = this;
+    }
+
+    pub fn release(this: *const Document) void {
+        std.debug.assert(doc == this);
+        doc = null;
     }
 
     pub fn elem_children(this: *const Document, elem: Element) []const NodeIndex {
@@ -1218,8 +1225,8 @@ pub const Document = struct {
         // for (attributes) |item| {
         for (0..len) |i| {
             const item: Attribute = @bitCast(handle[1..][2 * i ..][0..2].*);
-            if (std.mem.eql(u8, this.str(item.name), key)) {
-                return this.str(item.value);
+            if (std.mem.eql(u8, item.name.slice(), key)) {
+                return item.value.slice();
             }
         }
         return null;
@@ -1232,6 +1239,11 @@ pub const Document = struct {
 
 pub const StringIndex = enum(u32) {
     _,
+
+    pub fn slice(idx: StringIndex) string {
+        const obj = doc.?.data[@intFromEnum(idx)..][0..2].*;
+        return doc.?.string_bytes[obj[0]..][0..obj[1]];
+    }
 };
 
 pub const StringListIndex = enum(u32) {
