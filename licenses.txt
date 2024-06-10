@@ -5,3 +5,4 @@ MPL-2.0:
 MIT:
 = https://spdx.org/licenses/MIT
 - git https://github.com/nektro/zig-extras
+- git https://github.com/nektro/zig-tracer
