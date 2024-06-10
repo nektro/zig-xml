@@ -1,11 +1,13 @@
 const std = @import("std");
 const string = []const u8;
 const Parser = @This();
-const buf_size = 16;
 const xml = @import("./mod.zig");
 
 any: std.io.AnyReader,
-buf: [buf_size]u8 = std.mem.zeroes([buf_size]u8),
+allocator: std.mem.Allocator,
+temp: std.ArrayListUnmanaged(u8) = .{},
+idx: usize = 0,
+end: bool = false,
 amt: usize = 0,
 line: usize = 1,
 col: usize = 1,
@@ -16,46 +18,42 @@ gentity_map: std.AutoArrayHashMapUnmanaged(xml.StringIndex, xml.StringIndex) = .
 pentity_map: std.AutoArrayHashMapUnmanaged(xml.StringIndex, xml.StringIndex) = .{},
 nodes: std.MultiArrayList(Node) = .{},
 
+pub fn avail(p: *Parser) usize {
+    return p.temp.items.len - p.idx;
+}
+
+pub fn slice(p: *Parser) []const u8 {
+    return p.temp.items[p.idx..];
+}
+
 pub fn eat(p: *Parser, comptime test_s: string) !?void {
     if (!try p.peek(test_s)) return null;
-    p.shiftLAmt(test_s.len);
+    p.idx += test_s.len;
 }
 
 pub fn peek(p: *Parser, comptime test_s: string) !bool {
-    comptime std.debug.assert(test_s.len > 0);
-    comptime std.debug.assert(test_s.len <= buf_size);
     try p.peekAmt(test_s.len) orelse return false;
-    if (test_s.len == 1) return p.buf[0] == test_s[0];
-    return std.mem.eql(u8, test_s, p.buf[0..test_s.len]);
+    if (test_s.len == 1) return p.slice()[0] == test_s[0];
+    return std.mem.eql(u8, test_s, p.slice()[0..test_s.len]);
 }
 
 pub fn peekAmt(p: *Parser, comptime amt: usize) !?void {
-    if (p.amt >= amt) return;
-    const diff_amt = amt - p.amt;
-    const target_buf = p.buf[p.amt..][0..diff_amt];
-    std.debug.assert(target_buf.len > 0);
-    const len = try p.any.readAll(target_buf);
+    if (p.avail() >= amt) return;
+    const buf_size = std.mem.page_size;
+    const diff_amt = amt - p.avail();
+    std.debug.assert(diff_amt <= buf_size);
+    var buf: [buf_size]u8 = undefined;
+    const len = try p.any.readAll(&buf);
+    if (len == 0) p.end = true;
     if (len == 0) return null;
-    for (target_buf) |c| {
-        p.col += 1;
-        if (c == '\n') p.line += 1;
-        if (c == '\n') p.col = 1;
-    }
-    p.amt += diff_amt;
-}
-
-pub fn shiftLAmt(p: *Parser, amt: usize) void {
-    std.debug.assert(amt <= p.amt);
-    var new_buf = std.mem.zeroes([buf_size]u8);
-    for (amt..p.amt, 0..) |i, j| new_buf[j] = p.buf[i];
-    p.buf = new_buf;
-    p.amt -= amt;
+    try p.temp.appendSlice(p.allocator, buf[0..len]);
+    if (amt > len) return null;
 }
 
 pub fn eatByte(p: *Parser, test_c: u8) !?u8 {
     try p.peekAmt(1) orelse return null;
-    if (p.buf[0] == test_c) {
-        defer p.shiftLAmt(1);
+    if (p.slice()[0] == test_c) {
+        defer p.idx += 1;
         return test_c;
     }
     return null;
@@ -63,9 +61,9 @@ pub fn eatByte(p: *Parser, test_c: u8) !?u8 {
 
 pub fn eatRange(p: *Parser, comptime from: u8, comptime to: u8) !?u8 {
     try p.peekAmt(1) orelse return null;
-    if (p.buf[0] >= from and p.buf[0] <= to) {
-        defer p.shiftLAmt(1);
-        return p.buf[0];
+    if (p.slice()[0] >= from and p.slice()[0] <= to) {
+        defer p.idx += 1;
+        return p.slice()[0];
     }
     return null;
 }
@@ -75,11 +73,11 @@ pub fn eatRangeM(p: *Parser, comptime from: u21, comptime to: u21) !?u21 {
     const to_len = comptime std.unicode.utf8CodepointSequenceLength(to) catch unreachable;
     const amt = @max(from_len, to_len);
     try p.peekAmt(amt) orelse return null;
-    const len = std.unicode.utf8ByteSequenceLength(p.buf[0]) catch return null;
+    const len = std.unicode.utf8ByteSequenceLength(p.slice()[0]) catch return null;
     if (amt != len) return null;
-    const mcp = std.unicode.utf8Decode(p.buf[0..amt]) catch return null;
+    const mcp = std.unicode.utf8Decode(p.slice()[0..amt]) catch return null;
     if (mcp >= from and mcp <= to) {
-        defer p.shiftLAmt(len);
+        defer p.idx += len;
         return @intCast(mcp);
     }
     return null;
@@ -88,8 +86,8 @@ pub fn eatRangeM(p: *Parser, comptime from: u21, comptime to: u21) !?u21 {
 pub fn eatAny(p: *Parser, test_s: []const u8) !?u8 {
     try p.peekAmt(1) orelse return null;
     for (test_s) |c| {
-        if (p.buf[0] == c) {
-            defer p.shiftLAmt(1);
+        if (p.slice()[0] == c) {
+            defer p.idx += 1;
             return c;
         }
     }
@@ -99,12 +97,12 @@ pub fn eatAny(p: *Parser, test_s: []const u8) !?u8 {
 pub fn eatAnyNot(p: *Parser, test_s: []const u8) !?u8 {
     try p.peekAmt(1) orelse return null;
     for (test_s) |c| {
-        if (p.buf[0] == c) {
+        if (p.slice()[0] == c) {
             return null;
         }
     }
-    defer p.shiftLAmt(1);
-    return p.buf[0];
+    defer p.idx += 1;
+    return p.slice()[0];
 }
 
 pub fn eatQuoteS(p: *Parser) !?u8 {

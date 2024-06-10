@@ -15,9 +15,12 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: anytype) !Documen
     const t = tracer.trace(@src(), "", .{});
     defer t.end();
 
+    _ = path;
+
     var bufread = std.io.bufferedReader(inreader);
     var counter = std.io.countingReader(bufread.reader());
-    var ourreader = Parser{ .any = counter.reader().any() };
+    var ourreader = Parser{ .any = counter.reader().any(), .allocator = alloc };
+    defer ourreader.temp.deinit(alloc);
     errdefer ourreader.data.deinit(alloc);
     errdefer ourreader.string_bytes.deinit(alloc);
     errdefer ourreader.strings_map.deinit(alloc);
@@ -28,7 +31,6 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: anytype) !Documen
     _ = try ourreader.addStr(alloc, "");
     return parseDocument(alloc, &ourreader) catch |err| switch (err) {
         error.XmlMalformed => {
-            log.err("{s}:{d}:{d}: {d}'{s}'", .{ path, ourreader.line, ourreader.col -| ourreader.amt, ourreader.amt, ourreader.buf });
             if (@errorReturnTrace()) |trace| std.debug.dumpStackTrace(trace.*);
             return err;
         },
@@ -446,16 +448,16 @@ fn parseChar(p: *Parser) anyerror!?u21 {
     defer t.end();
 
     try p.peekAmt(3) orelse return null;
-    if (std.unicode.utf8Decode(p.buf[0..1]) catch null) |cp| {
-        p.shiftLAmt(1);
+    if (std.unicode.utf8Decode(p.slice()[0..1]) catch null) |cp| {
+        p.idx += 1;
         return cp;
     }
-    if (std.unicode.utf8Decode(p.buf[0..2]) catch null) |cp| {
-        p.shiftLAmt(2);
+    if (std.unicode.utf8Decode(p.slice()[0..2]) catch null) |cp| {
+        p.idx += 2;
         return cp;
     }
-    if (std.unicode.utf8Decode(p.buf[0..3]) catch null) |cp| {
-        p.shiftLAmt(3);
+    if (std.unicode.utf8Decode(p.slice()[0..3]) catch null) |cp| {
+        p.idx += 3;
         return cp;
     }
     return null;
@@ -566,7 +568,7 @@ fn parseSystemLiteral(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringInde
     while (true) {
         if (try p.eatByte(q)) |_| break;
         try p.peekAmt(1) orelse return error.XmlMalformed;
-        const c = try p.eatByte(p.buf[0]) orelse return error.XmlMalformed;
+        const c = try p.eatByte(p.slice()[0]) orelse return error.XmlMalformed;
         try list.append(c);
     }
     return try p.addStr(alloc, list.items);
