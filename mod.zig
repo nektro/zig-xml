@@ -1216,44 +1216,44 @@ pub const Document = struct {
     nodes: std.MultiArrayList(Parser.Node).Slice,
     root: Element,
 
-    pub fn deinit(doc: *Document) void {
-        doc.allocator.free(doc.data);
-        doc.allocator.free(doc.string_bytes);
-        doc.nodes.deinit(doc.allocator);
+    pub fn deinit(this: *Document) void {
+        this.allocator.free(this.data);
+        this.allocator.free(this.string_bytes);
+        this.nodes.deinit(this.allocator);
     }
 
-    pub fn str(doc: *const Document, idx: StringIndex) string {
-        const obj = doc.data[@intFromEnum(idx)..][0..2].*;
-        return doc.string_bytes[obj[0]..][0..obj[1]];
+    pub fn str(this: *const Document, idx: StringIndex) string {
+        const obj = this.data[@intFromEnum(idx)..][0..2].*;
+        return this.string_bytes[obj[0]..][0..obj[1]];
     }
 
-    pub fn elem_children(doc: *const Document, elem: Element) []const NodeIndex {
+    pub fn elem_children(this: *const Document, elem: Element) []const NodeIndex {
         const eidx = elem.content orelse return &.{};
         if (eidx == .empty) return &.{};
-        const handle = doc.data[@intFromEnum(eidx)..];
+        const handle = this.data[@intFromEnum(eidx)..];
         const len = handle[0];
         return @ptrCast(handle[1..][0..len]);
     }
 
-    pub fn elem_attr(doc: *const Document, elem: Element, key: string) ?string {
+    pub fn elem_attr(this: *const Document, elem: Element, key: string) ?string {
         const eidx = elem.attributes;
         if (eidx == .empty) return null;
-        const handle = doc.data[@intFromEnum(eidx)..];
+        const handle = this.data[@intFromEnum(eidx)..];
         const len = handle[0] / 2;
         // error: TODO: implement @ptrCast between slices changing the length
         // const attributes: []const Attribute = @ptrCast(handle[1..][0..len]);
         // for (attributes) |item| {
         for (0..len) |i| {
             const item: Attribute = @bitCast(handle[1..][2 * i ..][0..2].*);
-            if (std.mem.eql(u8, doc.str(item.name), key)) {
-                return doc.str(item.value);
+            if (std.mem.eql(u8, this.str(item.name), key)) {
+                return this.str(item.value);
             }
         }
         return null;
     }
 
-    pub fn node(doc: *const Document, idx: NodeIndex) Parser.Node {
-        return doc.nodes.get(@intFromEnum(idx));
+    pub fn node(this: *const Document, idx: NodeIndex) Parser.Node {
+        return this.nodes.get(@intFromEnum(idx));
     }
 };
 
