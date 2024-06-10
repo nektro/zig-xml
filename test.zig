@@ -155,24 +155,24 @@ test {
 
     const children = doc.elem_children(doc.root);
     try expect(children.len == 3);
-    try expect(doc.node(children[0]) == .element);
-    try expect(doc.node(children[1]) == .element);
-    try expect(doc.node(children[2]) == .element);
+    try expect(children[0].v() == .element);
+    try expect(children[1].v() == .element);
+    try expect(children[2].v() == .element);
 
-    const child1 = doc.node(children[1]).element;
+    const child1 = children[1].v().element;
     try expectEqualStrings(child1.tag_name.slice(), "book");
     try expectEqualStrings(doc.elem_attr(child1, "title").?, "The Hunger Games");
 
     const children2 = doc.elem_children(child1);
     try expect(children2.len == 1);
-    try expect(doc.node(children2[0]) == .element);
+    try expect(children2[0].v() == .element);
 
-    const child2 = doc.node(children2[0]).element;
+    const child2 = children2[0].v().element;
     try expectEqualStrings(child2.tag_name.slice(), "price");
     const children3 = doc.elem_children(child2);
     try expect(children3.len == 1);
-    try expect(doc.node(children3[0]) == .text);
-    try expectEqualStrings(doc.node(children3[0]).text.slice(), "$13");
+    try expect(children3[0].v() == .text);
+    try expectEqualStrings(children3[0].v().text.slice(), "$13");
 }
 
 fn expectEqualStrings(actual: []const u8, expected: []const u8) !void {

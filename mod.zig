@@ -1231,10 +1231,6 @@ pub const Document = struct {
         }
         return null;
     }
-
-    pub fn node(this: *const Document, idx: NodeIndex) Parser.Node {
-        return this.nodes.get(@intFromEnum(idx));
-    }
 };
 
 pub const StringIndex = enum(u32) {
@@ -1258,6 +1254,10 @@ pub const AttributeListIndex = enum(u32) {
 
 pub const NodeIndex = enum(u32) {
     _,
+
+    pub fn v(idx: NodeIndex) Parser.Node {
+        return doc.?.nodes.get(@intFromEnum(idx));
+    }
 };
 
 pub const NodeListIndex = enum(u32) {
