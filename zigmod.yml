@@ -4,5 +4,4 @@ main: mod.zig
 license: MPL-2.0
 description: XML
 dependencies:
-  - src: git https://github.com/nektro/zig-extras
   - src: git https://github.com/nektro/zig-tracer

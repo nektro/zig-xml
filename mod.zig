@@ -4,7 +4,6 @@
 
 const std = @import("std");
 const string = []const u8;
-const extras = @import("extras");
 const Parser = @import("./Parser.zig");
 const log = std.log.scoped(.xml);
 const tracer = @import("tracer");
@@ -18,8 +17,7 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: anytype) !Documen
 
     var bufread = std.io.bufferedReader(inreader);
     var counter = std.io.countingReader(bufread.reader());
-    const anyreader = extras.AnyReader.from(counter.reader());
-    var ourreader = Parser{ .any = anyreader };
+    var ourreader = Parser{ .any = counter.reader().any() };
     errdefer ourreader.data.deinit(alloc);
     errdefer ourreader.string_bytes.deinit(alloc);
     errdefer ourreader.strings_map.deinit(alloc);

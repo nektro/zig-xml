@@ -1,11 +1,10 @@
 const std = @import("std");
 const string = []const u8;
-const extras = @import("extras");
 const Parser = @This();
 const buf_size = 16;
 const xml = @import("./mod.zig");
 
-any: extras.AnyReader,
+any: std.io.AnyReader,
 buf: [buf_size]u8 = std.mem.zeroes([buf_size]u8),
 amt: usize = 0,
 line: usize = 1,
