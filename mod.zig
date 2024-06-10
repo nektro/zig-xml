@@ -17,9 +17,7 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: anytype) !Documen
 
     _ = path;
 
-    var bufread = std.io.bufferedReader(inreader);
-    var counter = std.io.countingReader(bufread.reader());
-    var ourreader = Parser{ .any = counter.reader().any(), .allocator = alloc };
+    var ourreader = Parser{ .any = inreader.any(), .allocator = alloc };
     defer ourreader.temp.deinit(alloc);
     errdefer ourreader.data.deinit(alloc);
     errdefer ourreader.string_bytes.deinit(alloc);
@@ -35,7 +33,7 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: anytype) !Documen
             return err;
         },
         // stave off error: error sets 'anyerror' and 'error{}' have no common errors
-        else => |e| @as(@TypeOf(counter.reader()).Error || error{XmlMalformed}, @errorCast(e)),
+        else => |e| @as(@TypeOf(inreader).Error || error{XmlMalformed}, @errorCast(e)),
     };
 }
 
