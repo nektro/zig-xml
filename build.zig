@@ -32,6 +32,7 @@ pub fn build(b: *std.Build) void {
     deps.addAllTo(unit_tests);
 
     const run_unit_tests = b.addRunArtifact(unit_tests);
+    run_unit_tests.has_side_effects = true;
 
     const test_step = b.step("test", "Run unit tests");
     test_step.dependOn(&run_unit_tests.step);
