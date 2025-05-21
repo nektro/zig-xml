@@ -37,7 +37,7 @@ pub fn peek(p: *Parser, comptime test_s: string) !bool {
 pub fn peekAmt(p: *Parser, comptime amt: usize) !?void {
     if (p.avail() >= amt) return;
     if (p.end) return null;
-    const buf_size = std.mem.page_size;
+    const buf_size = std.heap.page_size_min;
     const diff_amt = amt - p.avail();
     std.debug.assert(diff_amt <= buf_size);
     var buf: [buf_size]u8 = undefined;
