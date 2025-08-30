@@ -1,0 +1,1113 @@
+<!ELEMENT  bill             (pre-form?, metadata?, form, legis-body, (legis-body | official-title-amendment)*, attestation?, endorsement?) >
+<!ATTLIST  bill
+
+             key (H | S | G | L) #IMPLIED
+
+		star-print  (first-star-print | second-star-print | third-star-print |
+		fourth-star-print | no-star-print)	"no-star-print"
+
+             dms-id      CDATA          #IMPLIED
+             dms-version  CDATA       #IMPLIED
+	     bill-type
+                        (olc | traditional | appropriations)   "olc"
+
+             stage-count	(1 | 2 | 3)	"1"
+
+             bill-stage (Additional-Sponsors-House |
+Additional-Sponsors-Senate |
+Agreed-to-House |
+Agreed-to-Senate |
+Amendment-in-House |
+Amendment-in-Senate |
+Committee-Discharged-House |
+Committee-Discharged-Senate |
+Considered-and-Passed-House |
+Considered-and-Passed-Senate |
+Engrossed-Amendment-House |
+Engrossed-Amendment-Senate |
+Engrossed-in-House |
+Engrossed-in-Senate |
+Enrolled-Bill |
+Failed-Amendment-House |
+Failed-Amendment-Senate |
+Failed-Passage-House |
+Failed-Passage-Senate |
+Held-at-Desk-House |
+Held-at-Desk-Senate |
+Indefinitely-Postponed-House |
+Indefinitely-Postponed-Senate |
+Introduced-in-House |
+Introduced-in-Senate |
+Laid-on-Table-House |
+Laid-on-Table-Senate |
+Ordered-to-be-Printed-House |
+Ordered-to-be-Printed-Senate |
+Placed-on-Calendar-House |
+Placed-on-Calendar-Senate |
+Pre-Introduction |
+Printed-as-Passed |
+Re-Enrolled-Bill |
+Received-in-House |
+Received-in-Senate |
+Reengrossed-Amendment-House |
+Reengrossed-Amendment-Senate |
+Reference-Change-House |
+Reference-Change-Senate |
+Referral-Instructions-House |
+Referral-Instructions-Senate |
+Referred-in-House |
+Referred-in-Senate |
+Referred-to-Committee-House |
+Referred-to-Committee-Senate |
+Referred-w-Amendments-House |
+Referred-w-Amendments-Senate |
+Reported-in-House |
+Reported-in-Senate |
+Sponsor-Change)  #REQUIRED
+public-private
+               (public | private)  #REQUIRED
+
+microcomp-version  CDATA   #IMPLIED
+public-print     (yes | no)	"no">
+<!ENTITY % unique-id
+            "id        ID  #REQUIRED">
+<!ENTITY %   display-inline-model
+        'display-inline (yes-display-inline | no-display-inline)  "no-display-inline"' >
+<!ENTITY % refs         "internal-xref | external-xref"                        >
+<!ENTITY % ext-refs     "external-xref"                        >
+<!ENTITY % revisions    "added-phrase |
+                         deleted-phrase"                       >
+<!ENTITY % pcd-model
+                    "#PCDATA | marker">
+<!ELEMENT marker     EMPTY >
+<!ENTITY % approps-block
+                     "appropriations-major | appropriations-intermediate | appropriations-small">
+<!ENTITY % legis-structures
+                        "%approps-block;|
+                        chapter |
+			subdivision |
+                        division |
+                        subsection |
+                        paragraph |
+                        subparagraph |
+                        clause |
+                        subclause |
+                        item |
+                        subitem |
+                        part |
+                    section |
+                        subchapter |
+                        subpart |
+                        subtitle |
+                        title">
+<!ENTITY % legis-structures-attributes
+                     "%approps-block; |
+                      chapter |
+		      subdivision |
+                      division |
+                      subsection |
+                      paragraph |
+                      subparagraph |
+                      clause |
+                      subclause |
+                      item |
+                      subitem |
+                      part |
+                      section |
+                     subchapter |
+                      subpart |
+                      subtitle |
+                      title">
+<!ENTITY % phrase-level  "%revisions; | %refs; | fraction | superscript | subscript | italic | quote | inline-comment | act-name | formula | term | omitted-text | linebreak | nobreak | pagebreak">
+<!ENTITY %    rules-level-model
+                        "rule | rules-clause | rules-paragraph |
+                         rules-subparagraph | rules-subdivision |
+                         rules-item | rules-subitem">
+<!ENTITY % text-model "%pcd-model; | %phrase-level; | definition | header-in-text | committee-name | debate-time |
+			sponsor | cosponsor | nonsponsor | short-title | editorial | footnote | footnote-ref | proviso">
+<!ELEMENT  debate-time  (%pcd-model;)*>
+<!ENTITY %    rules-level-model
+                        "rule | rules-clause | rules-paragraph |
+                         rules-subparagraph | rules-subdivision |
+                         rules-item | rules-subitem">
+<!ENTITY % rules-structure-attributes
+           '%unique-id;
+		changed (added | deleted | not-changed)     #IMPLIED
+     	committee-id
+                     CDATA                              #IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED
+      indent  (left-margin | flush-left | subsection | paragraph | subparagraph | clause |
+               subclause | item | subitem | up1 | up2 | up3 | up4 | up5 | up6 | down1 |
+              down2 | down3 | down4 | down5 | down6)                           #IMPLIED '>
+<!ELEMENT  rule              (enum, header, (rules-clause | continuation-text | %legis-structures; | legis-comment)* )    >
+<!ATTLIST  rule              %rules-structure-attributes;                  >
+<!ELEMENT  rules-clause      (rules-clause-header?, enum, header?, (text | rules-paragraph | continuation-text | %legis-structures; | legis-comment)+)  >
+<!ATTLIST  rules-clause      %rules-structure-attributes;
+                             %display-inline-model;                >
+<!ELEMENT rules-clause-header   (%text-model;)* >
+<!ELEMENT  rules-paragraph   (enum, header?, (text | rules-subparagraph | continuation-text | %legis-structures; | legis-comment)+) >
+<!ATTLIST  rules-paragraph   %rules-structure-attributes;
+				%display-inline-model;>
+<!ELEMENT  rules-subparagraph  (enum, (text | rules-subdivision | continuation-text | %legis-structures; | legis-comment)+)  >
+<!ATTLIST  rules-subparagraph  %rules-structure-attributes;
+				%display-inline-model;>
+<!ELEMENT  rules-subdivision   (enum, (text | rules-item | continuation-text | %legis-structures; | legis-comment)+)         >
+<!ATTLIST  rules-subdivision   %rules-structure-attributes;
+				%display-inline-model;>
+<!ELEMENT  rules-item        (enum, (text | rules-subitem | continuation-text | %legis-structures; | legis-comment)+)            >
+<!ATTLIST  rules-item        %rules-structure-attributes;
+				%display-inline-model;>
+<!ELEMENT  rules-subitem     (enum, (text | continuation-text | %legis-structures; | legis-comment)+)   >
+<!ATTLIST  rules-subitem     %rules-structure-attributes;
+				%display-inline-model;>
+<!ENTITY % legis-body-model
+              "(pagebreak?,(section*,((division | title)+)*)?)">
+<!ENTITY % locator.att
+            "href       CDATA                 #REQUIRED" >
+<!ENTITY % optional-locator.att
+            "href       CDATA                  #IMPLIED" >
+<!ENTITY % internal-locator.att
+            "idref       IDREF                 #REQUIRED" >
+<!ENTITY % optional-internal-locator.att
+            "idref       IDREF                  #IMPLIED" >
+<!ENTITY % internal-link-attributes
+            "%internal-locator.att;"                                 >
+<!ENTITY % internal-link-attributes-if-needed
+            "%optional-internal-locator.att;"                        >
+<!ENTITY % link-attributes
+            "%locator.att;"                                          >
+<!ENTITY % link-attributes-if-needed
+            "%optional-locator.att;"                                 >
+<!ENTITY %    nonstructured-level-model
+                        "quoted-block | non-statutory-material  |  graphic | legis-comment | formula | toc | table | pagebreak | list">
+<!ENTITY % within-section-level-model
+                        "subsection | paragraph |
+                         subparagraph | clause |
+                         subclause | item | subitem" >
+<!ELEMENT  quote  ( %text-model;)* >
+<!ELEMENT editorial     (%pcd-model; | %phrase-level; | definition | header-in-text | committee-name |
+				short-title | footnote | footnote-ref)*>
+<!ELEMENT footnote     (%pcd-model; | %phrase-level; | definition | header-in-text | committee-name |
+				short-title | editorial | footnote-ref)*>
+<!ATTLIST footnote
+          id    ID  #REQUIRED>
+<!ELEMENT footnote-ref     (%pcd-model;)*>
+<!ATTLIST footnote-ref
+          idref   IDREF   #REQUIRED>
+<!ELEMENT act-name     (%pcd-model;)*>
+<!ATTLIST act-name
+          parsable-cite		CDATA		#IMPLIED>
+<!ELEMENT  inline-comment  ( %text-model; | enum-in-header)* >
+<!ATTLIST  inline-comment display (yes | no) "yes" >
+<!ELEMENT  italic  (%pcd-model; | superscript | subscript | inline-comment | linebreak | term | nobreak |
+                    fraction | quote | pagebreak | external-xref | internal-xref | formula | act-name | editorial |
+		         footnote | footnote-ref)* >
+<!ENTITY % person-elements  "%pcd-model; | %phrase-level;">
+<!ENTITY % date-attributes
+            "date       CDATA  #IMPLIED
+             legis-day  CDATA  #IMPLIED">
+<!ELEMENT  enum         (%text-model;)*>
+<!ELEMENT  header       (%pcd-model; | enum-in-header | committee-name | %phrase-level; | editorial)*>
+<!ATTLIST  header
+	display-inline  (yes-display-inline | no-display-inline)  "yes-display-inline"  >
+<!ELEMENT  enum-in-header  (%text-model;)*>
+<!ELEMENT  short-title  (%pcd-model; | %phrase-level;)*>
+<!ELEMENT  subheader    (%pcd-model; | enum-in-header | committee-name | %phrase-level; | editorial)*>
+<!ELEMENT  internal-xref  (%pcd-model; | fraction |
+                          superscript | subscript |
+                          omitted-text | linebreak | italic |
+                          quote | inline-comment | nobreak |
+                          pagebreak | act-name | formula | term)*>
+<!ATTLIST  internal-xref
+              idref		IDREF		#IMPLIED
+	        legis-path	CDATA		#IMPLIED>
+<!ELEMENT  external-xref  (%pcd-model; | fraction |
+                          superscript | subscript |
+                          omitted-text | linebreak | italic |
+                          quote | inline-comment | nobreak |
+                          pagebreak | act-name | formula | term | enum-in-header | header-in-text)*>
+<!ATTLIST  external-xref
+             legal-doc (usc | public-law | statute-at-large | bill | act | executive-order | regulation | senate-rule | house-rule | treaty-ust | treaty-tias |
+			 usc-appendix | usc-act | usc-chapter | usc-subtitle)	#IMPLIED
+		  parsable-cite		CDATA			#IMPLIED>
+<!ENTITY % yesorno '(0 | 1)'  >
+<!ENTITY % titles  'ttitle*, tdesc*'>
+<!ELEMENT  ttitle       (%pcd-model; | bold | superscript | subscript)*>
+<!ELEMENT  tdesc        (%pcd-model; | bold | superscript | subscript)*>
+<!ENTITY % tbl.table.att
+      "pgwide          %yesorno;                              #IMPLIED
+      line-rules      (no-gen | hor | hor-ver | hor-sides | all-gen
+                         | hor-trimside
+                         | hor-ver-trimside)                 	#REQUIRED
+     rule-weights    NMTOKEN                               	#IMPLIED
+	subformat			CDATA						#IMPLIED
+	changed (added | deleted | not-changed)     #IMPLIED
+	committee-id
+		CDATA                              #IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED
+ 	table-template-name	CDATA		#IMPLIED"		>
+<!ENTITY % tbl.tgroup.att   "
+        bearoff         CDATA                                   #IMPLIED
+        min-space       %yesorno;                               #IMPLIED
+        no-carding      %yesorno;                               #IMPLIED
+        no-hyph         %yesorno;                               #IMPLIED
+        ldr-align-top   %yesorno;                               #IMPLIED
+        ttitle-size     CDATA                                   #IMPLIED
+        thead-tbody-ldg-size  NMTOKEN                           #IMPLIED
+        fnote-size       CDATA                                  #IMPLIED
+        grid-typeface    NMTOKEN                                #IMPLIED
+        actual-width     NMTOKEN                                #IMPLIED
+        block-style      %yesorno;                              #IMPLIED
+        offset-from-left  CDATA                                 #IMPLIED
+        restrict-indent  %yesorno;                              #IMPLIED
+	  horizontal-justify	(yes | no | auto)			    #IMPLIED">
+<!ENTITY % tbl.colspec.att   "
+        coldef          (trace | fig | txt | txt-no-ldr | txt-no-spread
+                         | txt-no-ldr-no-spread | align-on-char)
+                                                                #REQUIRED
+        min-data-value  NMTOKEN                                 #REQUIRED
+        colsep-modify   (parallel | bold)                       #IMPLIED
+        align-modify-variable  %yesorno;                        #IMPLIED">
+<!ENTITY % tbl.row.att
+        "rowsep-modify   (double | bold)                         #IMPLIED">
+<!ENTITY % tbl.entry.att
+        "rowsep-modify   (double | bold)                         #IMPLIED
+        stub-definition  (trace | fig | txt-clr | txt-ldr
+                          | txt-clr-start-end | txt-clr-2pts-larger
+                          | txt-ldr-start | txt-ldr-end | ctr-start
+                          | ctr-start-end | ctr-continues-start
+                          | ctr-on-table-start | table-fnote
+                          | fnote-bottom-page)   #IMPLIED
+        stub-hierarchy  CDATA                                   #IMPLIED
+        entry-modify    (force-ldr | force-ldr-bottom
+                         | ctr-variable | paragraph
+                         | fl-hang-hier-2 | fl-hang-hier-3
+                         | fl-hang-hier-4 | fl-hang-hier-5
+                         | fl-hang-hier-6 | fl-hang-hier-7
+                         | fl-hang-hier-8 | fl-hang-hier-9)     #IMPLIED
+	  leader-modify	(force-ldr | clr-ldr | force-ldr-bottom)	#IMPLIED">
+<!ENTITY % yesorno 'NMTOKEN'>
+<!ENTITY % titles  'title? | subtitle?'>
+<!ENTITY % paracon '%pcd-model;'>
+<!ENTITY % tbl.table.name       "table">
+<!ENTITY % tbl.table-titles.mdl "%titles;,">
+<!ENTITY % tbl.table-main.mdl   "tgroup+">
+<!ENTITY % tbl.table.mdl        "%tbl.table-titles.mdl; %tbl.table-main.mdl;">
+<!ENTITY % tbl.table.att        "
+    pgwide      %yesorno;       #IMPLIED ">
+<!ENTITY % bodyatt              "">
+<!ENTITY % tbl.tgroup.mdl       "colspec*,thead?, tfoot?, tbody">
+<!ENTITY % tbl.tgroup.att       "">
+<!ENTITY % tbl.thead.att        "">
+<!ENTITY % tbl.tbody.att        "">
+<!ENTITY % tbl.colspec.att      "">
+<!ENTITY % tbl.row.mdl          "entry+">
+<!ENTITY % tbl.row.att          "">
+<!ENTITY % tbl.entry.mdl        "(%paracon; | %phrase-level; | bold)*">
+<!ENTITY % tbl.entry.att        "">
+<!ELEMENT bold (%pcd-model; | superscript | subscript | linebreak | term | nobreak |
+                    fraction | quote | pagebreak | external-xref | internal-xref | act-name)* >
+<!ELEMENT %tbl.table.name; (%tbl.table.mdl;)>
+<!ATTLIST %tbl.table.name;
+	  table-type	CDATA						    #IMPLIED
+	  align-to-level  (section | subsection | paragraph | subparagraph | clause | subclause | 				item | subitem)  #IMPLIED
+        frame           (top|bottom|topbot|all|sides|none)      #IMPLIED
+        colsep          %yesorno;                               #IMPLIED
+        rowsep          %yesorno;                               #IMPLIED
+	  blank-lines-before  (0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 )	"0"
+	  blank-lines-after   (0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 )	"0"
+        %tbl.table.att;
+        %bodyatt;
+>
+<!ELEMENT tgroup (%tbl.tgroup.mdl;) >
+<!ATTLIST tgroup
+        cols            NMTOKEN                                 #REQUIRED
+        colsep          %yesorno;                               #IMPLIED
+        rowsep          %yesorno;                               #IMPLIED
+        align           (left|right|center|justify|char)        #IMPLIED
+        %tbl.tgroup.att;
+>
+<!ELEMENT colspec EMPTY >
+<!ATTLIST colspec
+        colnum          NMTOKEN                                 #IMPLIED
+        colname         NMTOKEN                                 #IMPLIED
+        colwidth        CDATA                                   #IMPLIED
+        colsep          %yesorno;                               #IMPLIED
+        rowsep          %yesorno;                               #IMPLIED
+        align           (left|right|center|justify|char)        #IMPLIED
+        char            CDATA                                   #IMPLIED
+        charoff         NMTOKEN                                 #IMPLIED
+        %tbl.colspec.att;
+>
+<!ELEMENT thead (row+)>
+<!ATTLIST thead
+        valign          (top|middle|bottom)                     #IMPLIED
+        %tbl.thead.att;
+>
+<!ELEMENT tfoot (row+)>
+<!ATTLIST tfoot
+        valign          (top|middle|bottom)                     #IMPLIED
+        %tbl.thead.att;
+>
+<!ELEMENT tbody (row+)>
+<!ATTLIST tbody
+        valign          (top|middle|bottom)                     #IMPLIED
+        %tbl.tbody.att;
+>
+<!ELEMENT row (%tbl.row.mdl;)>
+<!ATTLIST row
+        rowsep          %yesorno;                               #IMPLIED
+        valign          (top|middle|bottom)                     #IMPLIED
+        %tbl.row.att;
+>
+<!ELEMENT entry %tbl.entry.mdl;>
+<!ATTLIST entry
+        colname         NMTOKEN                                 #IMPLIED
+        namest          NMTOKEN                                 #IMPLIED
+        nameend         NMTOKEN                                 #IMPLIED
+        morerows        NMTOKEN                                 #IMPLIED
+        colsep          %yesorno;                               #IMPLIED
+        rowsep          %yesorno;                               #IMPLIED
+        align           (left|right|center|justify|char)        #IMPLIED
+        char            CDATA                                   #IMPLIED
+        charoff         NMTOKEN                                 #IMPLIED
+        valign          (top|middle|bottom)                     #IMPLIED
+        %tbl.entry.att;
+>
+<!ELEMENT  graphic      (graphic-caption?, image-data)>
+<!ATTLIST  graphic
+	     graphic-desc	CDATA			#IMPLIED
+             span       (1 | 2 | 3 | 4)                     "1"
+             depth      CDATA                              #IMPLIED
+             halign     (center | left | right)            "center"
+             graphic-indent     CDATA                      #IMPLIED
+             rotation   (p | l | i | il)                   "p"
+             file       CDATA                           #IMPLIED
+	     changed (added | deleted | not-changed)     #IMPLIED
+	     committee-id	CDATA                              #IMPLIED
+	     reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED	>
+<!ELEMENT  graphic-caption		(#PCDATA | quote | bold | italic)*		>
+<!ATTLIST  graphic-caption
+ 		location   (above | below)	"below"		>
+<!ELEMENT  image-data		(#PCDATA)	>
+<!ELEMENT  superscript  (%pcd-model;)*>
+<!ELEMENT  subscript    (%pcd-model;)*>
+<!ELEMENT  formula      (graphic)>
+<!ATTLIST  formula
+      %unique-id;
+	changed (added | deleted | not-changed)     #IMPLIED
+	committee-id
+		CDATA                              #IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED	>
+<!ELEMENT  fraction     (%pcd-model;)*>
+<!ELEMENT  linebreak    EMPTY>
+<!ELEMENT  pagebreak    EMPTY>
+<!ELEMENT  nobreak      EMPTY>
+<!NOTATION gif          SYSTEM "gif">
+<!NOTATION eps          SYSTEM "eps">
+<!NOTATION jpeg         SYSTEM "jpeg">
+<!ENTITY % term-attributes
+            "%internal-link-attributes;">
+<!ENTITY % definition-attributes
+            "%unique-id;">
+<!ELEMENT  term         (%pcd-model; | %revisions; | %refs; |  fraction | superscript | subscript | italic | quote |
+					act-name | formula | editorial | footnote | footnote-ref |
+					omitted-text | linebreak | nobreak | pagebreak)*>
+<!ELEMENT  definition   (%pcd-model; | %phrase-level;)*>
+<!ELEMENT  added-phrase  (%text-model;)*>
+<!ATTLIST  added-phrase
+	committee-id
+		CDATA   #IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED  >
+<!ELEMENT  deleted-phrase  (%text-model;)*>
+<!ATTLIST  deleted-phrase
+	committee-id
+		CDATA		#IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED  >
+<!ENTITY % start-of-structure
+                        "(enum?,
+                        header?,
+                        toc?), (%approps-block; | section)*">
+<!ENTITY % structure-attributes
+	'%unique-id;
+	changed (added | deleted | not-changed)     #IMPLIED
+	committee-id
+		CDATA                              #IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED
+     indent  (left-margin | flush-left | subsection | paragraph | subparagraph | clause |
+              subclause | item | subitem | up1 | up2 | up3 | up4 | up5 | up6 | down1 |
+              down2 | down3 | down4 | down5 | down6)                           #IMPLIED
+	commented	(yes | no | hidden) 	"no" '	  >
+<!ENTITY % res-structure-attributes
+	'changed (added | deleted | not-changed)     #IMPLIED
+	committee-id
+		CDATA                              #IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED
+	indent  (left-margin | flush-left | subsection | paragraph | subparagraph | clause |
+              subclause | item | subitem | up1 | up2 | up3 | up4 | up5 | up6 | down1 |
+              down2 | down3 | down4 | down5 | down6)                           #IMPLIED
+	commented	(yes | no | hidden) 	"no" '	  >
+<!ENTITY % style-attribute-values
+                        "defense | OLC | tax | traditional | traditional-inline |
+                        USC | multiple-resolved-clause | appropriations |
+			order-of-business | concur-with-amendment |
+			constitutional-amendment | impeachment">
+<!ENTITY % style-attributes
+            "style   (%style-attribute-values;)  'OLC'">
+<!ENTITY % section-model
+                        "enum?,
+                        header?,
+                        pl-cite?,
+                        text?,
+                        (%nonstructured-level-model;)*,
+                        (subsection* |
+                        paragraph* |
+                        committee-appointment-paragraph* | (%approps-block;)*),continuation-text?">
+<!ELEMENT  pl-cite  (%pcd-model;)*>
+<!ELEMENT  committee-appointment-paragraph (header?, text) >
+<!ENTITY % subsection-model
+                     "enum,
+                      header?,
+                     text?,
+                     (%nonstructured-level-model;)*,
+                     (paragraph | continuation-text)*">
+<!ELEMENT subsection (%subsection-model;)>
+<!ATTLIST subsection %structure-attributes;
+                       %display-inline-model; >
+<!ELEMENT paragraph   (enum,
+                      header?,
+                      text?,
+                      (%nonstructured-level-model;)*,
+                      (subparagraph |
+                      continuation-text)*) >
+<!ATTLIST paragraph  %structure-attributes;
+                       %display-inline-model; >
+<!ELEMENT subparagraph  (enum,
+                      header?,
+                     text?,
+                     (%nonstructured-level-model;)*,
+                     (clause |
+                     continuation-text )* )>
+<!ATTLIST subparagraph  %structure-attributes;
+                        %display-inline-model;>
+<!ELEMENT clause      (enum,
+                      header?,
+                     text?,
+                     (%nonstructured-level-model;)*,
+                     (subclause |
+                     continuation-text )* )>
+<!ATTLIST clause     %structure-attributes;
+                        %display-inline-model;>
+<!ELEMENT subclause    (enum,
+                       header?,
+                       text?,
+                       (%nonstructured-level-model;)*,
+                       (item |
+                       continuation-text )* )>
+<!ATTLIST subclause  %structure-attributes;
+                       %display-inline-model;>
+<!ELEMENT item       (enum,
+                     header?,
+                     text?,
+                     (%nonstructured-level-model;)*,
+                     (subitem |
+                     continuation-text )* )>
+<!ATTLIST item       %structure-attributes;
+                        %display-inline-model;>
+<!ELEMENT subitem     (enum,
+                      header?,
+                      text?,
+                      (%nonstructured-level-model;)*, continuation-text?)>
+<!ATTLIST subitem    %structure-attributes;
+                        %display-inline-model;>
+<!ENTITY % division-model
+                         "%start-of-structure;,
+                        (subdivision | title )*">
+<!ELEMENT  division     (%division-model;)>
+<!ATTLIST  division
+	    style      (%style-attribute-values;) #IMPLIED
+	    section-style  (olc-section-style | traditional-section-style | usc-section-style)	#IMPLIED
+            %structure-attributes;
+            level-type  (undesignated | subsequent)     "subsequent">
+<!ENTITY % subdivision-model
+                         "%start-of-structure;,title*">
+<!ELEMENT  subdivision     (%subdivision-model;)>
+<!ATTLIST  subdivision
+            style      (%style-attribute-values;) #IMPLIED
+            section-style  (olc-section-style | traditional-section-style | usc-section-style)	#IMPLIED
+            %structure-attributes;
+            level-type  (undesignated | subsequent)     "subsequent">
+<!ENTITY % title-model  "%start-of-structure;,
+			(subtitle | chapter | part)*">
+<!ELEMENT  title            (%title-model;)>
+<!ATTLIST  title
+	    style      (%style-attribute-values;) #IMPLIED
+            section-style  (olc-section-style | traditional-section-style | usc-section-style)	#IMPLIED
+            %structure-attributes;
+            level-type  (undesignated | subsequent)     "subsequent">
+<!ENTITY % subtitle-model
+                        "%start-of-structure;,
+				(chapter |
+                         part)*">
+<!ELEMENT  subtitle         (%subtitle-model;)                       >
+<!ATTLIST  subtitle
+            style      (%style-attribute-values;) #IMPLIED
+            section-style  (olc-section-style | traditional-section-style | usc-section-style)	#IMPLIED
+            %structure-attributes;
+            level-type  (undesignated | subsequent)     "subsequent">
+<!ENTITY % chapter-model
+                      "%start-of-structure;,
+                      (subchapter|
+                       part)*">
+<!ELEMENT  chapter          (%chapter-model;)>
+<!ATTLIST  chapter
+	    style      (%style-attribute-values;) #IMPLIED
+            section-style  (olc-section-style | traditional-section-style | usc-section-style)	#IMPLIED
+            %structure-attributes;
+            level-type  (undesignated | subsequent)     "subsequent">
+<!ENTITY % subchapter-model
+                        "%start-of-structure;,
+                        (part)*">
+<!ELEMENT  subchapter       (%subchapter-model;)>
+<!ATTLIST  subchapter
+            style      (%style-attribute-values;) #IMPLIED
+            section-style  (olc-section-style | traditional-section-style | usc-section-style)	#IMPLIED
+            %structure-attributes;
+            level-type  (undesignated | subsequent)     "subsequent">
+<!ENTITY % part-model  "%start-of-structure;,
+                        (subpart|
+                         chapter)*">
+<!ELEMENT  part             (%part-model;)>
+<!ATTLIST  part
+            style      (%style-attribute-values;) #IMPLIED
+            section-style  (olc-section-style | traditional-section-style | usc-section-style)	#IMPLIED
+            %structure-attributes;
+            level-type  (undesignated | subsequent)     "subsequent">
+<!ENTITY % subpart-model
+                       "%start-of-structure;,
+				(chapter)*">
+<!ELEMENT  subpart          (%subpart-model;)>
+<!ATTLIST  subpart
+            style      (%style-attribute-values;) #IMPLIED
+            section-style  (olc-section-style | traditional-section-style | usc-section-style)	#IMPLIED
+            %structure-attributes;
+            level-type  (undesignated | subsequent)     "subsequent">
+<!ELEMENT  text         (%text-model; | effective-date)*>
+<!ATTLIST text  display-inline
+                (yes-display-inline | no-display-inline)  "yes-display-inline">
+<!ELEMENT  continuation-text    (%text-model; | table)*>
+<!ATTLIST  continuation-text
+		%res-structure-attributes;
+		continuation-text-level	(section | subsection |	paragraph | subparagraph | clause | subclause | item | subitem | appropriations-major | appropriations-intermediate | appropriations-small)	#IMPLIED>
+<!ELEMENT  effective-date  (%pcd-model; | %phrase-level;)*>
+<!ELEMENT  header-in-text  (%pcd-model; | enum-in-header | committee-name | %phrase-level; | editorial)*>
+<!ATTLIST  header-in-text
+          level     (section |
+                        subsection |
+                        paragraph |
+                        subparagraph |
+                        clause |
+                        subclause |
+                        item |
+                        subitem |
+                        division |
+                        part |
+                        subpart |
+                        chapter |
+                        subchapter | title | subtitle |
+			subdivision | appropriations-major | appropriations-intermediate | appropriations-small |
+			rule | rules-clause | rules-paragraph |
+                         rules-subparagraph | rules-subdivision |
+                         rules-item | rules-subitem) "section"
+			style      (%style-attribute-values; | other) "OLC"
+         		other-style
+			(archaic | hybrid | nuclear | education | railroad-retirement | traditional-inline | archaic-paragraph | codification-quoted | codification-not-quoted) #IMPLIED >
+<!ELEMENT  legis-comment  (%text-model;)*>
+<!ATTLIST  legis-comment  display (yes | no)  #IMPLIED>
+<!ELEMENT  constitution-article	(enum, section+)	>
+<!ATTLIST  constitution-article
+            %structure-attributes;>
+<!ELEMENT  preamble     (whereas+)                                   >
+<!ATTLIST preamble     %res-structure-attributes;			>
+<!ELEMENT  whereas      (text, (paragraph | %nonstructured-level-model;)*)>
+<!ATTLIST whereas   %res-structure-attributes;	>
+<!ELEMENT  after-quoted-block  (%pcd-model; | %revisions; | linebreak | pagebreak | inline-comment | legis-comment)* >
+<!ATTLIST  after-quoted-block
+             display  (yes | no)  "yes"  >
+<!ENTITY % quoted-block-model
+                        "((text?,(%nonstructured-level-model;)*,
+				quoted-block-continuation-text?,((%legis-structures;)+,
+				quoted-block-continuation-text?)?)? | (%rules-level-model;)+ |
+                        (constitution-article | preamble)?), after-quoted-block">
+<!ELEMENT  quoted-block  (%quoted-block-model;)>
+<!ATTLIST  quoted-block
+	style      (%style-attribute-values; | other) "OLC"
+	other-style
+		(archaic | hybrid | nuclear | education | railroad-retirement | traditional-inline | archaic-paragraph | codification-quoted | codification-not-quoted) #IMPLIED
+	display-inline   (yes-display-inline | no-display-inline) "no-display-inline"
+	changed (added | deleted | not-changed)     #IMPLIED
+	committee-id
+		CDATA                              #IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED
+	act-name 			CDATA 		#IMPLIED
+	parsable-cite		CDATA			#IMPLIED
+	%unique-id; >
+<!ELEMENT  quoted-block-continuation-text	(%text-model;)*	>
+<!ATTLIST  quoted-block-continuation-text
+	%res-structure-attributes;
+	quoted-block-continuation-text-level	(section | subsection |
+	paragraph | subparagraph | clause | subclause | item | subitem)	#IMPLIED  >
+<!ELEMENT  non-statutory-material  (para | graphic)+ 	>
+<!ATTLIST  non-statutory-material
+	non-statutory-material-type		CDATA		#IMPLIED
+	changed (added | deleted | not-changed)     #IMPLIED
+	committee-id
+		CDATA                              #IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED	>
+<!ELEMENT  para	(%pcd-model; | quote | bold | italic | linebreak | pagebreak)*  >
+<!ATTLIST  para
+		para-indent  (1 | 2 | 3 | 4 | 5)   "1"
+		justification	(left | center | right)	"left"
+	changed (added | deleted | not-changed)     #IMPLIED
+	committee-id
+                     CDATA                              #IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED >
+<!ELEMENT list     (list-item+)>
+<!ATTLIST list
+	list-type (numbered | lettered | bulleted | none) "none"
+	level  (%legis-structures-attributes;)  #IMPLIED
+	changed (added | deleted | not-changed)     #IMPLIED
+	committee-id
+		CDATA                              #IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED
+ 		commented	(yes | no | hidden) 	"no">
+<!ELEMENT list-item     (%text-model;)*>
+<!ATTLIST list-item
+	changed (added | deleted | not-changed)     #IMPLIED
+	committee-id
+		CDATA                              #IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED
+ 		commented	(yes | no | hidden) 	"no">
+<!ELEMENT  toc          ((header?, instructive-para?), ((toc-entry |
+                        toc-quoted-entry)+ | (multi-column-toc-entry | multi-column-toc-quoted-entry)+))+>
+<!ATTLIST  toc
+	container-level
+		(legis-body-container | quoted-block-container | title-container | subtitle-container | chapter-container |
+		subchapter-container | part-container | subpart-container | division-container | subdivision-container | amendment-block-container)  #IMPLIED
+	quoted-block (yes-quoted-block | no-quoted-block) #IMPLIED
+	lowest-level (%legis-structures-attributes;) #IMPLIED
+	regeneration (yes-regeneration | no-regeneration) #IMPLIED
+	lowest-bolded-level
+		(none-lowest-bolded | division-lowest-bolded | title-lowest-bolded | subtitle-lowest-bolded) #IMPLIED
+	changed (added | deleted | not-changed)     #IMPLIED
+	committee-id
+		CDATA                              #IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED
+	%internal-link-attributes-if-needed;  >
+<!ELEMENT  instructive-para	(%text-model;)*	>
+<!ELEMENT  multi-column-toc-entry	(toc-enum?, level-header?, (target | page-num)?)+  >
+<!ATTLIST  multi-column-toc-entry
+	level  (%legis-structures-attributes;)  #REQUIRED
+	%internal-link-attributes-if-needed;
+	changed (added | deleted | not-changed)     #IMPLIED
+	committee-id
+		CDATA                              #IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED
+
+	bold (on | off) "off">
+<!ELEMENT  toc-enum	(%text-model;)*  >
+<!ELEMENT  level-header	(%text-model;)*	>
+<!ATTLIST  level-header
+			level  (%legis-structures-attributes;)  #REQUIRED
+                        %internal-link-attributes-if-needed;
+                        bold (on | off) "off">
+<!ELEMENT  target		(%text-model;)*  >
+<!ELEMENT  page-num     (%pcd-model;)*>
+<!ELEMENT  multi-column-toc-quoted-entry	(multi-column-toc-entry)+  >
+<!ATTLIST  multi-column-toc-quoted-entry
+
+            style      (%style-attribute-values; | other) "OLC"
+
+            other-style
+
+                        (archaic | hybrid | nuclear | education | railroad-retirement | traditional-inline | archaic-paragraph | codification-quoted | codification-not-quoted) #IMPLIED >
+<!ELEMENT  toc-entry    (%pcd-model; | enum-in-header | %phrase-level;)*>
+<!ATTLIST  toc-entry  level
+	(%legis-structures-attributes;)  #REQUIRED
+	%internal-link-attributes-if-needed;
+	changed (added | deleted | not-changed)     #IMPLIED
+	committee-id
+		CDATA                              #IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED
+	bold (on | off) "off">
+<!ELEMENT  toc-quoted-entry  (toc-entry+)>
+<!ATTLIST  toc-quoted-entry
+
+            style      (%style-attribute-values; | other) "OLC"
+
+            other-style
+
+                        (archaic | hybrid | nuclear | education | railroad-retirement | traditional-inline | archaic-paragraph | codification-quoted | codification-not-quoted) #IMPLIED >
+<!ELEMENT  omitted-text  EMPTY>
+<!ATTLIST  omitted-text
+             type    (horizontal |
+                        vertical)  #REQUIRED>
+<!ELEMENT  legis-body   (%legis-body-model;)>
+<!ATTLIST legis-body
+	%style-attributes;
+	changed (added | deleted | not-changed)     #IMPLIED
+	committee-id
+                     CDATA                              #IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED
+	display-enacting-clause (yes-display-enacting-clause | no-display-enacting-clause)       "yes-display-enacting-clause"
+	id
+		ID			#IMPLIED	>
+<!ELEMENT  section          (%section-model;)>
+<!ATTLIST  section
+                     %structure-attributes;
+                     %display-inline-model;
+			   section-author		CDATA			#IMPLIED
+                     section-type
+                       (subsequent-section | section-one | resolved |
+                       undesignated-section | ordered)      "subsequent-section">
+<!ELEMENT  meta-house   (holc-filename?,holc-attorney?,
+				holc-last-author?,
+                        holc-last-saved?, holc-creator?,
+                        holc-creation-date?, holc-contact?,
+                        holc-contact-phone?,conversion-notes?,version*,
+				holc-job-number?,holc-doc-number?)>
+<!ELEMENT  holc-filename  (%pcd-model;)*>
+<!ELEMENT  holc-attorney  (%pcd-model;)*>
+<!ELEMENT  holc-job-number  (%pcd-model;)*>
+<!ELEMENT  holc-doc-number  (%pcd-model;)*>
+<!ELEMENT  holc-last-author  (%pcd-model;)*>
+<!ELEMENT  holc-last-saved  (%pcd-model;)*>
+<!ELEMENT  holc-creator  (%pcd-model;)*>
+<!ELEMENT  holc-creation-date  (%pcd-model;)*>
+<!ELEMENT  holc-contact  (%pcd-model;)*>
+<!ELEMENT  holc-contact-phone  (%pcd-model;)*>
+<!ELEMENT  conversion-notes  (noted+)>
+<!ELEMENT  noted		  (%pcd-model;)*>
+<!ATTLIST  noted
+           idref   IDREF   #IMPLIED
+	     error-level		(1 | 2| 3| 4 | 5)   "5">
+<!ELEMENT version (version-filename, version-date, version-creator) >
+<!ELEMENT  version-filename (%pcd-model;)*>
+<!ELEMENT  version-date     (%pcd-model;)*>
+<!ELEMENT  version-creator  (%pcd-model;)*>
+<!ELEMENT  meta-senate  (slc-for?,slc-subject?,
+                        slc-type?, slc-description?,
+                        slc-received?, slc-delivered?,
+                        slc-staff?,slc-peer-reviewed-by?)>
+<!ELEMENT  slc-for-office  (#PCDATA)>
+<!ELEMENT  slc-for-sponsor  (#PCDATA)>
+<!ELEMENT  slc-for-staffer  (#PCDATA)>
+<!ELEMENT  slc-for  (slc-for-office?,slc-for-sponsor?,slc-for-staffer?)>
+<!ELEMENT  slc-subject-field1  (#PCDATA)>
+<!ELEMENT  slc-subject-field2  (#PCDATA)>
+<!ELEMENT  slc-subject-field3  (#PCDATA)>
+<!ELEMENT  slc-subject  (slc-subject-field1?,slc-subject-field2?,
+                         slc-subject-field3?)>
+<!ELEMENT  slc-type  (#PCDATA)>
+<!ELEMENT  slc-description (#PCDATA |
+                           %phrase-level;)*>
+<!ELEMENT  slc-received  (#PCDATA)>
+<!ELEMENT  slc-delivered  (#PCDATA)>
+<!ELEMENT  slc-staff  (#PCDATA)>
+<!ELEMENT  slc-peer-reviewed-by  (#PCDATA)>
+<!ENTITY % pre-form-model   "(meta-house | meta-senate)?,
+                        author-note?,
+                        running-header?,
+				suspension-floor-action?,
+                        suspension-instructions*,
+                        legis-counsel?,
+                        reintroduction-code?,
+                        signature-line?,
+                        first-page-header?,
+                        first-page-date?,
+                        first-page-desc?">
+<!ELEMENT  pre-form             (%pre-form-model;)                  >
+<!ATTLIST  pre-form     display (yes | no)  "yes"                   >
+<!ELEMENT  author-note
+                            (%pcd-model;)*                               >
+<!ATTLIST  author-note     display (yes | no)  "yes"                >
+<!ELEMENT  running-header
+                            (%pcd-model;)*                               >
+<!ATTLIST  running-header   display (yes | no)  "yes"               >
+<!ELEMENT  reintroduction-code
+                            (%pcd-model; | %phrase-level;)*              >
+<!ATTLIST  reintroduction-code
+                            display (yes | no)  "yes"       >
+<!ELEMENT  suspension-floor-action
+                            (%pcd-model; | %phrase-level;)*              >
+<!ATTLIST  suspension-floor-action   display (yes | no)  "yes"       >
+<!ELEMENT  suspension-instructions
+                            (%pcd-model; | %phrase-level;)*              >
+<!ATTLIST  suspension-instructions   display (yes | no)  "yes"       >
+<!ELEMENT  legis-counsel
+                            (%pcd-model;)*                               >
+<!ATTLIST  legis-counsel    display (yes | no)  "yes"               >
+<!ELEMENT  signature-line
+                            (%pcd-model;)*                               >
+<!ATTLIST  signature-line   display (yes | no)  "yes"               >
+<!ELEMENT  first-page-header
+                            (%pcd-model;)*                               >
+<!ATTLIST  first-page-header   display (yes | no)  "yes"            >
+<!ELEMENT  first-page-date
+                            (%pcd-model;)*                               >
+<!ATTLIST  first-page-date  display (yes | no)  "yes"               >
+<!ELEMENT  first-page-desc
+                            (%pcd-model; | linebreak)*                               >
+<!ATTLIST  first-page-desc  display (yes | no)  "yes"               >
+<!ELEMENT     metadata           (dublinCore) >
+<!ATTLIST        metadata
+xmlns:dc CDATA #FIXED "http://purl.org/dc/elements/1.1/" >
+<!ELEMENT     dublinCore         (dc:title | dc:publisher | dc:date | dc:format | dc:language | dc:rights)* >
+<!ELEMENT dc:title (#PCDATA)>
+<!ATTLIST dc:title xml:lang CDATA #IMPLIED>
+<!ATTLIST dc:title rdf:resource CDATA #IMPLIED>
+<!ELEMENT dc:publisher (#PCDATA)>
+<!ATTLIST dc:publisher xml:lang CDATA #IMPLIED>
+<!ATTLIST dc:publisher rdf:resource CDATA #IMPLIED>
+<!ELEMENT dc:date (#PCDATA)>
+<!ATTLIST dc:date xml:lang CDATA #IMPLIED>
+<!ATTLIST dc:date rdf:resource CDATA #IMPLIED>
+<!ELEMENT dc:format (#PCDATA)>
+<!ATTLIST dc:format xml:lang CDATA #IMPLIED>
+<!ATTLIST dc:format rdf:resource CDATA #IMPLIED>
+<!ELEMENT dc:language (#PCDATA)>
+<!ATTLIST dc:language xml:lang CDATA #IMPLIED>
+<!ATTLIST dc:language rdf:resource CDATA #IMPLIED>
+<!ELEMENT dc:rights (#PCDATA)>
+<!ATTLIST dc:rights xml:lang CDATA #IMPLIED>
+<!ATTLIST dc:rights rdf:resource CDATA #IMPLIED>
+<!ENTITY % form-model   "distribution-code?,
+                         calendar?,
+                         congress, session, enrolled-dateline?,
+                         legis-num,
+                         associated-doc*,
+                         current-chamber,
+                         action*,
+                         legis-type,
+                         official-title" >
+<!ELEMENT  form             (%form-model;)+                          >
+<!ATTLIST  form     	display (yes | no)  "yes"                   >
+<!ELEMENT  calendar     (%pcd-model;)*>
+<!ATTLIST calendar
+                        display (yes | no) "yes"                       >
+<!ELEMENT  committee-name  (%pcd-model; | %phrase-level;)*>
+<!ATTLIST committee-name
+	committee-id
+		CDATA				 #IMPLIED
+	added-display-style
+		(italic | boldface-roman | boldface-italic | brackets-boldface-roman | brackets-boldface-italic |
+		parentheses-boldface-roman | parentheses-boldface-italic | bold-brackets)           #IMPLIED
+	deleted-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+		 brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+		 bold-brackets)            #IMPLIED      >
+<!ELEMENT  cosponsor    (%person-elements;)*>
+<!ATTLIST  cosponsor
+             name-id  CDATA  #IMPLIED>
+<!ELEMENT  congress     (%pcd-model;)*>
+<!ATTLIST  congress
+             display (yes | no) "yes">
+<!ELEMENT  session      (%pcd-model;)*>
+<!ATTLIST  session
+             display (yes | no) "yes">
+<!ELEMENT  distribution-code  (%pcd-model;)*>
+<!ATTLIST  distribution-code
+             display (yes | no) "yes">
+<!ELEMENT  current-chamber  (%pcd-model;)*>
+<!ATTLIST  current-chamber
+             display (yes | no) "yes">
+<!ELEMENT  legis-type   (%pcd-model;)*>
+<!ATTLIST  legis-type
+             display (yes | no) "yes">
+<!ELEMENT  legis-num    (%pcd-model;)*>
+<!ATTLIST  legis-num
+             display (yes | no) "yes">
+<!ELEMENT  nonsponsor   (%person-elements;)*>
+<!ATTLIST  nonsponsor
+             name-id  CDATA  #IMPLIED>
+<!ELEMENT  sponsor      (%person-elements;)*>
+<!ATTLIST  sponsor
+             name-id  CDATA  #IMPLIED
+	      by-request	(yes | no)	"no">
+<!ELEMENT  official-title  (%pcd-model; |
+                           %phrase-level;)*>
+<!ATTLIST  official-title
+             display  (yes | no)  "yes"  >
+<!ELEMENT  enrolled-dateline  (%pcd-model;)*	>
+<!ATTLIST  enrolled-dateline
+             display (yes | no) "yes">
+<!ELEMENT  action       (action-date?, (action-desc |
+                        action-instruction)*)>
+<!ATTLIST  action
+             stage   (Additional-Sponsors-House |
+                        Additional-Sponsors-Senate |
+                        Agreed-to-House |
+                        Agreed-to-Senate |
+                        Amendment-in-House |
+                        Amendment-in-Senate |
+                        Committee-Discharged-House |
+                        Committee-Discharged-Senate |
+                        Considered-and-Passed-House |
+                        Considered-and-Passed-Senate |
+                        Engrossed-Amendment-House |
+                        Engrossed-Amendment-Senate |
+                        Engrossed-in-House |
+                        Engrossed-in-Senate |
+                        Enrolled-Bill |
+                        Failed-Amendment-House |
+                        Failed-Amendment-Senate |
+                        Failed-Passage-House |
+                        Failed-Passage-Senate |
+                        Held-at-Desk-House |
+                        Held-at-Desk-Senate |
+                        Indefinitely-Postponed-House |
+                        Indefinitely-Postponed-Senate |
+                        Introduced-in-House |
+                        Introduced-in-Senate |
+                        Laid-on-Table-House |
+                        Laid-on-Table-Senate |
+                        Ordered-to-be-Printed-House |
+                        Ordered-to-be-Printed-Senate |
+                        Placed-on-Calendar-House |
+                        Placed-on-Calendar-Senate |
+                        Pre-Introduction |
+                        Public-Print |
+                        Re-Enrolled-Bill |
+                        Received-in-House |
+                        Received-in-Senate |
+                        Reengrossed-Amendment-House |
+                        Reengrossed-Amendment-Senate |
+                        Reference-Change-House |
+                        Reference-Change-Senate |
+                        Referral-Instructions-House |
+                        Referral-Instructions-Senate |
+                        Referred-in-House |
+                        Referred-in-Senate |
+                        Referred-to-Committee-House |
+                        Referred-to-Committee-Senate |
+                        Referred-w-Amendments-House |
+                        Referred-w-Amendments-Senate |
+                        Reported-in-House |
+                        Reported-in-Senate |
+                        Sponsor-Change)  #IMPLIED
+        display         (yes | no)   "yes">
+<!ELEMENT  action-date  (%pcd-model;)*>
+<!ATTLIST  action-date
+			display    (yes | no)   "yes"
+		    	%date-attributes;	>
+<!ELEMENT  action-desc  (%pcd-model; | %phrase-level; | committee-name |
+                        cosponsor |
+                        sponsor |
+                        nonsponsor)*  >
+<!ATTLIST action-desc  blank-lines-after
+                         (0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 ) "0"
+                       display
+                         (yes | no)   "yes"                      >
+<!ELEMENT  action-instruction  (%pcd-model;)*>
+<!ATTLIST  action-instruction
+                       display
+                         (yes | no)   "yes"                      >
+<!ELEMENT  associated-doc  (%pcd-model;)*>
+<!ATTLIST  associated-doc
+	parsable-cite
+		CDATA			#IMPLIED
+	role
+		(amendment | associated-bill | associated-resolution | companion-bill | identical-bill | legislative-history | 		report | other)            'associated-bill'
+	other-association
+		CDATA                   #IMPLIED
+	display (yes | no) "yes">
+<!ELEMENT  official-title-amendment  (%pcd-model; |
+                           %phrase-level;)*>
+<!ATTLIST  official-title-amendment
+	changed (added | deleted | not-changed)     #IMPLIED
+	committee-id
+		CDATA                              #IMPLIED
+	reported-display-style
+		(strikethrough | italic | boldface-roman | boldface-italic | brackets-boldface-roman |
+ 		brackets-boldface-italic | parentheses-boldface-roman | parentheses-boldface-italic |
+ 		bold-brackets)            #IMPLIED
+	display  (yes | no)  "yes"  >
+<!ELEMENT  attestation  (attestation-group+)>
+<!ELEMENT  attestation-group  (attestation-date?,
+                              ((attestor| proxy)?, role)*)>
+<!ELEMENT  attestation-date  (%pcd-model; | %phrase-level;)*>
+<!ATTLIST  attestation-date
+             %date-attributes;
+             chamber  (House | Senate)  #IMPLIED>
+<!ELEMENT  attestor     (%pcd-model;)*>
+<!ATTLIST  attestor
+             name-id  ID  #IMPLIED
+             display (yes | no) "no"	>
+<!ELEMENT  proxy     (%pcd-model;)*>
+<!ATTLIST  proxy
+             name-id  ID  #IMPLIED
+             display (yes | no) "no"	>
+<!ELEMENT  role         (%pcd-model;)*>
+<!ELEMENT  endorsement  (action-date | action-desc)*>
+<!ATTLIST  endorsement display (yes | no) "yes" >
+<!ELEMENT appropriations-major (header?, subheader*,(text* | %nonstructured-level-model;)*, ((subsection* | paragraph*), continuation-text*)*)>
+<!ATTLIST  appropriations-major
+            %structure-attributes;>
+<!ELEMENT appropriations-intermediate (header?, subheader*,(text* | %nonstructured-level-model;)*, ((subsection* | paragraph*), continuation-text*)*)>
+<!ATTLIST  appropriations-intermediate
+            %structure-attributes;>
+<!ELEMENT appropriations-small (header?, subheader*, (text* | %nonstructured-level-model;)*, ((subsection* | paragraph*), continuation-text*)*)>
+<!ATTLIST  appropriations-small
+            %structure-attributes;>
+<!ELEMENT  proviso	(%text-model;)*	>

@@ -1,8 +1,17 @@
 MPL-2.0:
 = https://spdx.org/licenses/MPL-2.0
 - This
+- git https://github.com/nektro/zig-nfs
+- git https://github.com/nektro/zig-nio
 
 MIT:
 = https://spdx.org/licenses/MIT
+- git https://github.com/nektro/zig-errno
 - git https://github.com/nektro/zig-extras
+- git https://github.com/nektro/zig-libc
+- git https://github.com/nektro/zig-sys-libc
+- git https://github.com/nektro/zig-time
 - git https://github.com/nektro/zig-tracer
+
+Unspecified:
+- system_lib c

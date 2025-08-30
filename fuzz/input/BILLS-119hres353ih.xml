@@ -1,0 +1,438 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="billres.xsl"?>
+<!DOCTYPE resolution PUBLIC "-//US Congress//DTDs/res.dtd//EN" "res.dtd">
+<resolution resolution-stage="Introduced-in-House" dms-id="HE705415DE3A24301B5228231058A9B46" public-private="public" resolution-type="house-resolution" star-print="no-star-print" key="H">
+	<metadata
+		xmlns:dc="http://purl.org/dc/elements/1.1/">
+		<dublinCore>
+			<dc:title>119 HRES 353 IH: Impeaching Donald John Trump, President of the United States, for high crimes and misdemeanors.</dc:title>
+			<dc:publisher>U.S. House of Representatives</dc:publisher>
+			<dc:date>2025-04-28</dc:date>
+			<dc:format>text/xml</dc:format>
+			<dc:language>EN</dc:language>
+			<dc:rights>Pursuant to Title 17 Section 105 of the United States Code, this file is not subject to copyright protection and is in the public domain.</dc:rights>
+		</dublinCore>
+	</metadata>
+	<form>
+		<distribution-code display="yes">IV</distribution-code>
+		<congress display="yes">119th CONGRESS</congress>
+		<session display="yes">1st Session</session>
+		<legis-num display="yes">H. RES. 353</legis-num>
+		<current-chamber>IN THE HOUSE OF REPRESENTATIVES</current-chamber>
+		<action display="yes">
+			<action-date date="20250428">April 28, 2025</action-date>
+			<action-desc>
+				<sponsor name-id="T000488">Mr. Thanedar</sponsor> (for himself,
+				<cosponsor name-id="M000687">Mr. Mfume</cosponsor>,
+				<cosponsor name-id="N000002">Mr. Nadler</cosponsor>, and
+				<cosponsor name-id="K000385">Ms. Kelly of Illinois</cosponsor>) submitted the following resolution; which was referred to the
+				<committee-name committee-id="HJU00">Committee on the Judiciary</committee-name>
+			</action-desc>
+		</action>
+		<legis-type>RESOLUTION</legis-type>
+		<official-title display="yes">Impeaching Donald John Trump, President of the United States, for high crimes and misdemeanors.</official-title>
+	</form>
+	<resolution-body style="traditional" id="H00A2D538C99B4A3182A4BEFA8012D688">
+		<section display-inline="yes-display-inline" section-type="undesignated-section" id="H37781DD16E5D4C8BA289FB15941848AD">
+			<enum/>
+			<text>That Donald John Trump, President of the United States, is impeached for high crimes and misdemeanors, and that the following articles of impeachment be exhibited to the Senate:</text>
+			<subsection display-inline="no-display-inline" id="H85543AD42A684227895BDFA9A0A711C4">
+				<enum/>
+				<text display-inline="yes-display-inline">Article of impeachment exhibited by the House of Representatives of the United States of America in the name of itself and of the people of the United States of America, against Donald John Trump, President of the United States of America, in maintenance and support of its impeachment against him for high crimes and misdemeanors.</text>
+			</subsection>
+		</section>
+		<section id="H9C27CB08D6E6485AA742CB810A4416F3" section-type="undesignated-section">
+			<enum/>
+			<header>Article I: Obstruction of Justice, Violation of Due Process, and a Breach of the Duty to Faithfully Execute Laws </header>
+			<subsection display-inline="no-display-inline" id="H8B3E9EDAA8BB43E898AAC39BE829BAC5">
+				<enum/>
+				<text display-inline="yes-display-inline">The Constitution provides that the House of Representatives
+					<quote>shall have the sole Power of Impeachment</quote> and that the President
+					<quote>shall be removed from Office on Impeachment for, and Conviction of, Treason, Bribery, or other high Crimes and Misdemeanors</quote>. Further, Article II of the Constitution states that the President
+					<quote>shall take Care that the Laws be faithfully executed</quote>, the Fourth Amendment of the Constitution states that
+					<quote>The right of the people … against unreasonable searches and seizures, shall not be violated</quote>, and the Fifth Amendment of the Constitution states
+					<quote>No person shall be … deprived of life, liberty, or property, without due process of law</quote>. In his conduct of the office of President of the United States—and in violation of his constitutional oath to faithfully to execute the office of President of the United States and, to the best of his ability, preserve, protect, and defend the Constitution of the United States, and in violation of his constitutional duty to take care that the laws be faithfully executed—Donald John Trump has abused the powers of the Presidency in a manner offensive to, and subversive of, the Constitution, in that:
+				</text>
+			</subsection>
+			<subsection id="H8C7C9C99DE8547ACB86C86E922A3F7E6">
+				<enum/>
+				<text display-inline="yes-display-inline">Using the power of his high office, Donald John Trump has engaged in this scheme or course of conduct through the following means:</text>
+				<paragraph id="H6FEB124EBE6C4DAFA05F124A46530BC3">
+					<enum>(1)</enum>
+					<text>By his orders and directions to subordinates, obstructed the administration of justice and embarked on a scheme to destroy and corrupt the legal system and the powers of the courts under Article III of the Constitution. Specifically, he has done the following:</text>
+					<subparagraph id="HE28ACC2D3EFF42C2B5FEFB6A8951F1FC">
+						<enum>(A)</enum>
+						<text>Directed and permitted his subordinates and attorneys at the Department of Justice to violate their oaths to uphold the Constitution, laws of the United States, and the rules of professional ethics by adducing misleading and willfully false representations to the courts of the United States, and to otherwise abuse their official powers. Specifically, he has—</text>
+						<clause id="H9A13D4D2161144A097C02585752B7908">
+							<enum>(i)</enum>
+							<text>sought to dismiss, without prejudice and under false pretenses, the bribery and fraud charges against New York City Mayor Eric Adams, in an unethical quid pro quo exchange for the Defendant’s cooperation with the Administration’s political priorities, thus abusing the criminal laws to unconstitutionally commandeer a State officer and unit of government in violation of the sovereignty thereof; and</text>
+						</clause>
+						<clause id="HB5B63AE0662D4DCA9C28D3B9E1694DDE">
+							<enum>(ii)</enum>
+							<text>terminated and purged career Department of Justice attorneys without reasonable cause and in violation of the law in retaliation for their legitimate investigatory and prosecutorial work under prior administrations, including in relation to the January 6, 2021, attack on the United States Capitol, and in retaliation for attorneys upholding their ethical and legal obligations including candor and honesty to the courts.</text>
+						</clause>
+					</subparagraph>
+					<subparagraph id="H75E6BA2F8F7E45DAA72683FCB8305A8C">
+						<enum>(B)</enum>
+						<text>Directed and permitted the evasion and defiance of binding court orders. Specifically, he has—</text>
+						<clause id="HFFEF604903DC4713AB833C9CA5AF2DC8">
+							<enum>(i)</enum>
+							<text>removed persons from the United States to El Salvador despite an order from the United States District Court for the District of Columbia, for which said Court has found probable cause that the Government committed acts of criminal contempt;</text>
+						</clause>
+						<clause id="H2273C469D63F48C8B2644B3F30959AEF">
+							<enum>(ii)</enum>
+							<text>removed Kilmar Armando Abrego Garcia from the United States to El Salvador despite a binding Withholding of Removal order prohibiting the government from removing him to El Salvador;</text>
+						</clause>
+						<clause id="HAD67E36FE9FA4BF7BB367A264FF55CA0">
+							<enum>(iii)</enum>
+							<text>defied court orders, upheld by a unanimous ruling of the Supreme Court, to facilitate the release of Mr. Abrego Garcia, and related orders to provide information to the court and opposing counsel, while publicly flaunting their refusal;</text>
+						</clause>
+						<clause id="H6B256E0520BF4A70B00F0D531B982AEB">
+							<enum>(iv)</enum>
+							<text>acted in contempt of court for violating a court-sanctioned settlement agreement; and</text>
+						</clause>
+						<clause id="H6844D5B6E40A4E0B90D09555BB985E11">
+							<enum>(v)</enum>
+							<text>conducted enforced disappearances of persons without due process and without disclosing their fate and location to their families and legal counsel, in violation of the Constitution and the rulings of the Supreme Court, as well as the foundational principles of due process and the rule of law.</text>
+						</clause>
+					</subparagraph>
+					<subparagraph id="H11E14C8EBF3345399FDA277B91A4F600">
+						<enum>(C)</enum>
+						<text>Directed and permitted the deliberate and systematic violation of laws duly enacted by Congress. Specifically, he has—</text>
+						<clause id="HC0BAED6262934450BF8AA519C7330EE9">
+							<enum>(i)</enum>
+							<text>terminated Inspector Generals, the officers responsible for detecting and preventing waste by auditing and investigating their respective agencies’ operations and personnel, in violation of the process stipulated by the Inspector Generals Act of 1974, as subsequently amended;</text>
+						</clause>
+						<clause id="HE58D9598196C4943AC48DBFD42C7AAAA">
+							<enum>(ii)</enum>
+							<text>terminated a member of the Merit Systems Protection Board, a tribunal created to address widespread public concerns about the Federal civil service; and</text>
+						</clause>
+						<clause id="HA96B785E217A4612BAEEA229D8D8B3D5">
+							<enum>(iii)</enum>
+							<text>unlawfully transmitted sensitive personal information of private citizens and government employees in violation of, among other Federal laws, the Privacy Act and the Administrative Procedure Act.</text>
+						</clause>
+					</subparagraph>
+				</paragraph>
+			</subsection>
+			<subsection id="H92CF27551F314062AF11FCA7A7CA3C1A">
+				<enum/>
+				<text display-inline="yes-display-inline"> In all of this, Donald John Trump has willfully disregarded Federal laws and the Constitution, imperiled a coequal branch of Government, and threatened the integrity of the democratic system. He thereby betrayed his trust as President, abused the powers of the Presidency, acted in a manner grossly incompatible with self-governance and the rule of law, and has committed the High Crimes and Misdemeanors of obstruction of justice and effecting a wide-ranging scheme to destroy and corrupt the legal system and the powers of the courts under Article III of the Constitution.</text>
+			</subsection>
+			<subsection id="H7D8986B446B94BB887542B4C4ED7B6D9">
+				<enum/>
+				<text display-inline="yes-display-inline">Wherefore, Donald John Trump, by such conduct, has demonstrated that he is unfit to govern a Nation by and for the people, has acted in a manner grossly incompatible with self-governance and the rule of law, and will remain a threat to the Constitution if allowed to remain in office. </text>
+			</subsection>
+		</section>
+		<section id="H439674E13B5A4A55AB296AD801724A33" section-type="undesignated-section">
+			<enum/>
+			<header>Article II: Usurpation of the Appropriations Power</header>
+			<subsection display-inline="no-display-inline" id="H7BA27FBCACB144109588D9E4131ED79A">
+				<enum/>
+				<text display-inline="yes-display-inline">The Constitution provides that the House of Representatives
+					<quote>shall have the sole Power of Impeachment</quote> and that the President
+					<quote>shall be removed from Office on Impeachment for, and Conviction of, Treason, Bribery, or other high Crimes and Misdemeanors</quote>. Further, Section 9 of Article I of the Constitution states that
+					<quote>No money shall be drawn from the Treasury, but in Consequence of Appropriations made by Law</quote>. In his conduct of the office of President of the United States—and in violation of his constitutional oath to faithfully to execute the office of President of the United States and, to the best of his ability, preserve, protect, and defend the Constitution of the United States, and in violation of his constitutional duty to take care that the laws be faithfully executed—Donald John Trump has abused the powers of the Presidency in a manner offensive to, and subversive of, the Constitution, in that:
+				</text>
+			</subsection>
+			<subsection id="H4F80D0CF17B242558B513D320DA06695">
+				<enum/>
+				<text display-inline="yes-display-inline">Using the powers of his high office, Donald John Trump unlawfully usurped Congress and its power to appropriate funds, thereby nullifying the Appropriations Clause in the Constitution and violating the Impoundment Control Act of 1974. Since taking office, he has signed numerous Executive Orders directing agencies to withhold funds appropriated by Congress. The President does not have the power to override spending laws or impound appropriated funds, a principle affirmed by numerous Supreme Court rulings.</text>
+			</subsection>
+			<subsection id="H17E47CF3867D4A169CFD8C2EBEF0E9C8">
+				<enum/>
+				<text display-inline="yes-display-inline">Donald John Trump has withheld funds and terminated en masse Federal employees and numerous Federal agencies and departments, including the following:</text>
+				<paragraph id="H9B66D563F94543938FC94B934D6F67EF">
+					<enum>(1)</enum>
+					<text>Directed the dismantling of the Department of Education. As enacted in the Department of Education Organization Act, signed into law by President Jimmy Carter, the Department of Education was established by Congress to create reform in the education system throughout the country, distribute Federal aid to students and places of learning, and prohibit discriminatory practices. The President does not have the authority to dismantle the Department of Education, and his signing of Executive Order 14242, which aims to
+						<quote>Improving Education Outcomes by Empowering Parents, States, and Communities</quote>, violates the law and the Constitution.
+					</text>
+				</paragraph>
+				<paragraph id="HF62389799E304D79B956615A274495C7">
+					<enum>(2)</enum>
+					<text>Unlawfully directed the elimination of the United States Agency for International Development (USAID). As enacted in the Foreign Assistance Act of 1961, signed into law by President John F. Kennedy, USAID plays a crucial role in delivering foreign assistance worldwide, including disaster relief, conflict relief, combating global diseases, promoting educational programs, and enhancing food security in developing countries. By dismantling USAID and freezing foreign assistance, he has severed the United States from its humanitarian role as directed by Congress, leaving other countries and potentially our adversaries to fill in the role the United States has abandoned.</text>
+				</paragraph>
+				<paragraph id="H5CD1C448200A40F4B9F789DEF7638C3C">
+					<enum>(3)</enum>
+					<text>Created the so-called
+						<quote>Department of Government Efficiency (DOGE)</quote>, which has imposed payment holds and rescinded funds after disbursement. Donald John Trump has utilized DOGE to unlawfully block or impound appropriated funds to dozens of Federal agencies, including the National Institutes of Health, the Federal Aviation Administration, and the Department of Veterans Affairs. By impounding congressionally appropriated funds, Donald John Trump and DOGE have not only violated the law, but have negatively impacted the American people by cutting jobs, halting critical services, and rescinding grants for programs, in defiance of the express, constitutionally binding will of Congress.
+					</text>
+				</paragraph>
+			</subsection>
+			<subsection id="H7F1163BA6ED040E58FFB53EF22B98A37">
+				<enum/>
+				<text display-inline="yes-display-inline">Using the powers of his high office, Donald John Trump has unlawfully withheld congressionally appropriated funds and attempted to dismantle congressionally mandated agencies. By withholding funds and crippling agencies, he has prevented the Federal Government from performing critical duties here and abroad. He has threatened the well-being of United States citizens through the gross misconduct of his office, resulting in dire and life-threatening consequences on the world’s most vulnerable populations.</text>
+			</subsection>
+			<subsection id="H550E506FAFFC4DA49E091728B703B5E5" commented="no">
+				<enum/>
+				<text display-inline="yes-display-inline">Wherefore, Donald John Trump, by such conduct, has demonstrated that he is unfit to govern a Nation by and for the people, has acted in a manner grossly incompatible with self-governance and the rule of law, and will remain a threat to the Constitution if allowed to remain in office. </text>
+			</subsection>
+		</section>
+		<section id="HEC64D267F37E4FD0A1C29F3E734AC363" section-type="undesignated-section">
+			<enum/>
+			<header>Article III: Abuse of Trade Powers and International Aggression</header>
+			<subsection display-inline="no-display-inline" id="H3789E3F467E2452F9580FAEA56D2DF7F">
+				<enum/>
+				<text display-inline="yes-display-inline">The Constitution provides that the House of Representatives
+					<quote>shall have the sole Power of Impeachment</quote> and that the President
+					<quote>shall be removed from Office on Impeachment for, and Conviction of, Treason, Bribery, or other high Crimes and Misdemeanors</quote>. Further, Section 8 of Article I of the Constitution states,
+					<quote>Congress shall have Power To lay and collect Taxes, Duties, Imposts and Excises, . . . but all Duties, Imposts and Excises shall be uniform throughout the United States</quote>. In his conduct of the office of President of the United States—and in violation of his constitutional oath to faithfully to execute the office of President of the United States and, to the best of his ability, preserve, protect, and defend the Constitution of the United States, and in violation of his constitutional duty to take care that the laws be faithfully executed—Donald John Trump has abused the powers of the Presidency in a manner offensive to, and subversive of, the Constitution, in that:
+				</text>
+			</subsection>
+			<subsection id="HE58E877EE14C445F804AF8D45B02D71E">
+				<enum/>
+				<text display-inline="yes-display-inline">Using the powers of his high office, Donald John Trump abused trade powers by imposing unjustifiable and unreasonable tariffs on foreign nations, causing a sharp decline in the United States economy and the economies of countries around the world, and declaring the false existence of a national security emergency to justify his actions. Donald John Trump’s tariffs contradicted trade agreements established by his Administration and other administrations, including the duly ratified and binding treaty obligations of the United States, thereby breaking international laws and norms, leading to countries around the world to enact damaging tariffs on goods and services originating from the United States. His
+					<quote>Liberation Day</quote> scheme, which imposed 10 percent tariffs on all countries, as well as additional tariffs based on a formula for
+					<quote>reciprocity</quote> widely mocked as nonsensical, led to the most significant drop in the financial markets since the 2020 crash triggered by the COVID–19 pandemic.
+				</text>
+			</subsection>
+			<subsection id="H05113668BEBC48038DF675D670B54901">
+				<enum/>
+				<text display-inline="yes-display-inline">Additionally, Donald John Trump has threatened foreign nations with invasion, the annexation of territory, and the occupation of sovereign territory through the use of military action. By doing this, he has implicated the United States and himself in violation of constitutionally binding treaty obligations, to include the North Atlantic Treaty of 1949, the General Treaty for Renunciation of War as an Instrument of National Policy of 1928, the Charter of the United Nations of 1945, and the Inter-American Treaty of Reciprocal Assistance of 1947. Donald John Trump threatened the following:</text>
+				<paragraph id="H73467A8D9D4A4F178BBFBA988B109F42">
+					<enum>(1)</enum>
+					<text>Annexation of the sovereign country of Canada. Donald John Trump has negatively impacted the deep and historic relationship between the United States and Canada by stating numerous times that Canada should become the 51st State, under the threat of both economic coercion and military force.</text>
+				</paragraph>
+				<paragraph id="HD12310F444C94F4E82E88F9AC98E3F8D">
+					<enum>(2)</enum>
+					<text>Unlawful and aggressive military action within Mexico, to include drone strikes and the use of special operations military personnel, ostensibly against drug cartels, in violation of the sovereignty and territorial integrity of that country and without any congressional authorization to use military force.</text>
+				</paragraph>
+				<paragraph id="H15BE6F9CB6F1427FA56439BE2C07A16F">
+					<enum>(3)</enum>
+					<text>Annexation of Greenland, an autonomous territory in the Kingdom of Denmark. Donald John Trump has continued to use hostile language aimed at taking control of Greenland, stating that the United States will
+						<quote>go as far as we have to go</quote> to obtain control of Greenland. He has refused to rule out military action to gain control of the territory, in violation of international law and despite Denmark’s longstanding alliance and friendly relations with the United States.
+					</text>
+				</paragraph>
+				<paragraph id="HAB4AD8C679BC4938BFB40D07E02DE159">
+					<enum>(4)</enum>
+					<text>Annexation of the Panama Canal, owned and controlled by Panama. During a joint session speech to Congress, Donald John Trump stated that his Administration
+						<quote>will be reclaiming the Panama Canal</quote>. He has refused to rule out military or economic action against the sovereign country.
+					</text>
+				</paragraph>
+				<paragraph id="HA4F41B0D46A0461F8F76CF621A757231">
+					<enum>(5)</enum>
+					<text>Annexation of the Gaza Strip, involving the forced resettlement of the Palestinian population to the surrounding countries. Donald John Trump has stated that the United States
+						<quote>will take over the Gaza Strip</quote> and
+						<quote>own it</quote>. His proposal of taking over the Gaza Strip and the expulsion of its population violates international law, including the Convention on the Prevention and Punishment of the Crime of Genocide, would be unconstitutional absent the approval of the United States Congress, and is profoundly unserious in light of the grave humanitarian situation and ongoing armed conflict in Gaza.
+					</text>
+				</paragraph>
+			</subsection>
+			<subsection id="HC7B3307BDF7E4E5E86F956E3F25DFF45">
+				<enum/>
+				<text display-inline="yes-display-inline">Using the powers of his high office, Donald John Trump has unlawfully conducted himself, bringing shame and embarrassment to the office of the Presidency and the people of the United States. He has betrayed the trust of the Nation to conduct meaningful diplomatic negotiations as its chief diplomat and failed to maintain peaceful economic and defense relations with foreign countries. He has threatened the security of the United States through gross misconduct of his office, prompting hostilities towards Americans here and abroad, as well as foreign nations warning their citizens against visiting the United States, further harming the Nation’s economy.</text>
+			</subsection>
+			<subsection id="H4F81694AEA5148459ABEEAE4EC491B7C" commented="no">
+				<enum/>
+				<text display-inline="yes-display-inline">Wherefore, Donald John Trump, by such conduct, has demonstrated that he is unfit to govern a Nation by and for the people, has acted in a manner grossly incompatible with self-governance and the rule of law, and will remain a threat to the Constitution if allowed to remain in office. </text>
+			</subsection>
+		</section>
+		<section id="H6CC0491280F9433D9AE25A1D7581D383" section-type="undesignated-section">
+			<enum/>
+			<header>Article IV: Violation of First Amendment Rights</header>
+			<subsection display-inline="no-display-inline" id="HCDD469DEAB454F1FBB607EA6DC9E65E4">
+				<enum/>
+				<text display-inline="yes-display-inline">The Constitution provides that the House of Representatives
+					<quote>shall have the sole Power of Impeachment</quote> and that the President
+					<quote>shall be removed from Office on Impeachment for, and Conviction of, Treason, Bribery, or other high Crimes and Misdemeanors</quote>. Further, the First Amendment of the Constitution states
+					<quote>Congress shall make no law respecting an establishment of religion, or prohibiting the free exercise thereof; or abridging the freedom of speech, or of the press; or the right of the people peaceably to assemble, and to petition the Government for a redress of grievances</quote>. In his conduct of the office of President of the United States—and in violation of his constitutional oath to faithfully to execute the office of President of the United States and, to the best of his ability, preserve, protect, and defend the Constitution of the United States, and in violation of his constitutional duty to take care that the laws be faithfully executed—Donald John Trump has abused the powers of the Presidency in a manner offensive to, and subversive of, the Constitution, in that:
+				</text>
+			</subsection>
+			<subsection id="HBFD205B93AE24A7D9C7FA6F902D68507">
+				<enum/>
+				<text display-inline="yes-display-inline">By his orders and directions to subordinates, retaliated against law firms and attorneys who have advised or represented, or been associated with those who advise or represent, litigants who displease him, in violation of the Constitution’s prohibition on retaliation against individuals for engaging in First Amendment-protected conduct, including the right to petition the government for redress of grievances. Specifically, he has, barred attorneys at certain law firms from access to Federal buildings, arbitrarily revoked security clearances without a reasonable basis, threatened to cancel Federal contracts with any entity engaging the targeted attorneys and firms, and demanded pro bono services from law firms in exchange for the discontinuation of the punitive Executive orders.</text>
+			</subsection>
+			<subsection id="H229513D999294764A56B359B2DA961CC">
+				<enum/>
+				<text display-inline="yes-display-inline"> Additionally, Donald John Trump has engaged in a pattern of unconstitutional, unlawful, and corrupt retaliation against critics and political opponents, a flagrant violation of constitutional rights protected by the First Amendment. He has weaponized the Department of Justice and other agencies to engage in spurious investigations and harassment, with no basis in law, of public figures and his perceived political enemies.</text>
+			</subsection>
+			<subsection id="H67EAF912829549949E10D7967DB2C8BD">
+				<enum/>
+				<text display-inline="yes-display-inline">Since taking office, Donald John Trump has directed the Department of Justice to dismiss more than a dozen prosecutors who were involved in investigations against him after he left office in 2021. The Department of Justice has subsequently launched investigations into officials involved in prior probes against Donald John Trump, in some cases against individuals specifically named and accused in flagrantly improper Executive orders.</text>
+			</subsection>
+			<subsection id="H2F1E1800EA8040CA9625C6C01879FF7A">
+				<enum/>
+				<text display-inline="yes-display-inline">Furthermore, he has made direct and unambiguous public statements threatening media outlets, current and former officeholders, and advocacy organizations. He has pursued meritless litigation, leveraged his public office for private gain, and perverted the course of justice and the integrity of the judicial system to extract tens of millions of dollars in putative settlements, effectively acting as a conduit for flagrant bribery and extortion. He has restricted the access of the Associated Press after they refused to use the name
+					<quote>Gulf of America</quote> in their reporting and has defied court orders to cease this unconstitutional action. He has also threatened current and former members of Congress for the exercise of their legislative and oversight functions, an attack on the independence of Congress as a coequal branch of government as established by the Constitution's Article I Vesting Clause, and by the Constitution’s Speech or Debate Clause, in addition to the First Amendment.
+				</text>
+			</subsection>
+			<subsection id="H7C6DD56842E948A9B7E878917D8B834E">
+				<enum/>
+				<text display-inline="yes-display-inline">For example, Donald John Trump has repeatedly threatened members of the House Select Committee on the January 6th Attack on the United States Capitol, which investigated the attack on the Capitol that Donald John Trump instigated. Donald John Trump has sought to intimidate the members and staff of the United States House Select Committee on the January 6th Attack, stating that they
+					<quote>should fully understand that they are subject to investigation at the highest level</quote> and expressing a desire to remove the pardons they received, stating
+					<quote>The
+						<quote>Pardons</quote> that Sleepy Joe Biden gave to the Unselect Committee of Political Thugs, and many others, are hereby declared [void, vacant, and of no further force or effect]
+					</quote>.
+				</text>
+			</subsection>
+			<subsection id="H5329C2FB5EFE400B8D14BF2E5F2704C3">
+				<enum/>
+				<text display-inline="yes-display-inline">Donald John Trump has made it clear that he will not rest until all of his perceived political enemies are eliminated. In a speech addressing his Department of Justice subordinates, Donald John Trump further laid out his fascist vision for the Department of Justice. He has targeted watchdog organizations like the Citizens for Responsibility and Ethics in Washington, calling them
+					<quote>scum</quote> and independent media outlets like CNN and MSNBC, labelling them as organizations that
+					<quote>literally write 97.6 percent bad about me, are political arms of the Democrat Party. And in my opinion, they are really corrupt and they are illegal. What they do is illegal.</quote>. He has stated that newspapers critical of him are
+					<quote>really no different than a highly paid political operative. And it has to stop. It has to be illegal. It’s influencing judges . . . it just cannot be legal.</quote>.
+				</text>
+			</subsection>
+			<subsection id="H1BF60FA6973D4641BF0E88734BD175FF">
+				<enum/>
+				<text display-inline="yes-display-inline">By these and many other actions, he has sought to outlaw dissent, opposition, and criticism of himself and his Administration. This attack on the constitutional rights to freedom of speech, and of association, and of the right to petition the government for redress of grievances, is wholly incompatible with the rights and liberties of the People of the United States as a self-governing people under the rule of law.</text>
+			</subsection>
+			<subsection id="H55748BF17C204D0E8D99440AA7E9BC87">
+				<enum/>
+				<text display-inline="yes-display-inline">In purpose and effect, he has attempted to suppress dissent and opposition, casting a chilling effect over the public discourse, and striking at the core freedoms essential to a free society and democratic elections under the Constitution.</text>
+			</subsection>
+			<subsection id="H5EDFB5740E6D419C9F2D957C91135195" commented="no">
+				<enum/>
+				<text display-inline="yes-display-inline">Wherefore, Donald John Trump, by such conduct, has demonstrated that he is unfit to govern a Nation by and for the people, has acted in a manner grossly incompatible with self-governance and the rule of law, and will remain a threat to the Constitution if allowed to remain in office. </text>
+			</subsection>
+		</section>
+		<section id="H7E106D5471EC4A619F75D39758ED2CB7" section-type="undesignated-section">
+			<enum/>
+			<header>Article V: Creation of Unlawful Office</header>
+			<subsection display-inline="no-display-inline" id="H6164A16417A54997925F866849DE9AAA">
+				<enum/>
+				<text display-inline="yes-display-inline">The Constitution provides that the House of Representatives
+					<quote>shall have the sole Power of Impeachment</quote> and that the President
+					<quote>shall be removed from Office on Impeachment for, and Conviction of, Treason, Bribery, or other high Crimes and Misdemeanors</quote>. Further, Section 2 of Article II of the Constitution states that the President
+					<quote>shall appoint Ambassadors, other public Ministers and Consuls, Judges of the supreme Court, and all other Officers of the United States … but the Congress may by Law vest the Appointment of such inferior Officers, as they think proper, in the President alone, in the Courts of Law, or in the Heads of Departments</quote>. In his conduct of the office of President of the United States—and in violation of his constitutional oath to faithfully to execute the office of President of the United States and, to the best of his ability, preserve, protect, and defend the Constitution of the United States, and in violation of his constitutional duty to take care that the laws be faithfully executed—Donald John Trump has abused the powers of the Presidency in a manner offensive to, and subversive of, the Constitution, in that:
+				</text>
+			</subsection>
+			<subsection id="H908F91FF11214F58B4CE65FE51FCA339">
+				<enum/>
+				<text display-inline="yes-display-inline">Using the powers of his high office, Donald John Trump has, through unlawful orders and directives, created an unlawful office, the so-called Department of Government Efficiency (
+					<quote>DOGE</quote>), and assigned an extensive range of unlawful powers, effectively granting this flagrantly unconstitutional creation significant control over the executive branch. Donald John Trump has appointed Mr. Elon Musk as the de facto head of this contrived entity, which was not created or funded by any law, without a formal title or office. These actions have been in direct violation of the Constitution’s requirement that principal officers of the United States must be created by law and their appointees confirmed by the Senate, and that inferior offices must be created by law with their appointment vested as Congress may determine.
+				</text>
+			</subsection>
+			<subsection id="H76E4B0826D4D435AB861C566182AF476">
+				<enum/>
+				<text display-inline="yes-display-inline">Additionally, he has vested these powers in Mr. Musk without complying with the constitutional requirement that all officers of the United States be commissioned by the President and swear an oath of office to support the Constitution. Mr. Musk has been designated as a special government employee of the White House Office, in violation of statutory authorization and restrictions on such designations. This false claim has also been used to commit violations of the ethics, disclosure, and conflict-of-interest laws applicable to government officers and regular employees.</text>
+			</subsection>
+			<subsection id="H1074BEF8B9FD4A0EA2BCC73D35C9006E">
+				<enum/>
+				<text display-inline="yes-display-inline">Contrary to the Government’s claims in court, Mr. Musk has exercised de facto control over DOGE and, through it, control over a wide range of Government departments and agencies. This unmistakable reality has been repeatedly and openly stated by the Trump Administration, including by Donald John Trump’s own address to Congress on March 4, 2025. In this capacity, Mr. Musk and his subordinates have undertaken numerous violations of the Constitution and laws, including by—</text>
+				<paragraph id="HAC2B9DFF0D974C38A00E51AC063E5B72">
+					<enum>(1)</enum>
+					<text>impoundment of funds appropriated by Congress;</text>
+				</paragraph>
+				<paragraph id="H9629395611404CAABFD6F2A8AAF47E32">
+					<enum>(2)</enum>
+					<text>violations of privacy and security laws with respect to sensitive information systems, personally identifiable information, and classified material; and</text>
+				</paragraph>
+				<paragraph id="H654304DFEA9A459B802131D5FFCA08AA">
+					<enum>(3)</enum>
+					<text>termination of government employees under false pretenses and in violation of civil service laws.</text>
+				</paragraph>
+			</subsection>
+			<subsection id="H05E467342386449F873813BDECB1CAD3">
+				<enum/>
+				<text display-inline="yes-display-inline">These actions have vastly exceeded the terms of the formal executive orders purporting to create DOGE under the direction of a
+					<quote>U.S. DOGE Service Administrator</quote>, an office which remained vacant for several weeks, with the Government’s own attorneys claiming in court that the official head of DOGE was unknown to them. Since that time, a nominal Administrator has been named, despite the repeated avowals from the President and his Administration that Mr. Musk controls and directs DOGE, as confirmed by ample public reporting and Mr. Musk’s own statements.
+				</text>
+			</subsection>
+			<subsection id="H2C2F2FEDDB754C61B9310ED9AA24972C">
+				<enum/>
+				<text display-inline="yes-display-inline">Donald John Trump has abused the powers of his high office and breached the public trust by establishing the so-called Department of Government Efficiency and unconstitutionally placing Mr. Musk in control of this entity, knowingly provided false testimony to the court regarding the leadership of the said entity, and directing the unlawful entity to implement his agenda, in violation of the Constitution’s objective of establishing Justice and fundamental rules for how the executive branch of the United States is to be structured and how persons may be appointed to public office.</text>
+			</subsection>
+			<subsection id="HCB89BA1A9CCA4E33AF40117DD99220E3">
+				<enum/>
+				<text display-inline="yes-display-inline">Wherefore, Donald John Trump, by such conduct, has demonstrated that he is unfit to govern a Nation by and for the people, has acted in a manner grossly incompatible with self-governance and the rule of law, and will remain a threat to the Constitution if allowed to remain in office. </text>
+			</subsection>
+		</section>
+		<section id="HAA921801B92D4909A7DC91395480133F" section-type="undesignated-section">
+			<enum/>
+			<header>Article VI: Bribery and Corruption</header>
+			<subsection display-inline="no-display-inline" id="H94D5CE9C347543579F78BD1CD785B111">
+				<enum/>
+				<text display-inline="yes-display-inline">The Constitution provides that the House of Representatives
+					<quote>shall have the sole Power of Impeachment</quote> and that the President
+					<quote>shall be removed from Office on Impeachment for, and Conviction of, Treason, Bribery, or other high Crimes and Misdemeanors</quote>. Further, Section 9 of Article I of the Constitution states that
+					<quote>no Person holding any Office of Profit or Trust under them, shall, without the Consent of the Congress, accept of any present, Emolument, Office, or Title, of any kind whatever, from any … foreign State</quote>. In his conduct of the office of President of the United States—and in violation of his constitutional oath to faithfully to execute the office of President of the United States and, to the best of his ability, preserve, protect, and defend the Constitution of the United States, and in violation of his constitutional duty to take care that the laws be faithfully executed—Donald John Trump has abused the powers of the Presidency in a manner offensive to, and subversive of, the Constitution, in that:
+				</text>
+			</subsection>
+			<subsection id="H8C6FDEB58590457DAE2FB8BB88E1DFF4">
+				<enum/>
+				<text display-inline="yes-display-inline">Donald John Trump has engaged in a pattern of unlawful corruption for the personal profit of himself and his associates, soliciting and accepting bribes in exchange for official actions, policy influence, and favorable treatment from the Administration. In so doing, he has, beyond a reasonable doubt, profiteered from public office on a scale unprecedented in American history.</text>
+			</subsection>
+			<subsection id="H0F7FFC5B2A414DBAA517B4FD8A099EC8">
+				<enum/>
+				<text display-inline="yes-display-inline">Donald John Trump has engaged in fraudulent con artist schemes through
+					<quote>pump and dump</quote> or
+					<quote>rug pull</quote> tactics for cryptocurrency tokens he has created, and at the same time, enabled a direct conduit for bribes paid to him in exchange for official actions.
+				</text>
+			</subsection>
+			<subsection id="H777F615F7A764B67A3F5FA2E07C99455">
+				<enum/>
+				<text display-inline="yes-display-inline">Donald John Trump has also leveraged the threat of hostile government action and the corresponding offer of preferential treatment in order to extract large payments in the form of settlements for meritless and vexatious litigation he pursues in his personal capacity, thereby corrupting both the executive branch and the judiciary. To advance this end, Donald John Trump solicited and received $940,000,000 in pro bono services from prominent law firms to help causes he personally supports.</text>
+			</subsection>
+			<subsection id="H83363BDA5B004C169F3EE8A28EE880FD">
+				<enum/>
+				<text display-inline="yes-display-inline">Donald John Trump has refused to divest himself or take any steps to prevent conflicts of interest in his substantial personal business ventures, creating another conduit for the payment of bribes.</text>
+			</subsection>
+			<subsection id="H47F89D733F444E209CE409E4F0D5B79C">
+				<enum/>
+				<text display-inline="yes-display-inline">Donald John Trump has permitted and encouraged his subordinates to violate laws regarding ethics, disclosures, and self-dealing, and through these actions, he has enabled and encouraged corruption and graft by his relatives, associates, and political allies.</text>
+			</subsection>
+			<subsection id="HC1CEABCA1BAF441CAE3B194551D539A9">
+				<enum/>
+				<text display-inline="yes-display-inline">Donald John Trump has, in these ways and others, solicited payments from foreign governments for corrupt purposes and in flagrant violation of the Constitution’s prohibition on foreign emoluments.</text>
+			</subsection>
+			<subsection id="H74784672EB50494DB897386D904CDFDC">
+				<enum/>
+				<text display-inline="yes-display-inline">Wherefore, Donald John Trump, by such conduct, has demonstrated that he is unfit to govern a Nation by and for the people, has acted in a manner grossly incompatible with self-governance and the rule of law, and will remain a threat to the Constitution if allowed to remain in office. </text>
+			</subsection>
+		</section>
+		<section id="HDF5E3D6DE0D14A5C8FE1CB9997E09B9B" section-type="undesignated-section">
+			<enum/>
+			<header>Article VII: Tyranny</header>
+			<subsection display-inline="no-display-inline" id="H0ECA06626DE745F492187C5B7513B6B4">
+				<enum/>
+				<text display-inline="yes-display-inline">The Constitution provides that the House of Representatives
+					<quote>shall have the sole Power of Impeachment</quote> and that the President
+					<quote>shall be removed from Office on Impeachment for, and Conviction of, Treason, Bribery, or other high Crimes and Misdemeanors</quote>. Further, the system of checks and balances, as well as the separation of powers, as defined in the Constitution, work to ensure that the Office of the President does not become tyrannical. In his conduct of the office of President of the United States—and in violation of his constitutional oath to faithfully to execute the office of President of the United States and, to the best of his ability, preserve, protect, and defend the Constitution of the United States, and in violation of his constitutional duty to take care that the laws be faithfully executed—Donald John Trump has abused the powers of the Presidency in a manner offensive to, and subversive of, the Constitution, in that:
+				</text>
+			</subsection>
+			<subsection id="H3D98C28B1C71423FBFD8A800AFB2C355">
+				<enum/>
+				<text display-inline="yes-display-inline">He has, by his actions and statements, sought to establish himself as tyrant, dictator, and autocrat over the People of the United States, usurping unto himself the constitutional powers of Congress, the courts, and the States, and powers illegitimate and beyond the scope of lawful government altogether.</text>
+			</subsection>
+			<subsection id="HCA3BFAD0344B41AF8C636EB39DC962B6">
+				<enum/>
+				<text display-inline="yes-display-inline">He has claimed for himself absolute and arbitrary power, the ability to suspend laws at whim, and utterly disregarded and betrayed his oath to faithfully execute the office of President of the United States and to preserve, protect, and defend the Constitution of the United States.</text>
+			</subsection>
+			<subsection id="H9BE9F4F845BF424EA0726E6681B25FBA">
+				<enum/>
+				<text display-inline="yes-display-inline">He has denied and violated the right of the People of the United States to freedom of speech, and of assembly, and to petition the government for redress of grievances.</text>
+			</subsection>
+			<subsection id="H926BC2830CA54C09A6E10994CA201FD1">
+				<enum/>
+				<text display-inline="yes-display-inline">He has denied and violated the right of the People of the United States to due process of law and equal protection under the laws, to fair and impartial independent courts, and to legal counsel.</text>
+			</subsection>
+			<subsection id="H366CD0B1315E402E8F1271ACA6A8C284">
+				<enum/>
+				<text display-inline="yes-display-inline">He has sought to intimidate and coerce, by means including the threat of unlawful prosecutions and by encouraging violence and threats of violence, the Representatives and Senators in Congress.</text>
+			</subsection>
+			<subsection id="HC0BD592913214901A6DE6A06569E386D">
+				<enum/>
+				<text display-inline="yes-display-inline">He has denied and violated the separation of powers and the Constitution’s system of checks and balances, arrogating unto himself the legislative and judicial powers, including the power of Congress to levy taxes, appropriate public funds, direct the organization of officers and agencies of the executive branch, and to make laws.</text>
+			</subsection>
+			<subsection id="H24B99B712C3B4E8189FED5F52E33FA59">
+				<enum/>
+				<text display-inline="yes-display-inline">He has sought to intimidate, coerce, and extort the officers of the several States, including those elected by the People thereof, and thereby sought to commandeer the several States, in violation of their sovereignty and the system of federalism established by the Constitution of the United States.</text>
+			</subsection>
+			<subsection id="HEB59271EF7404E0684A0C34D0ADAC85E">
+				<enum/>
+				<text display-inline="yes-display-inline"> He has sought to abrogate the citizenship clause of the 14th Amendment to the Constitution, by means including the issuance of an executive order that directs executive departments and agencies to withhold citizenship from certain classes of persons who are born within the United States.</text>
+			</subsection>
+			<subsection id="H140E9943AE1E48DBA88F0FA5F005DC92">
+				<enum/>
+				<text display-inline="yes-display-inline">He has repeatedly threatened and suggested that he intends to violate the Presidential term limits established by the 22d Amendment to the Constitution, and adopted overtly monarchical aspirations and affectations, including by invoking and endorsing theories that he is above the law or that his personal will constitutes the law.</text>
+			</subsection>
+			<subsection id="HE696BAED2A63488B87BAD6C18989B223">
+				<enum/>
+				<text display-inline="yes-display-inline">In all of this, Donald John Trump has willfully disregarded Federal laws and the Constitution, imperiled a coequal branch of Government, and threatened the integrity of the democratic system. He thereby betrayed his trust as President, abused the powers of the Presidency, acted in a manner grossly incompatible with self-governance and the rule of law, and has committed High Crimes and Misdemeanors in attempting to establish himself as a lawless tyrant to the manifest injury of the people of the United States.</text>
+			</subsection>
+			<subsection id="H1652519D4A2E4B9FAD5666218BCE0343">
+				<enum/>
+				<text display-inline="yes-display-inline">Wherefore, Donald John Trump, by such conduct, has demonstrated that he is unfit to govern a Nation by and for the people, has acted in a manner grossly incompatible with self-governance and the rule of law, and will remain a threat to the Constitution if allowed to remain in office. </text>
+			</subsection>
+		</section>
+	</resolution-body>
+</resolution>

@@ -2,8 +2,9 @@ const std = @import("std");
 const string = []const u8;
 const Parser = @This();
 const xml = @import("./mod.zig");
+const nio = @import("nio");
 
-any: std.io.AnyReader,
+any: nio.AnyReadable,
 allocator: std.mem.Allocator,
 temp: std.ArrayListUnmanaged(u8) = .{},
 idx: usize = 0,

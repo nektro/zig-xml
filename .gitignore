@@ -20,3 +20,4 @@ xml-test-suite/**/*.html
 xml-test-suite/**/*.htm
 xml-test-suite/xmlconf/xmltest/*.xml
 xml-test-suite/xmlconf/*
+fuzz/output
