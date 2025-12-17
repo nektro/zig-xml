@@ -33,7 +33,7 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: anytype) !Documen
             return err;
         },
         // stave off error: error sets 'anyerror' and 'error{}' have no common errors
-        else => |e| @as(@TypeOf(inreader).ReadError || error{XmlMalformed}, @errorCast(e)),
+        else => |e| @as(std.meta.Child(@TypeOf(inreader)).ReadError || error{XmlMalformed}, @errorCast(e)),
     };
 }
 

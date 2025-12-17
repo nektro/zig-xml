@@ -8,3 +8,4 @@ dependencies:
   - src: git https://github.com/nektro/zig-nio
 root_dependencies:
   - src: git https://github.com/nektro/zig-nfs
+  - src: git https://github.com/nektro/zig-nio

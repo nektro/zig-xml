@@ -2,6 +2,8 @@ const std = @import("std");
 const string = []const u8;
 const xml = @import("xml");
 const expect = std.testing.expect;
+const nfs = @import("nfs");
+const nio = @import("nio");
 
 // zig fmt: off
 test { try doValid("xml-test-suite/xmlconf/xmltest/valid/sa/001.xml"); }
@@ -125,10 +127,10 @@ test { try doValid("xml-test-suite/xmlconf/xmltest/valid/sa/118.xml"); }
 test { try doValid("xml-test-suite/xmlconf/xmltest/valid/sa/119.xml"); }
 // zig fmt: on
 
-fn doValid(testfile_path: string) !void {
-    var testfile_file = try std.fs.cwd().openFile(testfile_path, .{});
+fn doValid(testfile_path: [:0]const u8) !void {
+    var testfile_file = try nfs.cwd().openFile(testfile_path, .{});
     defer testfile_file.close();
-    var doc = try xml.parse(std.testing.allocator, testfile_path, testfile_file.reader());
+    var doc = try xml.parse(std.testing.allocator, testfile_path, &testfile_file);
     defer doc.deinit();
 }
 
@@ -145,8 +147,8 @@ test {
         \\  <book title="The Lightning Thief: Percy Jackson and the Olympians" author="Rick Riordan"></book>
         \\</category>
     ;
-    var fbs = std.io.fixedBufferStream(input);
-    var doc = try xml.parse(std.testing.allocator, "<stdin>", fbs.reader());
+    var fbs = nio.FixedBufferStream([]const u8).init(input);
+    var doc = try xml.parse(std.testing.allocator, "<stdin>", &fbs);
     defer doc.deinit();
     doc.acquire();
     defer doc.release();
