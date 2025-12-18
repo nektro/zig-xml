@@ -6,10 +6,8 @@ MPL-2.0:
 
 MIT:
 = https://spdx.org/licenses/MIT
-- git https://github.com/nektro/zig-errno
 - git https://github.com/nektro/zig-extras
-- git https://github.com/nektro/zig-libc
-- git https://github.com/nektro/zig-sys-libc
+- git https://github.com/nektro/zig-sys-linux
 - git https://github.com/nektro/zig-time
 - git https://github.com/nektro/zig-tracer
 
