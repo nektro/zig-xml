@@ -7,6 +7,7 @@ const string = []const u8;
 const Parser = @import("./Parser.zig");
 const log = std.log.scoped(.xml);
 const tracer = @import("tracer");
+const extras = @import("extras");
 
 //
 //
@@ -33,7 +34,7 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: anytype) !Documen
             return err;
         },
         // stave off error: error sets 'anyerror' and 'error{}' have no common errors
-        else => |e| @as(std.meta.Child(@TypeOf(inreader)).ReadError || error{XmlMalformed}, @errorCast(e)),
+        else => |e| @as(extras.Pointee(@TypeOf(inreader)).ReadError || error{XmlMalformed}, @errorCast(e)),
     };
 }
 
