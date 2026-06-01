@@ -3,15 +3,17 @@ const deps = @import("./deps.zig");
 
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
-    const mode = b.option(std.builtin.Mode, "mode", "") orelse .Debug;
+    const mode = b.option(std.builtin.OptimizeMode, "mode", "") orelse .Debug;
     const disable_llvm = b.option(bool, "disable_llvm", "use the non-llvm zig codegen") orelse false;
 
     {
         const exe = b.addExecutable(.{
             .name = "bench",
-            .root_source_file = b.path("main.zig"),
-            .target = target,
-            .optimize = mode,
+            .root_module = b.createModule(.{
+                .root_source_file = b.path("main.zig"),
+                .target = target,
+                .optimize = mode,
+            }),
         });
         deps.addAllTo(exe);
         exe.use_llvm = !disable_llvm;
@@ -28,9 +30,11 @@ pub fn build(b: *std.Build) void {
     }
 
     const unit_tests = b.addTest(.{
-        .root_source_file = b.path("test.zig"),
-        .target = target,
-        .optimize = mode,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("test.zig"),
+            .target = target,
+            .optimize = mode,
+        }),
     });
     deps.addAllTo(unit_tests);
     unit_tests.use_llvm = !disable_llvm;
@@ -60,11 +64,14 @@ pub fn build(b: *std.Build) void {
 }
 
 fn addFuzzer(b: *std.Build, target: std.Build.ResolvedTarget, comptime name: []const u8, afl_clang_args: []const []const u8) *std.Build.Step.InstallFile {
-    const fuzz_lib = b.addStaticLibrary(.{
+    const fuzz_lib = b.addLibrary(.{
+        .linkage = .static,
         .name = "fuzz-" ++ name ++ "-lib",
-        .root_source_file = b.path("fuzz/main.zig"),
-        .target = target,
-        .optimize = .Debug,
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("fuzz/main.zig"),
+            .target = target,
+            .optimize = .Debug,
+        }),
     });
     fuzz_lib.want_lto = true;
     fuzz_lib.bundle_compiler_rt = true;
