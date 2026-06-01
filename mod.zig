@@ -100,7 +100,7 @@ fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?Element {
 }
 
 fn collectAttributes(alloc: std.mem.Allocator, p: *Parser) !AttributeListIndex {
-    var list = std.ArrayList(StringIndex).init(alloc);
+    var list = std.array_list.Managed(StringIndex).init(alloc);
     defer list.deinit();
 
     while (true) {
@@ -166,9 +166,9 @@ fn parseContent(alloc: std.mem.Allocator, p: *Parser) anyerror!?NodeListIndex {
     const t = tracer.trace(@src(), "", .{});
     defer t.end();
 
-    var list1 = std.ArrayList(NodeIndex).init(alloc);
+    var list1 = std.array_list.Managed(NodeIndex).init(alloc);
     defer list1.deinit();
-    var list2 = std.ArrayList(u8).init(alloc);
+    var list2 = std.array_list.Managed(u8).init(alloc);
     defer list2.deinit();
 
     try addOpStringToList(p, &list2, try parseCharData(alloc, p));
@@ -247,7 +247,7 @@ fn parsePI(alloc: std.mem.Allocator, p: *Parser) anyerror!?ProcessingInstruction
     const target = try parsePITarget(alloc, p) orelse return error.XmlMalformed;
     try parseS(p) orelse {};
 
-    var list = std.ArrayList(u8).init(alloc);
+    var list = std.array_list.Managed(u8).init(alloc);
     defer list.deinit();
     while (true) {
         if (try p.eat("?>")) |_| break;
@@ -320,7 +320,7 @@ fn parseName(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     const t = tracer.trace(@src(), "", .{});
     defer t.end();
 
-    var list = std.ArrayList(u8).init(alloc);
+    var list = std.array_list.Managed(u8).init(alloc);
     defer list.deinit();
 
     try addUCPtoList(&list, try parseNameStartChar(p) orelse return null);
@@ -383,7 +383,7 @@ fn parseCharData(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     const t = tracer.trace(@src(), "", .{});
     defer t.end();
 
-    var list = std.ArrayList(u8).init(alloc);
+    var list = std.array_list.Managed(u8).init(alloc);
     defer list.deinit();
 
     var i: usize = 0;
@@ -497,7 +497,7 @@ fn parseEncName(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     const t = tracer.trace(@src(), "", .{});
     defer t.end();
 
-    var list = std.ArrayList(u8).init(alloc);
+    var list = std.array_list.Managed(u8).init(alloc);
     defer list.deinit();
 
     const b = try p.eatRange('A', 'Z') orelse try p.eatRange('a', 'z') orelse return null;
@@ -560,7 +560,7 @@ fn parseSystemLiteral(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringInde
     const t = tracer.trace(@src(), "", .{});
     defer t.end();
 
-    var list = std.ArrayList(u8).init(alloc);
+    var list = std.array_list.Managed(u8).init(alloc);
     defer list.deinit();
 
     const q = try p.eatQuoteS() orelse return null;
@@ -579,7 +579,7 @@ fn parsePubidLiteral(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex
     const t = tracer.trace(@src(), "", .{});
     defer t.end();
 
-    var list = std.ArrayList(u8).init(alloc);
+    var list = std.array_list.Managed(u8).init(alloc);
     defer list.deinit();
 
     const q = try p.eatQuoteS() orelse return null;
@@ -621,7 +621,7 @@ fn parseAttValue(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     const t = tracer.trace(@src(), "", .{});
     defer t.end();
 
-    var list = std.ArrayList(u8).init(alloc);
+    var list = std.array_list.Managed(u8).init(alloc);
     defer list.deinit();
 
     const q = try p.eatQuoteS() orelse return null;
@@ -705,7 +705,7 @@ fn parseCData(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     const t = tracer.trace(@src(), "", .{});
     defer t.end();
 
-    var list = std.ArrayList(u8).init(alloc);
+    var list = std.array_list.Managed(u8).init(alloc);
     defer list.deinit();
 
     while (true) {
@@ -897,7 +897,7 @@ fn parseMixed(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringListIndex {
     try parseS(p) orelse {};
     if (try p.eat(")")) |_| return .empty;
 
-    var list = std.ArrayList(StringIndex).init(alloc);
+    var list = std.array_list.Managed(StringIndex).init(alloc);
     defer list.deinit();
     while (true) {
         try parseS(p) orelse {};
@@ -1034,7 +1034,7 @@ fn parseEntityValue(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex 
     const t = tracer.trace(@src(), "", .{});
     defer t.end();
 
-    var list = std.ArrayList(u8).init(alloc);
+    var list = std.array_list.Managed(u8).init(alloc);
     defer list.deinit();
 
     const q = try p.eatQuoteS() orelse return null;
@@ -1077,7 +1077,7 @@ fn parseNotationType(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringListI
     const t = tracer.trace(@src(), "", .{});
     defer t.end();
 
-    var list = std.ArrayList(StringIndex).init(alloc);
+    var list = std.array_list.Managed(StringIndex).init(alloc);
     defer list.deinit();
 
     try p.eat("NOTATION") orelse return null;
@@ -1101,7 +1101,7 @@ fn parseEnumeration(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringListIn
     const t = tracer.trace(@src(), "", .{});
     defer t.end();
 
-    var list = std.ArrayList(StringIndex).init(alloc);
+    var list = std.array_list.Managed(StringIndex).init(alloc);
     defer list.deinit();
 
     try p.eat("(") orelse return null;
@@ -1123,7 +1123,7 @@ fn parseNmtoken(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     const t = tracer.trace(@src(), "", .{});
     defer t.end();
 
-    var list = std.ArrayList(u8).init(alloc);
+    var list = std.array_list.Managed(u8).init(alloc);
     defer list.deinit();
 
     var i: usize = 0;
@@ -1157,14 +1157,14 @@ fn parseNmtoken(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
 //
 //
 
-fn addUCPtoList(list: *std.ArrayList(u8), cp: u21) !void {
+fn addUCPtoList(list: *std.array_list.Managed(u8), cp: u21) !void {
     var buf: [4]u8 = undefined;
     const len = std.unicode.utf8CodepointSequenceLength(cp) catch unreachable;
     _ = std.unicode.utf8Encode(cp, buf[0..len]) catch unreachable;
     try list.appendSlice(buf[0..len]);
 }
 
-fn addReferenceToList(p: *Parser, list: *std.ArrayList(u8), ref: Reference) !void {
+fn addReferenceToList(p: *Parser, list: *std.array_list.Managed(u8), ref: Reference) !void {
     return switch (ref) {
         .char => |c| addUCPtoList(list, c),
         .entity_found => |sidx| list.appendSlice(p.getStr(sidx)),
@@ -1175,7 +1175,7 @@ fn addReferenceToList(p: *Parser, list: *std.ArrayList(u8), ref: Reference) !voi
     };
 }
 
-fn addOpStringToList(p: *Parser, list: *std.ArrayList(u8), sidx_maybe: ?StringIndex) !void {
+fn addOpStringToList(p: *Parser, list: *std.array_list.Managed(u8), sidx_maybe: ?StringIndex) !void {
     // try list.appendSlice(p.getStr(sidx_maybe orelse try p.addStr(list.allocator, "")));
     try list.appendSlice(std.mem.trim(u8, p.getStr(sidx_maybe orelse try p.addStr(list.allocator, "")), " \n"));
 }
