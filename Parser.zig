@@ -6,15 +6,15 @@ const nio = @import("nio");
 
 any: nio.AnyReadable,
 allocator: std.mem.Allocator,
-temp: std.ArrayListUnmanaged(u8) = .{},
+temp: std.ArrayListUnmanaged(u8) = .empty,
 idx: usize = 0,
 end: bool = false,
-data: std.ArrayListUnmanaged(u32) = .{},
-string_bytes: std.ArrayListUnmanaged(u8) = .{},
-strings_map: std.StringArrayHashMapUnmanaged(xml.StringIndex) = .{},
-gentity_map: std.AutoArrayHashMapUnmanaged(xml.StringIndex, xml.StringIndex) = .{},
-pentity_map: std.AutoArrayHashMapUnmanaged(xml.StringIndex, xml.StringIndex) = .{},
-nodes: std.MultiArrayList(Node) = .{},
+data: std.ArrayListUnmanaged(u32) = .empty,
+string_bytes: std.ArrayListUnmanaged(u8) = .empty,
+strings_map: std.StringArrayHashMapUnmanaged(xml.StringIndex) = .empty,
+gentity_map: std.AutoArrayHashMapUnmanaged(xml.StringIndex, xml.StringIndex) = .empty,
+pentity_map: std.AutoArrayHashMapUnmanaged(xml.StringIndex, xml.StringIndex) = .empty,
+nodes: std.MultiArrayList(Node) = .empty,
 
 pub fn avail(p: *Parser) usize {
     return p.temp.items.len - p.idx;

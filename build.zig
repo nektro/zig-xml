@@ -18,7 +18,7 @@ pub fn build(b: *std.Build) void {
         deps.addAllTo(exe);
         exe.use_llvm = !disable_llvm;
         exe.use_lld = !disable_llvm;
-        exe.linkLibC();
+        exe.root_module.link_libc = true;
 
         const run_exe = b.addRunArtifact(exe);
         if (b.args) |args| {
@@ -37,7 +37,7 @@ pub fn build(b: *std.Build) void {
         }),
     });
     deps.addAllTo(unit_tests);
-    unit_tests.linkLibC();
+    unit_tests.root_module.link_libc = true;
     unit_tests.use_llvm = !disable_llvm;
     unit_tests.use_lld = !disable_llvm;
     b.getInstallStep().dependOn(&unit_tests.step);
@@ -76,7 +76,7 @@ fn addFuzzer(b: *std.Build, target: std.Build.ResolvedTarget, comptime name: []c
             .optimize = .Debug,
         }),
     });
-    fuzz_lib.want_lto = true;
+    fuzz_lib.lto = .full;
     fuzz_lib.bundle_compiler_rt = true;
     fuzz_lib.use_llvm = true;
     fuzz_lib.use_lld = true;

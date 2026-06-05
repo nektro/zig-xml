@@ -30,7 +30,7 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: anytype) !Documen
     _ = try ourreader.addStr(alloc, "");
     return parseDocument(alloc, &ourreader) catch |err| switch (err) {
         error.XmlMalformed => {
-            if (@errorReturnTrace()) |trace| std.debug.dumpStackTrace(trace.*);
+            if (@errorReturnTrace()) |trace| std.debug.dumpErrorReturnTrace(trace);
             return err;
         },
         // stave off error: error sets 'anyerror' and 'error{}' have no common errors

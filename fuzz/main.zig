@@ -3,7 +3,7 @@ const xml = @import("xml");
 const nfs = @import("nfs");
 
 pub export fn main() void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var gpa = std.heap.DebugAllocator(.{}){};
     defer std.debug.assert(gpa.deinit() == .ok);
     const allocator = gpa.allocator();
 
