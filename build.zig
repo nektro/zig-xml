@@ -40,6 +40,7 @@ pub fn build(b: *std.Build) void {
     unit_tests.linkLibC();
     unit_tests.use_llvm = !disable_llvm;
     unit_tests.use_lld = !disable_llvm;
+    b.getInstallStep().dependOn(&unit_tests.step);
 
     const run_unit_tests = b.addRunArtifact(unit_tests);
     run_unit_tests.setCwd(b.path("."));
@@ -51,6 +52,7 @@ pub fn build(b: *std.Build) void {
     //
 
     const fuzz_exe = addFuzzer(b, target, "xml", &.{});
+    b.getInstallStep().dependOn(&fuzz_exe.step);
 
     const fuzz_run = b.addSystemCommand(&.{"afl-fuzz"});
     fuzz_run.step.dependOn(&fuzz_exe.step);
