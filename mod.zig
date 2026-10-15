@@ -383,19 +383,12 @@ fn parsePITarget(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
 
 /// Char   ::=   #x9 | #xA | #xD | [#x20-#xD7FF] | [#xE000-#xFFFD] | [#x10000-#x10FFFF] /* any Unicode character, excluding the surrogate blocks, FFFE, and FFFF. */
 fn parseChar(p: *Parser) anyerror!?u21 {
-    try p.peekAmt(3) orelse return null;
-    if (std.unicode.utf8Decode(p.slice()[0..1]) catch null) |cp| {
-        p.idx += 1;
-        return cp;
-    }
-    if (std.unicode.utf8Decode(p.slice()[0..2]) catch null) |cp| {
-        p.idx += 2;
-        return cp;
-    }
-    if (std.unicode.utf8Decode(p.slice()[0..3]) catch null) |cp| {
-        p.idx += 3;
-        return cp;
-    }
+    if (try p.eatByte(0x9)) |_| return 0x9;
+    if (try p.eatByte(0xA)) |_| return 0xA;
+    if (try p.eatByte(0xD)) |_| return 0xD;
+    if (try p.eatRangeM(0x20, 0xD7FF)) |c| return c;
+    if (try p.eatRangeM(0xE000, 0xFFFD)) |c| return c;
+    if (try p.eatRangeM(0x10000, 0x10FFFF)) |c| return c;
     return null;
 }
 
@@ -1067,8 +1060,7 @@ pub const Parser = struct {
         const amt = @max(from_len, to_len);
         try p.peekAmt(amt) orelse return null;
         const len = std.unicode.utf8ByteSequenceLength(p.slice()[0]) catch return null;
-        if (amt != len) return null;
-        const mcp = std.unicode.utf8Decode(p.slice()[0..amt]) catch return null;
+        const mcp = std.unicode.utf8Decode(p.slice()[0..len]) catch return null;
         if (mcp >= from and mcp <= to) {
             defer p.idx += len;
             return @intCast(mcp);
