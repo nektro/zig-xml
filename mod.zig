@@ -99,8 +99,9 @@ fn collectAttributes(alloc: std.mem.Allocator, p: *Parser) !AttributeListIndex {
     defer list.deinit();
 
     while (true) {
-        try parseS(p) orelse {};
+        const had_space = try parseS(p);
         const attr = try parseAttribute(alloc, p) orelse break;
+        if (had_space == null) return error.XmlMalformed;
         try list.append(attr.name);
         try list.append(attr.value);
     }
@@ -534,7 +535,7 @@ fn parseAttValue(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
         if (try p.eatQuoteE(q)) |_| break;
         if (try p.eatAnyNot(&.{ '<', '&', q })) |b| break :blk try list.append(b);
         if (try parseReference(alloc, p)) |ref| break :blk try addReferenceToList(p, &list, ref);
-        unreachable;
+        return error.XmlMalformed;
     }
     return try p.addStr(alloc, list.items);
 }
@@ -870,7 +871,7 @@ fn parseEntityValue(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex 
         if (try p.eatAnyNot(&.{ '%', '&', q })) |b| break :blk try list.append(b);
         if (try parsePEReference(alloc, p)) |ref| break :blk try list.appendSlice(p.getStr(p.pentity_map.get(ref) orelse return error.XmlMalformed));
         if (try parseReference(alloc, p)) |ref| break :blk try addReferenceToList(p, &list, ref);
-        unreachable;
+        return error.XmlMalformed;
     }
     return try p.addStr(alloc, list.items);
 }
@@ -971,8 +972,8 @@ fn parseNmtoken(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
 
 fn addUCPtoList(list: *std.array_list.Managed(u8), cp: u21) !void {
     var buf: [4]u8 = undefined;
-    const len = std.unicode.utf8CodepointSequenceLength(cp) catch unreachable;
-    _ = std.unicode.utf8Encode(cp, buf[0..len]) catch unreachable;
+    const len = std.unicode.utf8CodepointSequenceLength(cp) catch return error.XmlMalformed;
+    _ = std.unicode.utf8Encode(cp, buf[0..len]) catch return error.XmlMalformed;
     try list.appendSlice(buf[0..len]);
 }
 

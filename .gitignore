@@ -13,11 +13,14 @@ xml-test-suite/xmlconf/sun/
 xml-test-suite/xmlconf/xmltest/valid/sa/out/
 xml-test-suite/xmlconf/files/
 xml-test-suite/xmlconf/xmltest/invalid/
-xml-test-suite/xmlconf/xmltest/not-wf/
+xml-test-suite/xmlconf/xmltest/not-wf/ext-sa/
+xml-test-suite/xmlconf/xmltest/not-wf/not-sa/
 xml-test-suite/xmlconf/xmltest/valid/ext-sa/
 xml-test-suite/xmlconf/xmltest/valid/not-sa/
 xml-test-suite/**/*.html
 xml-test-suite/**/*.htm
-xml-test-suite/xmlconf/xmltest/*.xml
-xml-test-suite/xmlconf/*
+xml-test-suite/xmlconf/xmltest/xmltest.xml
+xml-test-suite/xmlconf/xmlconf*
+xml-test-suite/xmlconf/tarfile
+xml-test-suite/xmlconf/testcases.dtd
 fuzz/output
