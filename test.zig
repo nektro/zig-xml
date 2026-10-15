@@ -172,7 +172,7 @@ test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/034.xml"); }
 test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/035.xml"); }
 test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/036.xml"); }
 test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/037.xml"); }
-test { try doNotWfTODO("xml-test-suite/xmlconf/xmltest/not-wf/sa/038.xml"); }
+test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/038.xml"); }
 test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/039.xml"); }
 test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/040.xml"); }
 test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/041.xml"); }

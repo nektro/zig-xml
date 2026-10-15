@@ -96,17 +96,20 @@ fn parseElement(alloc: std.mem.Allocator, p: *Parser) anyerror!?Element {
 }
 
 fn collectAttributes(alloc: std.mem.Allocator, p: *Parser) !AttributeListIndex {
-    var list = std.array_list.Managed(StringIndex).init(alloc);
-    defer list.deinit();
-
+    var map: std.AutoArrayHashMapUnmanaged(StringIndex, StringIndex) = .empty;
+    defer map.deinit(alloc);
     while (true) {
         const had_space = try parseS(p);
         const attr = try parseAttribute(alloc, p) orelse break;
         if (had_space == null) return error.XmlMalformed;
-        try list.append(attr.name);
-        try list.append(attr.value);
+        const gop = try map.getOrPut(alloc, attr.name);
+        if (gop.found_existing) return error.XmlMalformed;
+        gop.value_ptr.* = attr.value;
     }
-    return @enumFromInt(@intFromEnum(try p.addStrList(alloc, list.items)));
+    const ks = try p.addStrList(alloc, map.keys());
+    const vs = try p.addStrList(alloc, map.values());
+    _ = vs;
+    return @enumFromInt(@intFromEnum(ks));
 }
 
 /// Misc   ::=   Comment | PI | S
@@ -1290,15 +1293,18 @@ pub const Element = struct {
     pub fn attr(this: Element, key: string) ?string {
         const eidx = this.attributes;
         if (eidx == .empty) return null;
-        const handle = doc.?.data[@intFromEnum(eidx)..];
-        const len = handle[0] / 2;
-        // error: TODO: implement @ptrCast between slices changing the length
-        // const attributes: []const Attribute = @ptrCast(handle[1..][0..len]);
-        // for (attributes) |item| {
-        for (0..len) |i| {
-            const item: Attribute = @bitCast(handle[1..][2 * i ..][0..2].*);
-            if (std.mem.eql(u8, item.name.slice(), key)) {
-                return item.value.slice();
+        const khandle = doc.?.data[@intFromEnum(eidx)..];
+        const klen = khandle[0];
+        const ks_r = khandle[1..][0..klen];
+        const vhandle = khandle[1..][klen..];
+        const vlen = vhandle[0];
+        const vs_r = vhandle[1..][0..vlen];
+        std.debug.assert(klen == vlen);
+        const ks: []align(1) const StringIndex = @ptrCast(ks_r);
+        const vs: []align(1) const StringIndex = @ptrCast(vs_r);
+        for (ks, 0..) |k, i| {
+            if (std.mem.eql(u8, k.slice(), key)) {
+                return vs[i].slice();
             }
         }
         return null;
@@ -1402,7 +1408,7 @@ pub const EntityDecl = union(enum) {
     pe: PEDecl,
 };
 
-pub const Attribute = extern struct {
+pub const Attribute = struct {
     name: StringIndex,
     value: StringIndex,
 };
