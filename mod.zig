@@ -338,8 +338,17 @@ fn parseCharData(alloc: std.mem.Allocator, p: *Parser) anyerror!?StringIndex {
     var i: usize = 0;
     while (true) : (i += 1) {
         if (try p.peek("]]>")) break;
-        if (try p.eatAnyNot("<&")) |c| {
-            try list.append(c);
+        blk: {
+            const c = try parseChar(p) orelse {
+                break :blk;
+            };
+            if (c == '<' or c == '&') {
+                p.idx -= 1;
+                break :blk;
+            }
+            const t = p.temp.items[0..p.idx];
+            const l = std.unicode.utf8CodepointSequenceLength(c) catch unreachable;
+            try list.appendSlice(t[t.len - l ..]);
             continue;
         }
         if (i == 0) return null;
