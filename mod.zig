@@ -212,6 +212,7 @@ fn parseComment(p: *Parser) anyerror!?void {
     try p.eat("<!--") orelse return null;
     while (true) {
         if (try p.eat("-->")) |_| break;
+        if (try p.eat("--")) |_| return error.XmlMalformed;
         _ = try parseChar(p) orelse return error.XmlMalformed;
     }
 }

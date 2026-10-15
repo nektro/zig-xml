@@ -140,7 +140,7 @@ test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/002.xml"); }
 test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/003.xml"); }
 test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/004.xml"); }
 test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/005.xml"); }
-test { try doNotWfTODO("xml-test-suite/xmlconf/xmltest/not-wf/sa/006.xml"); }
+test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/006.xml"); }
 test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/007.xml"); }
 test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/008.xml"); }
 test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/009.xml"); }
@@ -204,7 +204,7 @@ test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/066.xml"); }
 test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/067.xml"); }
 test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/068.xml"); }
 test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/069.xml"); }
-test { try doNotWfTODO("xml-test-suite/xmlconf/xmltest/not-wf/sa/070.xml"); }
+test { try doNotWf("xml-test-suite/xmlconf/xmltest/not-wf/sa/070.xml"); }
 test { try doNotWfTODO("xml-test-suite/xmlconf/xmltest/not-wf/sa/071.xml"); }
 test { try doNotWfTODO("xml-test-suite/xmlconf/xmltest/not-wf/sa/072.xml"); }
 test { try doNotWfTODO("xml-test-suite/xmlconf/xmltest/not-wf/sa/073.xml"); }
