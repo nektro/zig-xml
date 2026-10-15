@@ -3,6 +3,7 @@
 // https://www.w3.org/XML/Test/xmlconf-20020606.htm
 
 const std = @import("std");
+const builtin = @import("builtin");
 const string = []const u8;
 const log = std.log.scoped(.xml);
 const tracer = @import("tracer");
@@ -33,7 +34,7 @@ pub fn parse(alloc: std.mem.Allocator, path: string, inreader: anytype) !Documen
     _ = try ourreader.addStr(alloc, "");
     return parseDocument(alloc, &ourreader) catch |err| switch (err) {
         error.XmlMalformed => {
-            if (@errorReturnTrace()) |trace| std.debug.dumpErrorReturnTrace(trace);
+            if (!builtin.is_test) if (@errorReturnTrace()) |trace| std.debug.dumpErrorReturnTrace(trace);
             return err;
         },
         // stave off error: error sets 'anyerror' and 'error{}' have no common errors
@@ -980,7 +981,7 @@ fn addReferenceToList(p: *Parser, list: *std.array_list.Managed(u8), ref: Refere
         .char => |c| addUCPtoList(list, c),
         .entity_found => |sidx| list.appendSlice(p.getStr(sidx)),
         .entity_name => |nm| list.appendSlice(p.getStr(p.gentity_map.get(nm) orelse blk: {
-            log.warn("encountered unknown entity: &{s};", .{p.getStr(nm)});
+            if (!builtin.is_test) log.warn("encountered unknown entity: &{s};", .{p.getStr(nm)});
             break :blk try p.addStr(list.allocator, "");
         })),
     };
