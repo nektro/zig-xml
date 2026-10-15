@@ -47,6 +47,7 @@ fn parseDocument(alloc: std.mem.Allocator, p: *Parser) anyerror!Document {
     _ = try parseProlog(alloc, p) orelse return error.XmlMalformed;
     const root = try parseElement(alloc, p) orelse return error.XmlMalformed;
     while (true) _ = try parseMisc(alloc, p) orelse break;
+    if (p.avail() > 0) return error.XmlMalformed;
 
     defer p.strings_map.deinit(alloc);
     return .{
