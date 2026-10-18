@@ -8,6 +8,9 @@ MIT:
 = https://spdx.org/licenses/MIT
 - git https://github.com/nektro/zig-extras
 - git https://github.com/nektro/zig-sys-darwin
+- git https://github.com/nektro/zig-sys-freebsd
 - git https://github.com/nektro/zig-sys-linux
+- git https://github.com/nektro/zig-sys-netbsd
+- git https://github.com/nektro/zig-sys-openbsd
 - git https://github.com/nektro/zig-time
 - git https://github.com/nektro/zig-tracer
